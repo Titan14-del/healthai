@@ -4,3 +4,4 @@ healthai.db
 __pycache__/
 .idea/
 healthai.db
+.env
