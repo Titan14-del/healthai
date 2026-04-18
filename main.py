@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Depends, status
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List
@@ -48,6 +49,13 @@ async def lifespan(app: FastAPI):
     asyncio.create_task(keep_alive())
     yield
 
+class ForceHTTPSMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        if request.headers.get("x-forwarded-proto") == "http":
+            https_url = str(request.url).replace("http://", "https://", 1)
+            return RedirectResponse(url=https_url, status_code=301)
+        return await call_next(request)
+
 app = FastAPI(title="HealthAI API", lifespan=lifespan)
 
 app.add_middleware(
@@ -56,6 +64,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(ForceHTTPSMiddleware)
 
 ALLOWED_IMAGE_TYPES = {
     "image/jpeg": "image/jpeg",
