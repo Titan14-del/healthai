@@ -7,6 +7,7 @@ from typing import Optional, List
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 import traceback
+import os
 import httpx
 import asyncio
 from contextlib import asynccontextmanager
@@ -87,8 +88,9 @@ def home():
     return {"message": "HealthAI is running!"}
 @app.get("/app")
 def serve_app():
-    return FileResponse("HealthAi.html")
-
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    html_path = os.path.join(base_dir, "HealthAi.html")
+    return FileResponse(html_path)
 # ── Auth ─────────────────────────────────────────────────
 
 @app.post("/register", response_model=schemas.TokenResponse, status_code=status.HTTP_201_CREATED)
