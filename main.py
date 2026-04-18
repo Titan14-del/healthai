@@ -7,6 +7,9 @@ from typing import Optional, List
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 import traceback
+import httpx
+import asyncio
+from contextlib import asynccontextmanager
 
 
 from database import engine, get_db
@@ -29,8 +32,23 @@ with engine.connect() as conn:
         conn.commit()
     except Exception:
         pass  # Column already exists
+async def keep_alive():
+    await asyncio.sleep(60)
+    while True:
+        try:
+            async with httpx.AsyncClient() as client:
+                await client.get("https://healthai-qoem.onrender.com/")
+                print("Keep-alive ping sent")
+        except Exception as e:
+            print(f"Keep-alive error: {e}")
+        await asyncio.sleep(840)
 
-app = FastAPI(title="HealthAI API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    asyncio.create_task(keep_alive())
+    yield
+
+app = FastAPI(title="HealthAI API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
