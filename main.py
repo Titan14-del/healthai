@@ -1,0 +1,195 @@
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Depends, status
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import Optional, List
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+import traceback
+
+
+from database import engine, get_db
+import models
+import schemas
+from auth import (
+    hash_password, verify_password, create_token,
+    get_current_patient, get_optional_patient
+)
+from symptom_checker import analyze_symptoms
+from image_analyzer import analyze_image
+
+# ── DB setup & migration ─────────────────────────────────
+models.Base.metadata.create_all(bind=engine)
+
+# Add language column to existing databases that predate this migration
+with engine.connect() as conn:
+    try:
+        conn.execute(text("ALTER TABLE patients ADD COLUMN language VARCHAR DEFAULT 'en' NOT NULL"))
+        conn.commit()
+    except Exception:
+        pass  # Column already exists
+
+app = FastAPI(title="HealthAI API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+ALLOWED_IMAGE_TYPES = {
+    "image/jpeg": "image/jpeg",
+    "image/png":  "image/png",
+    "image/gif":  "image/gif",
+    "image/webp": "image/webp",
+}
+
+# ── Request/Response models ───────────────────────────────
+
+class SymptomRequest(BaseModel):
+    symptoms: str
+    age:      Optional[int]  = None
+    gender:   Optional[str]  = None
+    language: str            = 'en'
+
+class SymptomResponse(BaseModel):
+    urgency:    str
+    conditions: str
+    advice:     str
+
+class ImageResponse(BaseModel):
+    analysis: str
+
+# ── Health check ─────────────────────────────────────────
+
+@app.get("/")
+def home():
+    return {"message": "HealthAI is running!"}
+@app.get("/app")
+def serve_app():
+    return FileResponse("HealthAi.html")
+
+# ── Auth ─────────────────────────────────────────────────
+
+@app.post("/register", response_model=schemas.TokenResponse, status_code=status.HTTP_201_CREATED)
+def register(req: schemas.RegisterRequest, db: Session = Depends(get_db)):
+    if db.query(models.Patient).filter(models.Patient.email == req.email).first():
+        raise HTTPException(status_code=400, detail="Email already registered")
+    patient = models.Patient(
+        name     = req.name,
+        email    = req.email,
+        password = hash_password(req.password),
+        age      = req.age,
+    )
+    db.add(patient)
+    db.commit()
+    db.refresh(patient)
+    return schemas.TokenResponse(access_token=create_token(patient.id))
+
+@app.post("/login", response_model=schemas.TokenResponse)
+def login(req: schemas.LoginRequest, db: Session = Depends(get_db)):
+    patient = db.query(models.Patient).filter(models.Patient.email == req.email).first()
+    if not patient or not verify_password(req.password, patient.password):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    return schemas.TokenResponse(access_token=create_token(patient.id))
+
+@app.get("/me", response_model=schemas.PatientOut)
+def me(patient: models.Patient = Depends(get_current_patient)):
+    return patient
+
+@app.patch("/me/language", response_model=schemas.PatientOut)
+def update_language(
+    update:  schemas.LanguageUpdate,
+    patient: models.Patient = Depends(get_current_patient),
+    db:      Session = Depends(get_db),
+):
+    patient.language = update.language
+    db.commit()
+    db.refresh(patient)
+    return patient
+
+# ── Symptom analysis ─────────────────────────────────────
+
+@app.post("/analyze", response_model=SymptomResponse)
+def analyze(
+    request: SymptomRequest,
+    db:      Session = Depends(get_db),
+    patient: Optional[models.Patient] = Depends(get_optional_patient),
+):
+    try:
+        result = analyze_symptoms(
+            symptoms=request.symptoms,
+            age=request.age,
+            gender=request.gender,
+            language=request.language,
+        )
+        if patient:
+            db.add(models.Diagnosis(
+                patient_id = patient.id,
+                type       = "symptom",
+                query      = request.symptoms,
+                urgency    = result.get("urgency"),
+                conditions = result.get("conditions"),
+                advice     = result.get("advice"),
+            ))
+            db.commit()
+        return SymptomResponse(**result)
+    except Exception as e:
+        print("FULL ERROR:", traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ── Image analysis ───────────────────────────────────────
+
+@app.post("/analyze-image", response_model=ImageResponse)
+async def analyze_image_endpoint(
+    file:            UploadFile = File(...),
+    additional_info: str = Form(default=""),
+    language:        str = Form(default="en"),
+    db:      Session = Depends(get_db),
+    patient: Optional[models.Patient] = Depends(get_optional_patient),
+):
+    try:
+        if file.content_type not in ALLOWED_IMAGE_TYPES:
+            raise HTTPException(status_code=400, detail="Invalid file type. Please upload a JPEG, PNG, GIF or WEBP image.")
+
+        image_bytes = await file.read()
+        if len(image_bytes) > 5 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="Image too large. Please upload an image smaller than 5MB.")
+
+        result = analyze_image(
+            image_bytes=image_bytes,
+            image_type=ALLOWED_IMAGE_TYPES[file.content_type],
+            additional_info=additional_info,
+            language=language,
+        )
+        if patient:
+            db.add(models.Diagnosis(
+                patient_id = patient.id,
+                type       = "image",
+                query      = additional_info or "[Image uploaded]",
+                analysis   = result,
+            ))
+            db.commit()
+        return ImageResponse(analysis=result)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print("FULL ERROR:", traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ── Patient history ──────────────────────────────────────
+
+@app.get("/history", response_model=List[schemas.DiagnosisOut])
+def history(
+    patient: models.Patient = Depends(get_current_patient),
+    db:      Session = Depends(get_db),
+):
+    return (
+        db.query(models.Diagnosis)
+        .filter(models.Diagnosis.patient_id == patient.id)
+        .order_by(models.Diagnosis.created_at.desc())
+        .all()
+    )

@@ -1,0 +1,1283 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthAI — Medical Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Apple Sign-In -->
+    <script src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js" async defer></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>     
+    <style>
+      body { font-family: 'Inter', sans-serif; }
+      .scrollbar-slim::-webkit-scrollbar { width: 3px; }
+      .scrollbar-slim::-webkit-scrollbar-track { background: transparent; }
+      .scrollbar-slim::-webkit-scrollbar-thumb { background: #475569; border-radius: 99px; }
+      .msg-enter { animation: msgIn 0.25s ease forwards; }
+      @keyframes msgIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .dot { width: 6px; height: 6px; border-radius: 50%; background: #94a3b8; display: inline-block; margin: 0 2px; animation:  
+  dotBounce 1.2s infinite; }
+      .dot:nth-child(2) { animation-delay: .15s; }
+      .dot:nth-child(3) { animation-delay: .3s; }
+      @keyframes dotBounce {
+        0%, 60%, 100% { transform: translateY(0); }
+        30% { transform: translateY(-5px); }
+      }
+      .nav-active { background: rgba(16,185,129,.12) !important; color: #10b981 !important; }
+      .bnav-active { color: #10b981 !important; }
+    </style>
+  </head>
+
+  <body class="bg-slate-950 text-slate-100 h-screen flex overflow-hidden">
+
+  <!-- ── SIDEBAR (desktop) ── -->
+  <aside class="hidden lg:flex flex-col w-60 bg-slate-900 border-r border-slate-800 shrink-0">
+
+    <div class="p-5 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg 
+  shadow-emerald-500/25">
+          <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12   
+  20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        </div>
+        <div>
+          <h1 class="font-bold text-white text-sm leading-none">HealthAI</h1>
+          <p class="text-xs text-slate-500 mt-0.5">Medical Intelligence</p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="flex-1 p-3 space-y-0.5">
+      <button onclick="showScreen('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5     
+  rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+  stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0
+  012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 
+  2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        <span data-i18n="nav_dashboard">Dashboard</span>
+      </button>
+      <button onclick="showScreen('chat')" id="nav-chat" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+  <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+  <span data-i18n="nav_chat" class="truncate text-xs">Symptom Analysis</span>
+</button>
+      
+      <button onclick="showScreen('reports')" id="nav-reports" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5
+  rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+  stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414       
+  5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <span data-i18n="nav_reports">Reports</span>
+      </button>
+      <button onclick="showScreen('history')" id="nav-history" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5
+  rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+  stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span data-i18n="nav_history">History</span>
+      </button>
+      <button onclick="showScreen('nearby')" id="nav-nearby" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+  <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+  <span class="truncate text-xs">Nearby Care</span>
+</button>
+      <button onclick="showScreen('profile')" id="nav-profile" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5
+  rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+  stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>       
+        <span data-i18n="nav_profile">Profile</span>
+      </button>
+    </nav>
+
+    <div class="p-4 border-t border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-xs
+   font-bold text-white">P</div>
+        <div>
+          <p class="text-xs font-semibold text-white">Patient</p>
+          <p class="text-xs text-slate-500">Personal Account</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="shrink-0 bg-slate-900 border-b border-slate-800 px-4 lg:px-6 h-14 flex items-center justify-between">
+      <h2 id="headerTitle" class="text-sm font-semibold text-white">Dashboard</h2>
+      <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5 bg-slate-800 px-3 py-1.5 rounded-full">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span data-i18n="ai_online" class="text-xs text-slate-300 font-medium">AI Online</span>
+        </div>
+        <select id="langSelect" onchange="setLanguage(this.value)"
+          class="bg-slate-800 text-slate-300 text-xs rounded-xl px-2 py-1.5 border border-slate-700 focus:outline-none focus:border-emerald-500/50 transition-colors cursor-pointer">
+          <optgroup label="🌍 International">
+  <option value="en">English</option>
+  <option value="fr">Français</option>
+  <option value="es">Español</option>
+  <option value="zh">中文</option>
+  <option value="de">Deutsch</option>
+  <option value="ar">العربية</option>
+</optgroup>
+        </select>
+      </div>
+    </header>
+
+    <!-- ── SCREENS ── -->
+
+    <!-- DASHBOARD -->
+    <div id="dashboardScreen" class="flex-1 overflow-y-auto scrollbar-slim p-4 lg:p-6 space-y-5">
+
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-700 via-teal-700 to-cyan-800 p-6">
+        <div class="absolute -top-6 -right-6 w-36 h-36 rounded-full bg-white/5"></div>
+        <div class="absolute -bottom-8 -left-4 w-28 h-28 rounded-full bg-white/5"></div>
+        <div class="relative">
+          <p class="text-emerald-200 text-xs font-medium mb-1 uppercase tracking-wider">AI Medical Assistant</p>
+          <h2 data-i18n="dash_feeling" class="text-white text-xl font-bold mb-2">How are you feeling?</h2>
+          <p data-i18n="dash_subtitle" class="text-emerald-100/80 text-sm mb-4 max-w-xs">Describe your symptoms and receive instant AI-powered medical guidance.</p>
+          <button onclick="showScreen('chat')" class="inline-flex items-center gap-2 bg-white text-emerald-700 px-4 py-2
+  rounded-xl text-sm font-semibold hover:bg-emerald-50 transition shadow-md">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+  stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2
+  2 0 01-2 2h-5l-5 5v-5z"/></svg>
+            <span data-i18n="dash_cta">Start Consultation</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3">
+        <div class="bg-slate-900 rounded-2xl p-4 border border-slate-800">
+          <div class="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path
+  stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0   
+  012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+          </div>
+          <p id="statConsultations" class="text-2xl font-bold text-white">0</p>
+          <p data-i18n="dash_consultations" class="text-xs text-slate-500 mt-0.5">Consultations</p>
+        </div>
+        <div class="bg-slate-900 rounded-2xl p-4 border border-slate-800">
+          <div class="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center mb-3">
+            <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+   stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414      
+  5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <p id="statReports" class="text-2xl font-bold text-white">0</p>
+          <p data-i18n="nav_reports" class="text-xs text-slate-500 mt-0.5">Reports</p>
+        </div>
+        <div class="bg-slate-900 rounded-2xl p-4 border border-slate-800">
+          <div class="w-8 h-8 rounded-xl bg-red-500/10 flex items-center justify-center mb-3">
+            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" 
+  stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732
+  4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          </div>
+          <p id="statUrgent" class="text-2xl font-bold text-white">0</p>
+          <p data-i18n="dash_urgent" class="text-xs text-slate-500 mt-0.5">Urgent</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-800">
+          <h3 data-i18n="dash_recent" class="text-sm font-semibold text-white">Recent Consultations</h3>
+          <button onclick="showScreen('history')" class="text-xs text-emerald-400 hover:text-emerald-300 font-medium
+  transition"><span data-i18n="dash_viewall">View all →</span></button>
+        </div>
+        <div id="dashRecentList" class="p-3 space-y-1">
+          <p class="text-sm text-slate-500 text-center py-6">No consultations yet</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div id="chatScreen" class="hidden flex-1 flex flex-col overflow-hidden">
+      <div id="chatMessages" class="flex-1 overflow-y-auto scrollbar-slim p-4 lg:p-6 space-y-4">
+        <div class="flex justify-center pt-4 pb-2">
+          <div class="text-center max-w-xs">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center    
+  mx-auto mb-3 shadow-xl shadow-emerald-500/20">
+              <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000        
+  6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            </div>
+            <h3 class="font-semibold text-white text-sm mb-1">HealthAI Assistant</h3>
+            <p class="text-xs text-slate-500">Describe your symptoms in detail — include location, duration, and severity for the
+   best analysis.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="shrink-0 bg-slate-900 border-t border-slate-800 p-3 lg:p-4">
+        <div class="max-w-3xl mx-auto">
+          <!-- Hidden file input -->
+          <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp,image/gif"
+            class="hidden" onchange="handleImageSelect(event)">
+
+          <!-- Image preview (shown when image is selected) -->
+          <div id="imagePreview" class="hidden mb-2 flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-xl p-2">
+            <img id="imagePreviewThumb" src="" alt="" class="w-12 h-12 rounded-lg object-cover shrink-0 bg-slate-700">
+            <div class="flex-1 min-w-0">
+              <p id="imagePreviewName" class="text-xs text-white font-medium truncate"></p>
+              <p class="text-xs text-slate-500 mt-0.5">Ready to analyze · add context below (optional)</p>
+            </div>
+            <button onclick="clearPendingImage()"
+              class="w-6 h-6 rounded-lg bg-slate-700 hover:bg-red-500/20 text-slate-400 hover:text-red-400 flex items-center     
+  justify-center transition shrink-0">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+  stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="flex gap-2 items-end bg-slate-800 rounded-2xl p-2 border border-slate-700
+  focus-within:border-emerald-500/40 transition-colors">
+            <!-- Image attach button -->
+            <button onclick="document.getElementById('imageInput').click()"
+              title="Upload image for analysis"
+              class="shrink-0 w-9 h-9 text-slate-400 hover:text-emerald-400 hover:bg-slate-700 rounded-xl flex items-center      
+  justify-center transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+  stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20        
+  14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            </button>
+            <textarea
+              id="messageInput"
+              rows="1"
+              data-i18n-placeholder="chat_placeholder"
+              placeholder="Describe your symptoms…"
+              onkeydown="handleKey(event)"
+              oninput="autoResize(this)"
+              class="flex-1 bg-transparent text-sm text-slate-100 placeholder-slate-500 px-2 py-2 outline-none resize-none       
+  max-h-32 scrollbar-slim"
+            ></textarea>
+            <button onclick="sendMessage()" id="sendBtn"
+              class="shrink-0 w-9 h-9 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed        
+  rounded-xl flex items-center justify-center transition-colors">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" 
+  stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+            </button>
+          </div>
+          <p data-i18n="chat_disclaimer" class="text-xs text-slate-700 mt-2 text-center">For emergencies call 911 · Not a substitute for professional medical advice</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div id="reportsScreen" class="hidden flex-1 overflow-y-auto scrollbar-slim p-4 lg:p-6">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h3 data-i18n="nav_reports" class="font-semibold text-white text-sm">Medical Reports</h3>
+          <p data-i18n="reports_subtitle" class="text-xs text-slate-500 mt-0.5">AI-generated analyses from your consultations</p>
+        </div>
+        <button onclick="clearReports()" class="text-xs text-slate-500 hover:text-red-400 font-medium px-3 py-1.5 rounded-xl
+  hover:bg-red-500/10 transition"><span data-i18n="clear_all">Clear All</span></button>
+      </div>
+      <div id="reportsList" class="space-y-3"></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="historyScreen" class="hidden flex-1 overflow-y-auto scrollbar-slim p-4 lg:p-6">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h3 data-i18n="nav_history" class="font-semibold text-white text-sm">Consultation History</h3>
+          <p data-i18n="history_subtitle" class="text-xs text-slate-500 mt-0.5">Your past symptom queries</p>
+        </div>
+        <button onclick="clearHistory()" class="text-xs text-slate-500 hover:text-red-400 font-medium px-3 py-1.5 rounded-xl
+  hover:bg-red-500/10 transition"><span data-i18n="clear_all">Clear All</span></button>
+      </div>
+      <div id="historyList" class="space-y-2"></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div id="profileScreen" class="hidden flex-1 overflow-y-auto scrollbar-slim p-4 lg:p-6 space-y-4">
+      <!-- NEARBY CARE SCREEN -->
+<div id="nearbyScreen" class="hidden flex-1 overflow-y-auto scrollbar-slim p-4 lg:p-6 space-y-4">
+
+  <!-- Filter buttons -->
+  <div class="flex items-center gap-2">
+    <button onclick="filterPlaces('all')" id="filter-all" class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500 text-white transition">All</button>
+    <button onclick="filterPlaces('hospital')" id="filter-hospital" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 transition">Hospitals</button>
+    <button onclick="filterPlaces('pharmacy')" id="filter-pharmacy" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 transition">Pharmacies</button>
+  </div>
+
+  <!-- Map container -->
+  <div id="map" class="w-full rounded-2xl border border-slate-800 overflow-hidden" style="height: 350px; z-index:0;"></div>
+
+  <!-- Loading state -->
+  <div id="nearbyLoading" class="text-center py-8 text-slate-400 text-sm">
+    <svg class="w-8 h-8 mx-auto mb-3 animate-spin text-emerald-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+    Detecting your location...
+  </div>
+
+  <!-- Error state -->
+  <div id="nearbyError" class="hidden text-center py-8">
+    <p class="text-red-400 text-sm font-medium">Location access denied</p>
+    <p class="text-slate-500 text-xs mt-1">Please allow location access in your browser to find nearby care</p>
+  </div>
+
+  <!-- Results list -->
+  <div id="nearbyResults" class="hidden space-y-3"></div>
+
+</div>
+      <div>
+        <h3 class="font-semibold text-white text-sm">Patient Profile</h3>
+        <p class="text-xs text-slate-500 mt-0.5">Manage your health details and preferences</p>
+      </div>
+
+      <!-- Auth Card -->
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
+        <!-- Signed-out view -->
+        <div id="signedOutView" class="p-5">
+          <p data-i18n="profile_account" class="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Account</p>
+
+          <!-- Tab toggle -->
+          <div class="flex bg-slate-800 rounded-xl p-1 mb-4 mt-2">
+            <button id="tabLogin" onclick="switchAuthTab('login')"
+              class="flex-1 text-xs font-semibold py-1.5 rounded-lg transition bg-slate-700 text-white"><span data-i18n="tab_signin">Sign In</span></button>
+            <button id="tabRegister" onclick="switchAuthTab('register')"
+              class="flex-1 text-xs font-semibold py-1.5 rounded-lg transition text-slate-400"><span data-i18n="tab_register">Register</span></button>
+          </div>
+
+          <!-- Login form -->
+          <div id="loginForm" class="space-y-2.5">
+            <input id="loginEmail" type="email" data-i18n-placeholder="ph_email" placeholder="Email"
+              class="w-full bg-slate-800 text-white text-sm rounded-xl px-3 py-2.5 border border-slate-700 focus:border-emerald-500/50 focus:outline-none transition-colors placeholder-slate-500"/>
+            <input id="loginPassword" type="password" data-i18n-placeholder="ph_password" placeholder="Password"
+              class="w-full bg-slate-800 text-white text-sm rounded-xl px-3 py-2.5 border border-slate-700 focus:border-emerald-500/50 focus:outline-none transition-colors placeholder-slate-500"/>
+            <p id="loginError" class="text-xs text-red-400 hidden"></p>
+            <button onclick="submitLogin()"
+              class="w-full bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold py-2.5 rounded-xl transition"><span data-i18n="tab_signin">Sign In</span></button>
+          </div>
+
+          <!-- Register form -->
+          <div id="registerForm" class="space-y-2.5 hidden">
+            <input id="regName" type="text" data-i18n-placeholder="ph_name" placeholder="Full name"
+              class="w-full bg-slate-800 text-white text-sm rounded-xl px-3 py-2.5 border border-slate-700 focus:border-emerald-500/50 focus:outline-none transition-colors placeholder-slate-500"/>
+            <input id="regEmail" type="email" data-i18n-placeholder="ph_email" placeholder="Email"
+              class="w-full bg-slate-800 text-white text-sm rounded-xl px-3 py-2.5 border border-slate-700 focus:border-emerald-500/50 focus:outline-none transition-colors placeholder-slate-500"/>
+            <input id="regPassword" type="password" data-i18n-placeholder="ph_password" placeholder="Password"
+              class="w-full bg-slate-800 text-white text-sm rounded-xl px-3 py-2.5 border border-slate-700 focus:border-emerald-500/50 focus:outline-none transition-colors placeholder-slate-500"/>
+            <input id="regAge" type="number" data-i18n-placeholder="ph_age" placeholder="Age (optional)"
+              class="w-full bg-slate-800 text-white text-sm rounded-xl px-3 py-2.5 border border-slate-700 focus:border-emerald-500/50 focus:outline-none transition-colors placeholder-slate-500"/>
+            <p id="registerError" class="text-xs text-red-400 hidden"></p>
+            <button onclick="submitRegister()"
+              class="w-full bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold py-2.5 rounded-xl transition"><span data-i18n="btn_register">Create Account</span></button>
+          </div>
+
+          <div class="flex items-center gap-3 mt-4">
+            <div class="flex-1 h-px bg-slate-800"></div>
+            <span data-i18n="guest_mode" class="text-xs text-slate-600">guest mode active</span>
+            <div class="flex-1 h-px bg-slate-800"></div>
+          </div>
+        </div>
+        <!-- Signed-in view -->
+        <div id="signedInView" class="hidden px-5 py-4 flex items-center gap-3">
+          <div id="authAvatarWrap" class="w-10 h-10 rounded-xl bg-slate-700 shrink-0 flex items-center justify-center text-sm    
+  font-bold text-white overflow-hidden">
+            <span id="authAvatarInitial">?</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p id="authName" class="text-sm font-semibold text-white truncate">—</p>
+            <p id="authEmail" class="text-xs text-slate-400 truncate">—</p>
+          </div>
+          <button onclick="signOut()" class="text-xs text-slate-400 hover:text-red-400 font-medium px-3 py-1.5 rounded-xl
+  hover:bg-red-500/10 transition shrink-0"><span data-i18n="btn_signout">Sign out</span></button>
+        </div>
+      </div>
+
+      <!-- Identity Card -->
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 flex items-center gap-4">
+        <div id="profileAvatarEl" class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center 
+  justify-center text-xl font-bold text-white shadow-lg shadow-violet-500/20 overflow-hidden">P</div>
+        <div>
+          <h4 id="profileNameEl" class="font-semibold text-white text-sm">Patient</h4>
+          <p id="profileEmailEl" class="text-xs text-slate-400 mt-0.5">Personal health account</p>
+          <span id="profileProviderBadge" class="inline-flex items-center gap-1 mt-1.5 text-xs bg-slate-700/50 text-slate-400    
+  px-2 py-0.5 rounded-full font-medium">Guest</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-800">
+          <p data-i18n="profile_health" class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Health Details</p>
+          <div class="grid grid-cols-2 gap-3 mt-3">
+            <div>
+              <label data-i18n="lbl_age" class="text-xs text-slate-400 block mb-1.5">Age</label>
+              <input id="profileAge" type="number" placeholder="—" class="w-full bg-slate-800 text-white text-sm rounded-xl px-3
+  py-2.5 border border-slate-700 focus:border-emerald-500/50 focus:outline-none transition-colors"/>
+            </div>
+            <div>
+              <label data-i18n="lbl_gender" class="text-xs text-slate-400 block mb-1.5">Gender</label>
+              <select id="profileGender" class="w-full bg-slate-800 text-white text-sm rounded-xl px-3 py-2.5 border
+  border-slate-700 focus:border-emerald-500/50 focus:outline-none transition-colors">
+                <option value="">—</option>
+                <option id="opt-male" value="male">Male</option>
+                <option id="opt-female" value="female">Female</option>
+                <option id="opt-other" value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 py-4">
+          <p data-i18n="lbl_preferences" class="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-3">Preferences</p>
+          <div class="flex items-center justify-between">
+            <div>
+              <p data-i18n="pref_include" class="text-sm text-white font-medium">Include profile in analysis</p>
+              <p data-i18n="pref_include_sub" class="text-xs text-slate-500 mt-0.5">Sends age &amp; gender with queries</p>
+            </div>
+            <button onclick="togglePref(this)" id="prefToggle" data-active="false"
+              class="relative w-11 h-6 bg-slate-700 rounded-full transition-colors">
+              <span id="prefThumb" class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform
+  duration-200"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 rounded-2xl border border-red-900/30 p-5">
+        <p data-i18n="profile_data" class="text-xs text-red-400/80 font-semibold uppercase tracking-wider mb-3">Data Management</p>
+        <button onclick="clearAll()" class="text-sm text-red-400 hover:text-red-300 px-4 py-2 rounded-xl border border-red-900/40
+   hover:bg-red-500/10 transition font-medium"><span data-i18n="btn_clear_all">Clear All Data</span></button>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV (mobile) -->
+    <nav class="lg:hidden shrink-0 bg-slate-900 border-t border-slate-800 flex">
+      <button onclick="showScreen('dashboard')" id="bnav-dashboard" class="bnav-btn flex-1 flex flex-col items-center gap-0.5    
+  py-2.5 text-slate-500 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+  stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0
+  012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 
+  2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        <span data-i18n="bnav_home" class="text-[10px] font-medium">Home</span>
+      </button>
+      <button onclick="showScreen('chat')" id="bnav-chat" class="bnav-btn flex-1 flex flex-col items-center gap-0.5 py-2.5       
+  text-slate-500 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+  stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 
+  2 0 01-2 2h-5l-5 5v-5z"/></svg>
+        <span data-i18n="bnav_analyze" class="text-[10px] font-medium">Analyze</span>
+      </button>
+      <button onclick="showScreen('reports')" id="bnav-reports" class="bnav-btn flex-1 flex flex-col items-center gap-0.5 py-2.5 
+  text-slate-500 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+  stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414       
+  5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <span data-i18n="nav_reports" class="text-[10px] font-medium">Reports</span>
+      </button>
+      <button onclick="showScreen('history')" id="bnav-history" class="bnav-btn flex-1 flex flex-col items-center gap-0.5 py-2.5 
+  text-slate-500 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+  stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span data-i18n="nav_history" class="text-[10px] font-medium">History</span>
+      </button>
+      <button onclick="showScreen('profile')" id="bnav-profile" class="bnav-btn flex-1 flex flex-col items-center gap-0.5 py-2.5 
+  text-slate-500 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+  stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>       
+        <span class="text-[10px] font-medium">Profile</span>
+      </button>
+    </nav>
+  </div>
+
+  <script>
+  // ── State ────────────────────────────────────────────
+  const SCREENS = ['dashboard','chat','reports','history','profile'];
+  const TITLES  = { dashboard:'Dashboard', chat:'Symptom Analysis', reports:'Medical Reports', history:'History',
+  profile:'Profile' };
+  let isLoading    = false;
+  let pendingImage = null;
+
+  // ── Image selection ───────────────────────────────────
+  function handleImageSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    pendingImage = file;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      document.getElementById('imagePreviewThumb').src = ev.target.result;
+      document.getElementById('imagePreviewName').textContent = file.name;
+      document.getElementById('imagePreview').classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+    e.target.value = ''; // allow re-selecting same file
+    const inp = document.getElementById('messageInput');
+    inp.placeholder = T('chat_placeholder_img');
+    inp.focus();
+  }
+
+  function clearPendingImage() {
+    pendingImage = null;
+    document.getElementById('imagePreview').classList.add('hidden');
+    document.getElementById('imagePreviewThumb').src = '';
+    document.getElementById('messageInput').placeholder = T('chat_placeholder');
+  }
+
+  function appendImageUserMsg(file, text) {
+    const chat = document.getElementById('chatMessages');
+    const url  = URL.createObjectURL(file);
+    const d    = document.createElement('div');
+    d.className = 'flex justify-end msg-enter';
+    d.innerHTML = `
+      <div class="max-w-[78%] lg:max-w-[60%]">
+        <div class="bg-emerald-600 rounded-2xl rounded-br-sm overflow-hidden">
+          <img src="${url}" alt="Uploaded image"
+            class="w-full max-h-48 object-cover"
+            onload="URL.revokeObjectURL(this.src)">
+          ${text ? `<p class="text-white text-sm px-4 py-2.5 leading-relaxed">${esc(text)}</p>` : ''}
+        </div>
+        <p class="text-xs text-slate-600 mt-1 text-right">Image · ${ts()}</p>
+      </div>`;
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function appendImageAIResponse(data) {
+    const chat = document.getElementById('chatMessages');
+    const raw  = (data.analysis || '').trim();
+    const low  = raw.toLowerCase();
+
+    const urgencyKey = /\bhigh\b/.test(low) ? 'high'
+                     : /\bmedium\b|\bmoderate\b/.test(low) ? 'medium'
+                     : /\blow\b/.test(low) ? 'low' : '';
+    const uColor = urgencyColor(urgencyKey);
+    const uBg    = urgencyBg(urgencyKey);
+    const urgencyLabel = { high:'High', medium:'Medium', low:'Low', '':'Review' }[urgencyKey];
+
+    const rendered = raw.split('\n').map(line => {
+      const t = line.trim();
+      if (!t) return '<div class="h-1"></div>';
+      const heading = t.match(/^\*?\*?(\d+)\.\s+(.+?)\*?\*?:?\s*$/);
+      if (heading) {
+        return `<p class="text-xs font-semibold text-slate-500 uppercase tracking-wider pt-2 pb-1 border-b
+  border-slate-700/40">${esc(heading[2].replace(/\*\*/g,''))}</p>`;
+      }
+      return `<p class="text-sm text-slate-300 leading-relaxed">${esc(t.replace(/\*\*/g,''))}</p>`;
+    }).join('');
+
+    const d = document.createElement('div');
+    d.className = 'flex items-start gap-2 msg-enter';
+    d.innerHTML = `
+      <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center shrink-0    
+  mt-1">
+        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12     
+  20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+      </div>
+      <div class="max-w-[88%] lg:max-w-[68%] bg-slate-900 border border-slate-700/80 rounded-2xl rounded-tl-sm overflow-hidden"> 
+        <div class="flex items-center justify-between px-4 py-2.5 border-b border-slate-700/60 ${uBg}">
+          <span class="text-xs font-semibold text-slate-400 tracking-wider uppercase flex items-center gap-1.5">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
+  stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20        
+  14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Image Analysis
+          </span>
+          <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${uColor}">
+            <span class="w-1.5 h-1.5 rounded-full bg-current"></span>${urgencyLabel}
+          </span>
+        </div>
+        <div class="p-4 space-y-1">${rendered}</div>
+        <div class="px-4 py-2 border-t border-slate-700/50 bg-slate-800/40">
+          <p class="text-xs text-slate-600">${ts()} · Not a substitute for professional medical advice</p>
+        </div>
+      </div>`;
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  // ── Navigation ────────────────────────────────────────
+  function showScreen(name) {
+    // ── Nearby Care ───────────────────────────────────
+let map = null;
+let allPlaces = [];
+let activeFilter = 'all';
+
+function initNearbyMap() {
+  const loading = document.getElementById('nearbyLoading');
+  const error   = document.getElementById('nearbyError');
+  const results = document.getElementById('nearbyResults');
+
+  loading.classList.remove('hidden');
+  error.classList.add('hidden');
+  results.classList.add('hidden');
+
+  if (!navigator.geolocation) {
+    loading.classList.add('hidden');
+    error.classList.remove('hidden');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      loading.classList.add('hidden');
+
+      if (!map) {
+        map = L.map('map').setView([lat, lng], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+      } else {
+        map.setView([lat, lng], 15);
+      }
+
+      L.marker([lat, lng], {
+        icon: L.divIcon({
+          className: '',
+          html: '<div style="background:#10b981;width:16px;height:16px;border-radius:50%;border:3px solid white;box-shadow:0 0 6px rgba(0,0,0,0.4)"></div>',
+          iconSize: [16, 16],
+          iconAnchor: [8, 8]
+        })
+      }).addTo(map).bindPopup('You are here').openPopup();
+
+      fetchNearbyPlaces(lat, lng);
+    },
+    () => {
+      loading.classList.add('hidden');
+      error.classList.remove('hidden');
+    }
+  );
+}
+
+async function fetchNearbyPlaces(lat, lng) {
+  const results = document.getElementById('nearbyResults');
+  const radius  = 5000;
+
+  const query = `
+    [out:json][timeout:25];
+    (
+      node["amenity"="hospital"](around:${radius},${lat},${lng});
+      node["amenity"="pharmacy"](around:${radius},${lat},${lng});
+      node["amenity"="clinic"](around:${radius},${lat},${lng});
+      way["amenity"="hospital"](around:${radius},${lat},${lng});
+      way["amenity"="pharmacy"](around:${radius},${lat},${lng});
+    );
+    out center;
+  `;
+
+  try {
+    const res  = await fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      body: query
+    });
+    const data = await res.json();
+
+    allPlaces = data.elements.map(el => {
+      const placeLat = el.lat || el.center?.lat;
+      const placeLng = el.lon || el.center?.lon;
+      const dist = getDistance(lat, lng, placeLat, placeLng);
+      return {
+        name:    el.tags?.name || 'Unnamed facility',
+        type:    el.tags?.amenity || 'hospital',
+        address: el.tags?.['addr:street'] || el.tags?.['addr:full'] || 'Address not available',
+        phone:   el.tags?.phone || el.tags?.['contact:phone'] || null,
+        lat:     placeLat,
+        lng:     placeLng,
+        dist:    dist
+      };
+    }).filter(p => p.lat && p.lng)
+      .sort((a, b) => a.dist - b.dist);
+
+    allPlaces.forEach(place => {
+      const color = place.type === 'pharmacy' ? '#3b82f6' : '#10b981';
+      const icon  = L.divIcon({
+        className: '',
+        html: `<div style="background:${color};width:12px;height:12px;border-radius:50%;border:2px solid white;box-shadow:0 0 4px rgba(0,0,0,0.3)"></div>`,
+        iconSize: [12, 12],
+        iconAnchor: [6, 6]
+      });
+      L.marker([place.lat, place.lng], { icon })
+        .addTo(map)
+        .bindPopup(`<b>${place.name}</b><br>${place.type}`);
+    });
+
+    renderPlaceCards();
+
+  } catch {
+    document.getElementById('nearbyResults').innerHTML =
+      '<p class="text-red-400 text-sm text-center">Could not load nearby places. Please try again.</p>';
+    document.getElementById('nearbyResults').classList.remove('hidden');
+  }
+}
+
+function getDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+    Math.sin(dLng/2) * Math.sin(dLng/2);
+  return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+}
+
+function renderPlaceCards() {
+  const results = document.getElementById('nearbyResults');
+  const filtered = activeFilter === 'all'
+    ? allPlaces
+    : allPlaces.filter(p => p.type === activeFilter);
+
+  if (filtered.length === 0) {
+    results.innerHTML = '<p class="text-slate-500 text-sm text-center py-4">No places found nearby</p>';
+    results.classList.remove('hidden');
+    return;
+  }
+
+  results.innerHTML = filtered.map(p => {
+    const dist = p.dist >= 1000
+      ? (p.dist/1000).toFixed(1) + ' km'
+      : p.dist + ' m';
+    const typeColor = p.type === 'pharmacy'
+      ? 'bg-blue-500/10 text-blue-400'
+      : 'bg-emerald-500/10 text-emerald-400';
+    const typeLabel = p.type === 'pharmacy' ? 'Pharmacy' :
+                      p.type === 'clinic'   ? 'Clinic'   : 'Hospital';
+    return `
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${typeColor}">${typeLabel}</span>
+              <span class="text-xs text-slate-500">${dist} away</span>
+            </div>
+            <h3 class="text-sm font-semibold text-white truncate">${p.name}</h3>
+            <p class="text-xs text-slate-500 mt-0.5 truncate">${p.address}</p>
+            ${p.phone ? `<p class="text-xs text-emerald-400 mt-0.5">${p.phone}</p>` : ''}
+          </div>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}"
+            target="_blank"
+            class="shrink-0 flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-3 py-2 rounded-xl hover:bg-emerald-500/20 transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+            Directions
+          </a>
+        </div>
+      </div>`;
+  }).join('');
+  results.classList.remove('hidden');
+}
+
+function filterPlaces(type) {
+  activeFilter = type;
+  document.getElementById('filter-all').className      = 'px-4 py-2 rounded-xl text-xs font-semibold transition ' + (type==='all'      ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700');
+  document.getElementById('filter-hospital').className = 'px-4 py-2 rounded-xl text-xs font-semibold transition ' + (type==='hospital'  ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700');
+  document.getElementById('filter-pharmacy').className = 'px-4 py-2 rounded-xl text-xs font-semibold transition ' + (type==='pharmacy'  ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700');
+  renderPlaceCards();
+}
+    SCREENS.forEach(s => {
+      document.getElementById(s+'Screen').classList.add('hidden');
+      document.getElementById('nav-'+s)?.classList.remove('nav-active');
+      const b = document.getElementById('bnav-'+s);
+      if (b) { b.classList.remove('bnav-active'); b.classList.add('text-slate-500'); }
+    });
+
+    document.getElementById(name+'Screen').classList.remove('hidden');
+    document.getElementById('headerTitle').textContent = TITLES[name];
+    document.getElementById('nav-'+name)?.classList.add('nav-active');
+    const ab = document.getElementById('bnav-'+name);
+    if (ab) { ab.classList.add('bnav-active'); ab.classList.remove('text-slate-500'); }
+
+    if (name === 'dashboard') updateDashboard();
+    if (name === 'reports')   renderReports();
+    if (name === 'history')   renderHistory();
+    if (name === 'nearby')    initNearbyMap();
+  }
+
+  // ── Chat ──────────────────────────────────────────────
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  }
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 128) + 'px';
+  }
+
+  async function sendMessage() {
+    if (isLoading) return;
+    const input        = document.getElementById('messageInput');
+    const text         = input.value.trim();
+    const imageToSend  = pendingImage;
+    if (!text && !imageToSend) return;
+
+    isLoading = true;
+    input.value = '';
+    input.style.height = 'auto';
+    document.getElementById('sendBtn').disabled = true;
+    clearPendingImage();
+
+    if (imageToSend) {
+      appendImageUserMsg(imageToSend, text);
+    } else {
+      appendUserMsg(text);
+    }
+
+    const tid = 'typing-' + Date.now();
+    appendTyping(tid);
+
+    try {
+      const authHeaders = authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
+
+      if (imageToSend) {
+        // ── Image analysis path ──
+        const formData = new FormData();
+        formData.append('file', imageToSend);
+        if (text) formData.append('additional_info', text);
+
+        formData.append('language', currentLang);
+        const res  = await fetch('http://localhost:8000/analyze-image', { method: 'POST', headers: authHeaders, body: formData });
+        const data = await res.json();
+        removeEl(tid);
+        appendImageAIResponse(data);
+        saveHistory(text || '[Image uploaded]');
+        saveReport({ query: text || '[Image uploaded]', analysis: data.analysis });
+      } else {
+        // ── Symptom text path ──
+        const payload = { symptoms: text, language: currentLang };
+        const pref = document.getElementById('prefToggle');
+        if (pref?.dataset.active === 'true') {
+          const age    = document.getElementById('profileAge').value;
+          const gender = document.getElementById('profileGender').value;
+          if (age)    payload.age    = parseInt(age);
+          if (gender) payload.gender = gender;
+        }
+        const res  = await fetch('http://localhost:8000/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...authHeaders },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        removeEl(tid);
+        appendAIResponse(data);
+        saveHistory(text);
+        saveReport({ query: text, ...data });
+      }
+    } catch {
+      removeEl(tid);
+      appendError('Could not reach the HealthAI server. Make sure the backend is running on port 8000.');
+    }
+
+    isLoading = false;
+    document.getElementById('sendBtn').disabled = false;
+  }
+
+  function appendUserMsg(text) {
+    const chat = document.getElementById('chatMessages');
+    const d = document.createElement('div');
+    d.className = 'flex justify-end msg-enter';
+    d.innerHTML = `
+      <div class="max-w-[78%] lg:max-w-[60%]">
+        <div class="bg-emerald-600 text-white rounded-2xl rounded-br-sm px-4 py-2.5 text-sm leading-relaxed">${esc(text)}</div>  
+        <p class="text-xs text-slate-600 mt-1 text-right">${ts()}</p>
+      </div>`;
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function appendTyping(id) {
+    const chat = document.getElementById('chatMessages');
+    const d = document.createElement('div');
+    d.id = id;
+    d.className = 'flex items-end gap-2 msg-enter';
+    d.innerHTML = `
+      <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center shrink-0">  
+        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12     
+  20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+      </div>
+      <div class="bg-slate-800 border border-slate-700 rounded-2xl rounded-bl-sm px-4 py-3.5 flex items-center gap-0.5">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>`;
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function appendAIResponse(data) {
+    const chat    = document.getElementById('chatMessages');
+    const urgency = (data.urgency || '').toLowerCase();
+    const uColor  = urgencyColor(urgency);
+    const uBg     = urgencyBg(urgency);
+
+    const conditions = (data.conditions || '').split(/[,\n]/).map(c => c.trim()).filter(Boolean);
+    const pills = conditions.map(c =>
+      `<span class="inline-block bg-slate-700/80 text-slate-200 text-xs px-2.5 py-0.5 rounded-full">${esc(c)}</span>`
+    ).join('');
+
+    const advice = (data.advice || '').split('\n').map(l => l.replace(/^[-•*]\s*/,'').trim()).filter(Boolean);
+    const list   = advice.map(l =>
+      `<li class="flex items-start gap-2 text-sm text-slate-300 leading-relaxed">
+        <span class="mt-[7px] w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>
+        <span>${esc(l)}</span>
+      </li>`
+    ).join('');
+
+    const d = document.createElement('div');
+    d.className = 'flex items-start gap-2 msg-enter';
+    d.innerHTML = `
+      <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center shrink-0    
+  mt-1">
+        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12     
+  20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+      </div>
+      <div class="max-w-[88%] lg:max-w-[68%] bg-slate-900 border border-slate-700/80 rounded-2xl rounded-tl-sm overflow-hidden"> 
+        <div class="flex items-center justify-between px-4 py-2.5 border-b border-slate-700/60 ${uBg}">
+          <span class="text-xs font-semibold text-slate-400 tracking-wider uppercase">AI Assessment</span>
+          <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${uColor}">
+            <span class="w-1.5 h-1.5 rounded-full bg-current"></span>${esc(data.urgency || 'Unknown')}
+          </span>
+        </div>
+        <div class="p-4 space-y-4">
+          ${conditions.length ? `<div>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Possible Conditions</p>
+            <div class="flex flex-wrap gap-1.5">${pills}</div>
+          </div>` : ''}
+          ${advice.length ? `<div>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Recommendations</p>
+            <ul class="space-y-1.5">${list}</ul>
+          </div>` : ''}
+        </div>
+        <div class="px-4 py-2 border-t border-slate-700/50 bg-slate-800/40">
+          <p class="text-xs text-slate-600">${ts()} · Not a substitute for professional medical advice</p>
+        </div>
+      </div>`;
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function appendError(msg) {
+    const chat = document.getElementById('chatMessages');
+    const d = document.createElement('div');
+    d.className = 'flex justify-center msg-enter';
+    d.innerHTML = `<div class="bg-red-500/10 border border-red-500/20 text-red-400 text-xs px-4 py-3 rounded-xl max-w-sm
+  text-center">${esc(msg)}</div>`;
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  // ── Urgency helpers ───────────────────────────────────
+  function urgencyColor(u) {
+    if (/low|mild|minor/.test(u))                          return 'bg-emerald-500/15 text-emerald-400';
+    if (/moderate|medium/.test(u))                         return 'bg-amber-500/15 text-amber-400';
+    if (/high|severe|urgent|critical|emergency/.test(u))   return 'bg-red-500/15 text-red-400';
+    return 'bg-slate-700/50 text-slate-300';
+  }
+  function urgencyBg(u) {
+    if (/low|mild|minor/.test(u))                          return 'bg-emerald-500/5';
+    if (/moderate|medium/.test(u))                         return 'bg-amber-500/5';
+    if (/high|severe|urgent|critical|emergency/.test(u))   return 'bg-red-500/5';
+    return '';
+  }
+
+  // ── Storage ───────────────────────────────────────────
+  function saveHistory(text) {
+    let h = JSON.parse(localStorage.getItem('hai_history') || '[]');
+    h.unshift({ text, ts: Date.now() });
+    localStorage.setItem('hai_history', JSON.stringify(h.slice(0, 100)));
+  }
+  function saveReport(data) {
+    let r = JSON.parse(localStorage.getItem('hai_reports') || '[]');
+    r.unshift({ ...data, ts: Date.now() });
+    localStorage.setItem('hai_reports', JSON.stringify(r.slice(0, 50)));
+  }
+
+  // ── Render History ────────────────────────────────────
+  function renderHistory() {
+    const el = document.getElementById('historyList');
+    const h  = JSON.parse(localStorage.getItem('hai_history') || '[]');
+    if (!h.length) { el.innerHTML = emptyState('clock','No history yet'); return; }
+    el.innerHTML = h.map((item, i) => `
+      <div class="flex items-center gap-3 bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 hover:border-slate-700      
+  transition-colors">
+        <span class="w-6 h-6 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-500
+  shrink-0">${i+1}</span>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm text-white truncate">${esc(item.text)}</p>
+          <p class="text-xs text-slate-500 mt-0.5">${fmtDate(item.ts)}</p>
+        </div>
+        <button onclick="reuseQuery('${escAttr(item.text)}')" class="text-xs text-emerald-400 hover:text-emerald-300 font-medium 
+  shrink-0 transition">Reuse</button>
+      </div>`).join('');
+  }
+
+  // ── Render Reports ────────────────────────────────────
+  function renderReports() {
+    const el = document.getElementById('reportsList');
+    const r  = JSON.parse(localStorage.getItem('hai_reports') || '[]');
+    if (!r.length) { el.innerHTML = emptyState('doc','No reports yet'); return; }
+    el.innerHTML = r.map(item => {
+      const uc   = urgencyColor((item.urgency||'').toLowerCase());
+      const conds = (item.conditions||'').split(/[,\n]/).map(c=>c.trim()).filter(Boolean);
+      const pills = conds.slice(0,3).map(c=>`<span class="inline-block bg-slate-700 text-slate-300 text-xs px-2 py-0.5
+  rounded-full">${esc(c)}</span>`).join('');
+      return `
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-700 transition-colors">    
+        <div class="flex items-center gap-3 px-4 py-3 border-b border-slate-800">
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-white truncate">${esc(item.query||'Consultation')}</p>
+            <p class="text-xs text-slate-500 mt-0.5">${fmtDate(item.ts)}</p>
+          </div>
+          <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full shrink-0
+  ${uc}">${esc(item.urgency||'—')}</span>
+        </div>
+        ${conds.length ? `<div class="px-4 py-3 flex flex-wrap gap-1.5">${pills}${conds.length>3?`<span class="text-xs
+  text-slate-600">+${conds.length-3} more</span>`:''}</div>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  // ── Dashboard ─────────────────────────────────────────
+  function updateDashboard() {
+    const h = JSON.parse(localStorage.getItem('hai_history') || '[]');
+    const r = JSON.parse(localStorage.getItem('hai_reports') || '[]');
+    document.getElementById('statConsultations').textContent = h.length;
+    document.getElementById('statReports').textContent       = r.length;
+    document.getElementById('statUrgent').textContent        = r.filter(i =>
+  /high|severe|urgent|critical|emergency/.test((i.urgency||'').toLowerCase())).length;
+
+    const el = document.getElementById('dashRecentList');
+    const recent = h.slice(0,4);
+    if (!recent.length) { el.innerHTML='<p class="text-sm text-slate-500 text-center py-6">No consultations yet</p>'; return; }  
+    el.innerHTML = recent.map(item => `
+      <button onclick="reuseQuery('${escAttr(item.text)}')" class="w-full flex items-center gap-3 px-2.5 py-2 rounded-xl
+  hover:bg-slate-800 transition text-left group">
+        <div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+          <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path
+  stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0   
+  012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm text-slate-200 truncate group-hover:text-white transition">${esc(item.text)}</p>
+          <p class="text-xs text-slate-500">${fmtDate(item.ts)}</p>
+        </div>
+      </button>`).join('');
+  }
+
+  // ── Actions ───────────────────────────────────────────
+  function reuseQuery(text) {
+    showScreen('chat');
+    const inp = document.getElementById('messageInput');
+    inp.value = text;
+    inp.focus();
+    autoResize(inp);
+  }
+  function clearHistory() {
+    if (!confirm('Clear all history?')) return;
+    localStorage.removeItem('hai_history');
+    renderHistory();
+  }
+  function clearReports() {
+    if (!confirm('Clear all reports?')) return;
+    localStorage.removeItem('hai_reports');
+    renderReports();
+  }
+  function clearAll() {
+    if (!confirm('Clear ALL data?')) return;
+    localStorage.removeItem('hai_history');
+    localStorage.removeItem('hai_reports');
+    updateDashboard();
+  }
+  function togglePref(btn) {
+    const on = btn.dataset.active !== 'true';
+    btn.dataset.active = String(on);
+    btn.classList.toggle('bg-emerald-500', on);
+    btn.classList.toggle('bg-slate-700', !on);
+    document.getElementById('prefThumb').style.transform = on ? 'translateX(20px)' : '';
+  }
+
+  // ── Utils ─────────────────────────────────────────────
+  function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }     
+  function escAttr(s) { return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+  function ts() { return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+  function fmtDate(ms) { return new Date(ms).toLocaleDateString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
+  function removeEl(id) { document.getElementById(id)?.remove(); }
+  function emptyState(icon, msg) {
+    const icons = {
+      clock: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+      doc:   'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+    };
+    return `<div class="flex flex-col items-center justify-center py-20 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center mb-3">
+        <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"   
+  stroke-linejoin="round" stroke-width="2" d="${icons[icon]}"/></svg>
+      </div>
+      <p class="text-sm text-slate-500">${msg}</p>
+    </div>`;
+  }
+
+  // ── Auth ─────────────────────────────────────────────
+  const API = 'http://localhost:8000';
+  let authUser  = JSON.parse(localStorage.getItem('hai_auth') || 'null');
+  let authToken = localStorage.getItem('hai_token') || null;
+
+  function switchAuthTab(tab) {
+    const isLogin = tab === 'login';
+    document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
+    document.getElementById('registerForm').classList.toggle('hidden', isLogin);
+    document.getElementById('tabLogin').className    = 'flex-1 text-xs font-semibold py-1.5 rounded-lg transition ' + (isLogin  ? 'bg-slate-700 text-white' : 'text-slate-400');
+    document.getElementById('tabRegister').className = 'flex-1 text-xs font-semibold py-1.5 rounded-lg transition ' + (!isLogin ? 'bg-slate-700 text-white' : 'text-slate-400');
+  }
+
+  async function submitLogin() {
+    const email    = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errEl    = document.getElementById('loginError');
+    errEl.classList.add('hidden');
+    if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.remove('hidden'); return; }
+    try {
+      const res  = await fetch(`${API}/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password}) });
+      const data = await res.json();
+      if (!res.ok) { errEl.textContent = data.detail || 'Login failed.'; errEl.classList.remove('hidden'); return; }
+      await storeTokenAndLoadUser(data.access_token);
+    } catch { errEl.textContent = 'Could not reach server.'; errEl.classList.remove('hidden'); }
+  }
+
+  async function submitRegister() {
+    const name     = document.getElementById('regName').value.trim();
+    const email    = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const age      = parseInt(document.getElementById('regAge').value) || null;
+    const errEl    = document.getElementById('registerError');
+    errEl.classList.add('hidden');
+    if (!name || !email || !password) { errEl.textContent = 'Name, email and password are required.'; errEl.classList.remove('hidden'); return; }
+    try {
+      const res  = await fetch(`${API}/register`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name, email, password, age}) });
+      const data = await res.json();
+      if (!res.ok) { errEl.textContent = data.detail || 'Registration failed.'; errEl.classList.remove('hidden'); return; }
+      await storeTokenAndLoadUser(data.access_token);
+    } catch { errEl.textContent = 'Could not reach server.'; errEl.classList.remove('hidden'); }
+  }
+
+  async function storeTokenAndLoadUser(token) {
+    authToken = token;
+    localStorage.setItem('hai_token', token);
+    const res  = await fetch(`${API}/me`, { headers:{ 'Authorization': 'Bearer ' + token } });
+    const user = await res.json();
+    authUser = { name: user.name, email: user.email, age: user.age, language: user.language };
+    localStorage.setItem('hai_auth', JSON.stringify(authUser));
+    // Restore the user's saved language preference
+    if (user.language && user.language !== currentLang) {
+      currentLang = user.language;
+      localStorage.setItem('hai_lang', currentLang);
+      document.getElementById('langSelect').value = currentLang;
+      applyTranslations();
+    }
+    renderProfile();
+    updateDashboard();
+  }
+
+  function signOut() {
+    authUser  = null;
+    authToken = null;
+    localStorage.removeItem('hai_auth');
+    localStorage.removeItem('hai_token');
+    renderProfile();
+    updateDashboard();
+  }
+
+  function renderProfile() {
+    const signedOutView = document.getElementById('signedOutView');
+    const signedInView  = document.getElementById('signedInView');
+    const avatarEl      = document.getElementById('profileAvatarEl');
+    const nameEl        = document.getElementById('profileNameEl');
+    const emailEl       = document.getElementById('profileEmailEl');
+    const badge         = document.getElementById('profileProviderBadge');
+
+    if (authUser) {
+      signedOutView.classList.add('hidden');
+      signedInView.classList.remove('hidden');
+      const initial = (authUser.name || '?')[0].toUpperCase();
+      document.getElementById('authName').textContent  = authUser.name  || '—';
+      document.getElementById('authEmail').textContent = authUser.email || '—';
+      document.getElementById('authAvatarInitial').textContent = initial;
+      avatarEl.textContent = initial;
+      avatarEl.className   = 'w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-xl font-bold text-white shadow-lg shadow-violet-500/20 overflow-hidden';
+      nameEl.textContent   = authUser.name  || 'User';
+      emailEl.textContent  = authUser.email || '';
+      badge.className      = 'inline-flex items-center gap-1 mt-1.5 text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-medium';
+      badge.textContent    = 'Signed In';
+    } else {
+      signedOutView.classList.remove('hidden');
+      signedInView.classList.add('hidden');
+      nameEl.textContent   = 'Patient';
+      emailEl.textContent  = 'Personal health account';
+      avatarEl.textContent = 'P';
+      avatarEl.className   = 'w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-xl font-bold text-white shadow-lg shadow-violet-500/20 overflow-hidden';
+      badge.className      = 'inline-flex items-center gap-1 mt-1.5 text-xs bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded-full font-medium';
+      badge.textContent    = 'Guest';
+    }
+  }
+
+  // ── i18n ─────────────────────────────────────────────
+  const TRANSLATIONS = {
+    en:  { ai_online:'AI Online', nav_dashboard:'Dashboard', nav_chat:'Symptom Analysis', nav_reports:'Reports', nav_history:'History', nav_profile:'Profile', bnav_home:'Home', bnav_analyze:'Analyze', dash_feeling:'How are you feeling?', dash_subtitle:'Describe your symptoms and receive instant AI-powered medical guidance.', dash_cta:'Start Consultation', dash_consultations:'Consultations', dash_urgent:'Urgent', dash_recent:'Recent Consultations', dash_viewall:'View all →', chat_placeholder:'Describe your symptoms…', chat_placeholder_img:'Add context about the image (optional)…', chat_disclaimer:'For emergencies call 911 · Not a substitute for professional medical advice', reports_subtitle:'AI-generated analyses from your consultations', history_subtitle:'Your past symptom queries', clear_all:'Clear All', profile_account:'Account', profile_signin_prompt:'Sign in to sync your health data', tab_signin:'Sign In', tab_register:'Register', btn_register:'Create Account', btn_signout:'Sign out', guest_mode:'guest mode active', profile_health:'Health Details', lbl_age:'Age', lbl_gender:'Gender', opt_male:'Male', opt_female:'Female', opt_other:'Other', lbl_preferences:'Preferences', pref_include:'Include profile in analysis', pref_include_sub:'Sends age & gender with queries', profile_data:'Data Management', btn_clear_all:'Clear All Data', ph_email:'Email', ph_password:'Password', ph_name:'Full name', ph_age:'Age (optional)' },
+    fr:  { ai_online:'IA en ligne', nav_dashboard:'Tableau de bord', nav_chat:'Analyse des symptômes', nav_reports:'Rapports', nav_history:'Historique', nav_profile:'Profil', bnav_home:'Accueil', bnav_analyze:'Analyser', dash_feeling:'Comment vous sentez-vous ?', dash_subtitle:'Décrivez vos symptômes et recevez une analyse médicale IA instantanée.', dash_cta:'Commencer la consultation', dash_consultations:'Consultations', dash_urgent:'Urgent', dash_recent:'Consultations récentes', dash_viewall:'Tout voir →', chat_placeholder:'Décrivez vos symptômes…', chat_placeholder_img:'Ajoutez un contexte (optionnel)…', chat_disclaimer:'Urgences : appelez le 15 · Ne remplace pas un avis médical professionnel', reports_subtitle:'Analyses IA générées à partir de vos consultations', history_subtitle:'Vos requêtes de symptômes passées', clear_all:'Tout effacer', profile_account:'Compte', profile_signin_prompt:'Connectez-vous pour synchroniser vos données de santé', tab_signin:'Se connecter', tab_register:"S'inscrire", btn_register:'Créer un compte', btn_signout:'Se déconnecter', guest_mode:'mode invité actif', profile_health:'Informations de santé', lbl_age:'Âge', lbl_gender:'Genre', opt_male:'Homme', opt_female:'Femme', opt_other:'Autre', lbl_preferences:'Préférences', pref_include:"Inclure le profil dans l'analyse", pref_include_sub:'Envoie l\'âge et le genre avec les requêtes', profile_data:'Gestion des données', btn_clear_all:'Effacer toutes les données', ph_email:'Email', ph_password:'Mot de passe', ph_name:'Nom complet', ph_age:'Âge (optionnel)' },
+    ar:  { ai_online:'الذكاء الاصطناعي متصل', nav_dashboard:'لوحة التحكم', nav_chat:'تحليل الأعراض', nav_reports:'التقارير', nav_history:'السجل', nav_profile:'الملف الشخصي', bnav_home:'الرئيسية', bnav_analyze:'تحليل', dash_feeling:'كيف حالك؟', dash_subtitle:'صف أعراضك واحصل على تحليل طبي فوري بالذكاء الاصطناعي.', dash_cta:'بدء الاستشارة', dash_consultations:'الاستشارات', dash_urgent:'عاجل', dash_recent:'الاستشارات الأخيرة', dash_viewall:'عرض الكل ←', chat_placeholder:'صف أعراضك…', chat_placeholder_img:'أضف معلومات عن الصورة (اختياري)…', chat_disclaimer:'للطوارئ اتصل بـ 15 · لا يغني عن استشارة الطبيب', reports_subtitle:'تحليلات الذكاء الاصطناعي من استشاراتك', history_subtitle:'استفساراتك السابقة عن الأعراض', clear_all:'مسح الكل', profile_account:'الحساب', profile_signin_prompt:'سجّل الدخول لمزامنة بياناتك الصحية', tab_signin:'تسجيل الدخول', tab_register:'إنشاء حساب', btn_register:'إنشاء حساب', btn_signout:'تسجيل الخروج', guest_mode:'وضع الضيف نشط', profile_health:'المعلومات الصحية', lbl_age:'العمر', lbl_gender:'الجنس', opt_male:'ذكر', opt_female:'أنثى', opt_other:'آخر', lbl_preferences:'التفضيلات', pref_include:'تضمين الملف في التحليل', pref_include_sub:'يرسل العمر والجنس مع الاستفسارات', profile_data:'إدارة البيانات', btn_clear_all:'مسح جميع البيانات', ph_email:'البريد الإلكتروني', ph_password:'كلمة المرور', ph_name:'الاسم الكامل', ph_age:'العمر (اختياري)' },
+    es: { ai_online:'IA en línea', nav_dashboard:'Panel', nav_chat:'Análisis de síntomas', nav_reports:'Informes', nav_history:'Historial', nav_profile:'Perfil', bnav_home:'Inicio', bnav_analyze:'Analizar', dash_feeling:'¿Cómo se siente?', dash_subtitle:'Describa sus síntomas y reciba orientación médica instantánea.', dash_cta:'Iniciar consulta', dash_consultations:'Consultas', dash_urgent:'Urgente', dash_recent:'Consultas recientes', dash_viewall:'Ver todo →', chat_placeholder:'Describa sus síntomas...', chat_placeholder_img:'Añada información sobre la imagen (opcional)...', chat_disclaimer:'Para emergencias llame al 115 · No sustituye al médico', reports_subtitle:'Informes de IA de sus consultas', history_subtitle:'Sus consultas anteriores', clear_all:'Borrar todo', profile_account:'Cuenta', profile_signin_prompt:'Inicie sesión para guardar sus datos de salud', tab_signin:'Iniciar sesión', tab_register:'Registrarse', btn_register:'Crear cuenta', btn_signout:'Cerrar sesión', guest_mode:'modo invitado activo', profile_health:'Información de salud', lbl_age:'Edad', lbl_gender:'Género', opt_male:'Masculino', opt_female:'Femenino', opt_other:'Otro', lbl_preferences:'Preferencias', pref_include:'Incluir perfil en análisis', pref_include_sub:'Enviará edad y género con la consulta', profile_data:'Gestión de datos', btn_clear_all:'Borrar todos los datos', ph_email:'Correo electrónico', ph_password:'Contraseña', ph_name:'Nombre completo', ph_age:'Edad (opcional)' },
+zh: { ai_online:'AI 在线', nav_dashboard:'仪表板', nav_chat:'症状分析', nav_reports:'报告', nav_history:'历史', nav_profile:'个人资料', bnav_home:'首页', bnav_analyze:'分析', dash_feeling:'您感觉怎么样？', dash_subtitle:'描述您的症状，获得即时AI医疗指导。', dash_cta:'开始咨询', dash_consultations:'咨询', dash_urgent:'紧急', dash_recent:'最近咨询', dash_viewall:'查看全部 →', chat_placeholder:'描述您的症状...', chat_placeholder_img:'添加图片信息（可选）...', chat_disclaimer:'紧急情况请拨打115 · 不能替代专业医生', reports_subtitle:'您咨询的AI报告', history_subtitle:'您的历史咨询', clear_all:'清除全部', profile_account:'账户', profile_signin_prompt:'登录以保存您的健康数据', tab_signin:'登录', tab_register:'注册', btn_register:'创建账户', btn_signout:'退出登录', guest_mode:'访客模式已激活', profile_health:'健康信息', lbl_age:'年龄', lbl_gender:'性别', opt_male:'男', opt_female:'女', opt_other:'其他', lbl_preferences:'偏好设置', pref_include:'在分析中包含个人资料', pref_include_sub:'将发送年龄和性别', profile_data:'数据管理', btn_clear_all:'清除所有数据', ph_email:'电子邮件', ph_password:'密码', ph_name:'全名', ph_age:'年龄（可选）' },
+de: { ai_online:'KI Online', nav_dashboard:'Dashboard', nav_chat:'Symptomanalyse', nav_reports:'Berichte', nav_history:'Verlauf', nav_profile:'Profil', bnav_home:'Start', bnav_analyze:'Analysieren', dash_feeling:'Wie fühlen Sie sich?', dash_subtitle:'Beschreiben Sie Ihre Symptome und erhalten Sie sofortige KI-Unterstützung.', dash_cta:'Beratung starten', dash_consultations:'Beratungen', dash_urgent:'Dringend', dash_recent:'Letzte Beratungen', dash_viewall:'Alle anzeigen →', chat_placeholder:'Beschreiben Sie Ihre Symptome...', chat_placeholder_img:'Bildinformationen hinzufügen (optional)...', chat_disclaimer:'Im Notfall 115 anrufen · Kein Ersatz für einen Arzt', reports_subtitle:'KI-Berichte Ihrer Beratungen', history_subtitle:'Ihre früheren Beratungen', clear_all:'Alle löschen', profile_account:'Konto', profile_signin_prompt:'Anmelden um Gesundheitsdaten zu speichern', tab_signin:'Anmelden', tab_register:'Registrieren', btn_register:'Konto erstellen', btn_signout:'Abmelden', guest_mode:'Gastmodus aktiv', profile_health:'Gesundheitsinformationen', lbl_age:'Alter', lbl_gender:'Geschlecht', opt_male:'Männlich', opt_female:'Weiblich', opt_other:'Andere', lbl_preferences:'Einstellungen', pref_include:'Profil in Analyse einbeziehen', pref_include_sub:'Sendet Alter und Geschlecht mit', profile_data:'Datenverwaltung', btn_clear_all:'Alle Daten löschen', ph_email:'E-Mail', ph_password:'Passwort', ph_name:'Vollständiger Name', ph_age:'Alter (optional)' }, };
+
+  let currentLang = localStorage.getItem('hai_lang') || 'en';
+
+  function T(key) {
+    return TRANSLATIONS[currentLang]?.[key] ?? TRANSLATIONS.en[key] ?? key;
+  }
+
+  function applyTranslations() {
+    // Update text nodes
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      el.textContent = T(el.dataset.i18n);
+    });
+    // Update input placeholders
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      el.placeholder = T(el.dataset.i18nPlaceholder);
+    });
+    // Update gender options
+    const om = document.getElementById('opt-male');
+    const of = document.getElementById('opt-female');
+    const oo = document.getElementById('opt-other');
+    if (om) om.textContent = T('opt_male');
+    if (of) of.textContent = T('opt_female');
+    if (oo) oo.textContent = T('opt_other');
+    // RTL support for Arabic
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    // Sync dropdown
+    const sel = document.getElementById('langSelect');
+    if (sel && sel.value !== currentLang) sel.value = currentLang;
+    // Update TITLES so header updates when switching screens
+    TITLES.dashboard = T('nav_dashboard');
+    TITLES.chat      = T('nav_chat');
+    TITLES.reports   = T('nav_reports');
+    TITLES.history   = T('nav_history');
+    TITLES.profile   = T('nav_profile');
+  }
+
+  async function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('hai_lang', lang);
+    applyTranslations();
+    // Also update the chat placeholder dynamically
+    const msgInput = document.getElementById('messageInput');
+    if (msgInput) msgInput.placeholder = T('chat_placeholder');
+    // Save to backend if logged in
+    if (authToken) {
+      try {
+        await fetch(`${API}/me/language`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+          body: JSON.stringify({ language: lang })
+        });
+      } catch {}
+    }
+  }
+
+  // ── Init ──────────────────────────────────────────────
+  showScreen('dashboard');
+  renderProfile();
+  // Restore saved language and apply translations
+  const _savedLang = localStorage.getItem('hai_lang');
+  if (_savedLang) { currentLang = _savedLang; }
+  applyTranslations();
+  document.getElementById('langSelect').value = currentLang;
+  </script>
+  </body>
+  </html>
