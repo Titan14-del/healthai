@@ -87,7 +87,9 @@ def home():
     return {"message": "HealthAI is running!"}
 @app.get("/app")
 def serve_app():
-    return FileResponse("HealthAi.html")
+    import os
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    return FileResponse(os.path.join(base_dir, "HealthAi.html"))
 
 # ── Auth ─────────────────────────────────────────────────
 

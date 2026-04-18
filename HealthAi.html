@@ -826,7 +826,7 @@ function filterPlaces(type) {
         if (text) formData.append('additional_info', text);
 
         formData.append('language', currentLang);
-        const res  = await fetch('http://localhost:8000/analyze-image', { method: 'POST', headers: authHeaders, body: formData });
+        const res  = await fetch('https://healthai-qoem.onrender.com/analyze-image', { method: 'POST', headers: authHeaders, body: formData });
         const data = await res.json();
         removeEl(tid);
         appendImageAIResponse(data);
@@ -842,7 +842,7 @@ function filterPlaces(type) {
           if (age)    payload.age    = parseInt(age);
           if (gender) payload.gender = gender;
         }
-        const res  = await fetch('http://localhost:8000/analyze', {
+        const res  = await fetch('https://healthai-qoem.onrender.com/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', ...authHeaders },
           body: JSON.stringify(payload)
@@ -1105,7 +1105,7 @@ function filterPlaces(type) {
   }
 
   // ── Auth ─────────────────────────────────────────────
-  const API = 'http://localhost:8000';
+  const API = 'https://healthai-qoem.onrender.com';
   let authUser  = JSON.parse(localStorage.getItem('hai_auth') || 'null');
   let authToken = localStorage.getItem('hai_token') || null;
 
