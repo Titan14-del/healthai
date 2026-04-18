@@ -83,7 +83,7 @@
       </button>
       <button onclick="showScreen('nearby')" id="nav-nearby" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
   <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-  <span class="truncate text-xs">Nearby Care</span>
+  <span data-i18n="nearby_title" class="truncate text-xs">Nearby Care</span>
 </button>
       <button onclick="showScreen('profile')" id="nav-profile" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5
   rounded-xl text-sm font-medium transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
@@ -718,11 +718,17 @@
     return L.divIcon({ className: '', html: pin, iconSize: [28, 28], iconAnchor: [14, 28] });
   }
 
+  const MIRRORS = [
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter',
+    'https://overpass.openstreetmap.ru/api/interpreter',
+  ];
+
   async function fetchNearbyPlaces(lat, lng) {
     const results = document.getElementById('nearbyResults');
     const radius  = 5000;
     const query = `
-    [out:json][timeout:25];
+    [out:json][timeout:60];
     (
       node["amenity"="hospital"](around:${radius},${lat},${lng});
       node["amenity"="pharmacy"](around:${radius},${lat},${lng});
@@ -732,29 +738,43 @@
     );
     out center;
   `;
-    try {
-      const res  = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: query });
-      const data = await res.json();
-      allPlaces = data.elements.map(el => {
-        const placeLat = el.lat || el.center?.lat;
-        const placeLng = el.lon || el.center?.lon;
-        const dist = getDistance(lat, lng, placeLat, placeLng);
-        return {
-          name:    el.tags?.name || 'Unnamed facility',
-          type:    el.tags?.amenity || 'hospital',
-          address: el.tags?.['addr:street'] || el.tags?.['addr:full'] || 'Address not available',
-          phone:   el.tags?.phone || el.tags?.['contact:phone'] || null,
-          lat: placeLat, lng: placeLng, dist
-        };
-      }).filter(p => p.lat && p.lng).sort((a, b) => a.dist - b.dist);
-      allPlaces.forEach(place => {
-        L.marker([place.lat, place.lng], { icon: getMarkerIcon(place.type) }).addTo(map).bindPopup(`<b>${place.name}</b><br>${place.type}`);
-      });
-      renderPlaceCards();
-    } catch {
-      results.innerHTML = '<p class="text-red-400 text-sm text-center">Could not load nearby places. Please try again.</p>';
-      results.classList.remove('hidden');
+    let lastError;
+    for (const mirror of MIRRORS) {
+      try {
+        const res  = await fetch(mirror, { method: 'POST', body: query });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        allPlaces = data.elements.map(el => {
+          const placeLat = el.lat || el.center?.lat;
+          const placeLng = el.lon || el.center?.lon;
+          const dist = getDistance(lat, lng, placeLat, placeLng);
+          return {
+            name:    el.tags?.name || 'Unnamed facility',
+            type:    el.tags?.amenity || 'hospital',
+            address: el.tags?.['addr:street'] || el.tags?.['addr:full'] || 'Address not available',
+            phone:   el.tags?.phone || el.tags?.['contact:phone'] || null,
+            lat: placeLat, lng: placeLng, dist
+          };
+        }).filter(p => p.lat && p.lng).sort((a, b) => a.dist - b.dist);
+        allPlaces.forEach(place => {
+          L.marker([place.lat, place.lng], { icon: getMarkerIcon(place.type) }).addTo(map).bindPopup(`<b>${place.name}</b><br>${place.type}`);
+        });
+        renderPlaceCards();
+        return;
+      } catch (e) {
+        lastError = e;
+      }
     }
+    // All mirrors failed
+    results.innerHTML = `
+      <div class="text-center py-4">
+        <p class="text-red-400 text-sm mb-3">Could not load nearby places. All servers unavailable.</p>
+        <button onclick="fetchNearbyPlaces(${lat}, ${lng})"
+          class="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-sm font-semibold transition">
+          Retry
+        </button>
+      </div>`;
+    results.classList.remove('hidden');
   }
 
   function getDistance(lat1, lng1, lat2, lng2) {
