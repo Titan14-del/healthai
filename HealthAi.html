@@ -514,8 +514,11 @@
   const SCREENS = ['dashboard','chat','reports','history','nearby','profile'];
   const TITLES  = { dashboard:'Dashboard', chat:'Symptom Analysis', reports:'Medical Reports', history:'History',
   nearby:'Nearby Care', profile:'Profile' };
-  let isLoading    = false;
-  let pendingImage = null;
+  let isLoading          = false;
+  let pendingImage       = null;
+  let conversationHistory = [];
+  let chatPhase          = 'idle'; // 'idle' | 'gathering' | 'complete'
+  let firstSymptomText   = '';
 
   // ── Image selection ───────────────────────────────────
   function handleImageSelect(e) {
@@ -878,8 +881,14 @@
         saveHistory(text || '[Image uploaded]');
         saveReport({ query: text || '[Image uploaded]', analysis: data.analysis });
       } else {
-        // ── Symptom text path ──
-        const payload = { symptoms: text, language: currentLang };
+        // ── Conversational symptom path ──
+        if (chatPhase === 'idle') {
+          firstSymptomText = text;
+          chatPhase = 'gathering';
+        }
+        conversationHistory.push({ role: 'user', content: text });
+
+        const payload = { messages: conversationHistory, language: currentLang };
         const pref = document.getElementById('prefToggle');
         if (pref?.dataset.active === 'true') {
           const age    = document.getElementById('profileAge').value;
@@ -887,16 +896,24 @@
           if (age)    payload.age    = parseInt(age);
           if (gender) payload.gender = gender;
         }
-        const res  = await fetch('https://healthai-qoem.onrender.com/analyze', {
+        const res  = await fetch(`${API}/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', ...authHeaders },
           body: JSON.stringify(payload)
         });
         const data = await res.json();
         removeEl(tid);
-        appendAIResponse(data);
-        saveHistory(text);
-        saveReport({ query: text, ...data });
+        if (data.type === 'question') {
+          appendAIQuestion(data.text);
+          conversationHistory.push({ role: 'assistant', content: data.text });
+        } else {
+          appendAIResponse(data);
+          conversationHistory.push({ role: 'assistant', content: JSON.stringify({urgency: data.urgency, conditions: data.conditions, advice: data.advice}) });
+          saveHistory(firstSymptomText);
+          saveReport({ query: firstSymptomText, ...data });
+          chatPhase = 'complete';
+          appendNewConsultationBtn();
+        }
       }
     } catch {
       removeEl(tid);
@@ -918,6 +935,44 @@
       </div>`;
     chat.appendChild(d);
     chat.scrollTop = chat.scrollHeight;
+  }
+
+  function appendAIQuestion(text) {
+    const chat = document.getElementById('chatMessages');
+    const d = document.createElement('div');
+    d.className = 'flex items-start gap-2 msg-enter';
+    d.innerHTML = `
+      <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center shrink-0 mt-1">
+        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+      </div>
+      <div class="max-w-[88%] lg:max-w-[68%]">
+        <div class="bg-slate-800 border border-slate-700/80 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-slate-200 leading-relaxed">${esc(text)}</div>
+        <p class="text-xs text-slate-600 mt-1">${ts()} · Gathering information</p>
+      </div>`;
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function appendNewConsultationBtn() {
+    const chat = document.getElementById('chatMessages');
+    const d = document.createElement('div');
+    d.className = 'flex justify-center mt-2 mb-4 msg-enter';
+    d.innerHTML = `
+      <button onclick="resetConversation()" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs font-semibold px-4 py-2.5 rounded-xl transition">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        New Consultation
+      </button>`;
+    chat.appendChild(d);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function resetConversation() {
+    conversationHistory = [];
+    chatPhase = 'idle';
+    firstSymptomText = '';
+    const inp = document.getElementById('messageInput');
+    inp.placeholder = T('chat_placeholder');
+    inp.focus();
   }
 
   function appendTyping(id) {

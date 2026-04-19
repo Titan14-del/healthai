@@ -20,7 +20,7 @@ from auth import (
     hash_password, verify_password, create_token,
     get_current_patient, get_optional_patient
 )
-from symptom_checker import analyze_symptoms
+from symptom_checker import analyze_symptoms, chat_analyze
 from image_analyzer import analyze_image
 
 # ── DB setup & migration ─────────────────────────────────
@@ -89,6 +89,23 @@ class SymptomResponse(BaseModel):
 class ImageResponse(BaseModel):
     analysis: str
 
+class ChatMessage(BaseModel):
+    role:    str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: List[ChatMessage]
+    age:      Optional[int] = None
+    gender:   Optional[str] = None
+    language: str           = 'en'
+
+class ChatResponse(BaseModel):
+    type:       str
+    text:       Optional[str] = None
+    urgency:    Optional[str] = None
+    conditions: Optional[str] = None
+    advice:     Optional[str] = None
+
 # ── Health check ─────────────────────────────────────────
 
 @app.get("/")
@@ -138,6 +155,38 @@ def update_language(
     db.commit()
     db.refresh(patient)
     return patient
+
+# ── Conversational symptom intake ────────────────────────
+
+@app.post("/chat", response_model=ChatResponse)
+def chat_endpoint(
+    request: ChatRequest,
+    db:      Session = Depends(get_db),
+    patient: Optional[models.Patient] = Depends(get_optional_patient),
+):
+    try:
+        msgs   = [{"role": m.role, "content": m.content} for m in request.messages]
+        result = chat_analyze(
+            messages=msgs,
+            age=request.age,
+            gender=request.gender,
+            language=request.language,
+        )
+        if result["type"] == "diagnosis" and patient:
+            first_user = next((m.content for m in request.messages if m.role == "user"), "")
+            db.add(models.Diagnosis(
+                patient_id = patient.id,
+                type       = "symptom",
+                query      = first_user,
+                urgency    = result.get("urgency"),
+                conditions = result.get("conditions"),
+                advice     = result.get("advice"),
+            ))
+            db.commit()
+        return ChatResponse(**result)
+    except Exception as e:
+        print("FULL ERROR:", traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))
 
 # ── Symptom analysis ─────────────────────────────────────
 
