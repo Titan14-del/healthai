@@ -4,6 +4,7 @@ anthropic
 python-dotenv
 python-multipart
 sqlalchemy
+psycopg2-binary
 python-jose[cryptography]
 passlib[bcrypt]
 bcrypt==4.0.1
