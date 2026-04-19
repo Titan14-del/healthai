@@ -40,7 +40,7 @@ Always remind the patient in the advice field that this is not a substitute for 
 """
 
     message = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="claude-sonnet-4-6",
         max_tokens=1024,
         messages=[{"role": "user", "content": prompt}]
     )
@@ -95,7 +95,7 @@ Behaviour rules:
 - Respond entirely in {lang_name}.{profile_note}"""
 
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="claude-sonnet-4-6",
         max_tokens=1024,
         system=system,
         messages=messages,

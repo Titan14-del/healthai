@@ -27,12 +27,15 @@ from image_analyzer import analyze_image
 models.Base.metadata.create_all(bind=engine)
 
 # Add language column to existing databases that predate this migration
-with engine.connect() as conn:
-    try:
-        conn.execute(text("ALTER TABLE patients ADD COLUMN language VARCHAR DEFAULT 'en' NOT NULL"))
-        conn.commit()
-    except Exception:
-        pass  # Column already exists
+try:
+    with engine.connect() as conn:
+        try:
+            conn.execute(text("ALTER TABLE patients ADD COLUMN language VARCHAR DEFAULT 'en' NOT NULL"))
+            conn.commit()
+        except Exception:
+            pass  # Column already exists
+except Exception as e:
+    print(f"[DB] Migration skipped: {e}")
 async def keep_alive():
     await asyncio.sleep(60)
     while True:
