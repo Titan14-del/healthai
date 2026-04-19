@@ -1049,25 +1049,42 @@
     const el = document.getElementById('reportsList');
     const r  = JSON.parse(localStorage.getItem('hai_reports') || '[]');
     if (!r.length) { el.innerHTML = emptyState('doc','No reports yet'); return; }
-    el.innerHTML = r.map(item => {
-      const uc   = urgencyColor((item.urgency||'').toLowerCase());
+    el.innerHTML = r.map((item, idx) => {
+      const uc    = urgencyColor((item.urgency||'').toLowerCase());
       const conds = (item.conditions||'').split(/[,\n]/).map(c=>c.trim()).filter(Boolean);
-      const pills = conds.slice(0,3).map(c=>`<span class="inline-block bg-slate-700 text-slate-300 text-xs px-2 py-0.5
-  rounded-full">${esc(c)}</span>`).join('');
+      const previewPills = conds.slice(0,3).map(c=>`<span class="inline-block bg-slate-700 text-slate-300 text-xs px-2 py-0.5 rounded-full">${esc(c)}</span>`).join('');
+      const allPills     = conds.map(c=>`<span class="inline-block bg-slate-700 text-slate-300 text-xs px-2 py-0.5 rounded-full">${esc(c)}</span>`).join('');
+      const hasDetail    = conds.length > 3 || !!item.advice;
       return `
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-700 transition-colors">    
-        <div class="flex items-center gap-3 px-4 py-3 border-b border-slate-800">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-700 transition-colors">
+        <button onclick="toggleReport(${idx})" class="w-full flex items-center gap-3 px-4 py-3 text-left">
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-white truncate">${esc(item.query||'Consultation')}</p>
             <p class="text-xs text-slate-500 mt-0.5">${fmtDate(item.ts)}</p>
           </div>
-          <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full shrink-0
-  ${uc}">${esc(item.urgency||'—')}</span>
+          <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${uc}">${esc(item.urgency||'—')}</span>
+          ${hasDetail ? `<svg id="report-chevron-${idx}" style="transition:transform .2s;flex-shrink:0" class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>` : ''}
+        </button>
+        ${conds.length ? `<div class="px-4 pb-3 flex flex-wrap gap-1.5">${previewPills}${conds.length>3?`<span class="text-xs text-slate-500">+${conds.length-3} more</span>`:''}</div>` : ''}
+        <div id="report-body-${idx}" class="hidden border-t border-slate-800">
+          ${conds.length > 3 ? `<div class="px-4 pt-3 pb-2">
+            <p class="text-xs text-slate-500 font-semibold uppercase tracking-wide mb-2">All Conditions</p>
+            <div class="flex flex-wrap gap-1.5">${allPills}</div>
+          </div>` : ''}
+          ${item.advice ? `<div class="px-4 py-3 ${conds.length > 3 ? 'border-t border-slate-800/60' : 'pt-3'}">
+            <p class="text-xs text-slate-500 font-semibold uppercase tracking-wide mb-2">Advice</p>
+            <p class="text-sm text-slate-300 leading-relaxed">${esc(item.advice)}</p>
+          </div>` : ''}
         </div>
-        ${conds.length ? `<div class="px-4 py-3 flex flex-wrap gap-1.5">${pills}${conds.length>3?`<span class="text-xs
-  text-slate-600">+${conds.length-3} more</span>`:''}</div>` : ''}
       </div>`;
     }).join('');
+  }
+
+  function toggleReport(idx) {
+    const body    = document.getElementById('report-body-' + idx);
+    const chevron = document.getElementById('report-chevron-' + idx);
+    const hidden  = body.classList.toggle('hidden');
+    if (chevron) chevron.style.transform = hidden ? '' : 'rotate(180deg)';
   }
 
   // ── Dashboard ─────────────────────────────────────────
