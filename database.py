@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
@@ -18,9 +19,12 @@ if is_postgres:
         DATABASE_URL += f"{sep}sslmode=require"
     connect_args = {"sslmode": "require"}
     engine = create_engine(DATABASE_URL, connect_args=connect_args, pool_pre_ping=True)
+    # Print host only (never the password) for startup debugging
+    parsed = urlparse(DATABASE_URL)
+    print(f"[DB] Connecting to PostgreSQL host={parsed.hostname} port={parsed.port} db={parsed.path.lstrip('/')}")
 else:
-    # SQLite: no SSL, but needs check_same_thread=False
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+    print("[DB] Using SQLite (no DATABASE_URL set)")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
