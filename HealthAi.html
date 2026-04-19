@@ -882,6 +882,12 @@
         saveReport({ query: text || '[Image uploaded]', analysis: data.analysis });
       } else {
         // ── Conversational symptom path ──
+        // Start fresh if previous consultation was completed
+        if (chatPhase === 'complete') {
+          conversationHistory = [];
+          firstSymptomText   = '';
+          chatPhase          = 'idle';
+        }
         if (chatPhase === 'idle') {
           firstSymptomText = text;
           chatPhase = 'gathering';
@@ -947,7 +953,7 @@
       </div>
       <div class="max-w-[88%] lg:max-w-[68%]">
         <div class="bg-slate-800 border border-slate-700/80 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-slate-200 leading-relaxed">${esc(text)}</div>
-        <p class="text-xs text-slate-600 mt-1">${ts()} · Gathering information</p>
+        <p class="text-xs text-slate-600 mt-1">${ts()}</p>
       </div>`;
     chat.appendChild(d);
     chat.scrollTop = chat.scrollHeight;
