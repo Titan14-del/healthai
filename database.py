@@ -9,10 +9,19 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./healthai.db")
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-# SQLite needs check_same_thread=False; PostgreSQL does not accept it
-connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+is_postgres = DATABASE_URL.startswith("postgresql")
 
-engine = create_engine(DATABASE_URL, connect_args=connect_args)
+if is_postgres:
+    # Ensure SSL is required
+    if "sslmode=" not in DATABASE_URL:
+        sep = "&" if "?" in DATABASE_URL else "?"
+        DATABASE_URL += f"{sep}sslmode=require"
+    connect_args = {"sslmode": "require"}
+    engine = create_engine(DATABASE_URL, connect_args=connect_args, pool_pre_ping=True)
+else:
+    # SQLite: no SSL, but needs check_same_thread=False
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
