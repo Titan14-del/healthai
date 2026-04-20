@@ -35,13 +35,15 @@ class LanguageUpdate(BaseModel):
 # ── Diagnosis ─────────────────────────────────────────────
 
 class DiagnosisOut(BaseModel):
-    id:         int
-    type:       str
-    query:      str
-    urgency:    Optional[str]
-    conditions: Optional[str]
-    advice:     Optional[str]
-    analysis:   Optional[str]
-    created_at: datetime
+    id:           int
+    type:         str
+    query:        str
+    title:        Optional[str] = None
+    urgency:      Optional[str] = None
+    conditions:   Optional[str] = None
+    advice:       Optional[str] = None
+    analysis:     Optional[str] = None
+    conversation: Optional[str] = None
+    created_at:   datetime
 
     model_config = {"from_attributes": True}

@@ -22,10 +22,12 @@ class Diagnosis(Base):
     patient_id = Column(Integer, ForeignKey("patients.id"), nullable=False)
     type       = Column(String, nullable=False)   # "symptom" | "image"
     query      = Column(Text, nullable=False)
-    urgency    = Column(String, nullable=True)
-    conditions = Column(Text, nullable=True)
-    advice     = Column(Text, nullable=True)
-    analysis   = Column(Text, nullable=True)      # raw text for image results
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    title        = Column(String, nullable=True)
+    urgency      = Column(String, nullable=True)
+    conditions   = Column(Text, nullable=True)
+    advice       = Column(Text, nullable=True)
+    analysis     = Column(Text, nullable=True)     # raw text for image results
+    conversation = Column(Text, nullable=True)     # JSON string of full chat messages
+    created_at   = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     patient = relationship("Patient", back_populates="diagnoses")

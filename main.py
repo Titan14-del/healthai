@@ -20,20 +20,27 @@ from auth import (
     hash_password, verify_password, create_token,
     get_current_patient, get_optional_patient
 )
-from symptom_checker import analyze_symptoms, chat_analyze
+from symptom_checker import analyze_symptoms, chat_analyze, generate_title
+import json as _json
 from image_analyzer import analyze_image
 
 # ── DB setup & migration ─────────────────────────────────
 models.Base.metadata.create_all(bind=engine)
 
-# Add language column to existing databases that predate this migration
+# Schema migrations for columns added after initial deploy
+_MIGRATIONS = [
+    "ALTER TABLE patients  ADD COLUMN language     VARCHAR DEFAULT 'en' NOT NULL",
+    "ALTER TABLE diagnoses ADD COLUMN title        VARCHAR",
+    "ALTER TABLE diagnoses ADD COLUMN conversation TEXT",
+]
 try:
     with engine.connect() as conn:
-        try:
-            conn.execute(text("ALTER TABLE patients ADD COLUMN language VARCHAR DEFAULT 'en' NOT NULL"))
-            conn.commit()
-        except Exception:
-            pass  # Column already exists
+        for stmt in _MIGRATIONS:
+            try:
+                conn.execute(text(stmt))
+                conn.commit()
+            except Exception:
+                pass  # column already exists
 except Exception as e:
     print(f"[DB] Migration skipped: {e}")
 async def keep_alive():
@@ -108,6 +115,7 @@ class ChatResponse(BaseModel):
     urgency:    Optional[str] = None
     conditions: Optional[str] = None
     advice:     Optional[str] = None
+    title:      Optional[str] = None
 
 # ── Health check ─────────────────────────────────────────
 
@@ -175,17 +183,22 @@ def chat_endpoint(
             gender=request.gender,
             language=request.language,
         )
-        if result["type"] == "diagnosis" and patient:
-            first_user = next((m.content for m in request.messages if m.role == "user"), "")
-            db.add(models.Diagnosis(
-                patient_id = patient.id,
-                type       = "symptom",
-                query      = first_user,
-                urgency    = result.get("urgency"),
-                conditions = result.get("conditions"),
-                advice     = result.get("advice"),
-            ))
-            db.commit()
+        if result["type"] == "diagnosis":
+            title      = generate_title(msgs, result.get("conditions", ""))
+            result["title"] = title
+            first_user = next((m["content"] for m in msgs if m.get("role") == "user"), "")
+            if patient:
+                db.add(models.Diagnosis(
+                    patient_id   = patient.id,
+                    type         = "symptom",
+                    query        = first_user,
+                    title        = title,
+                    urgency      = result.get("urgency"),
+                    conditions   = result.get("conditions"),
+                    advice       = result.get("advice"),
+                    conversation = _json.dumps(msgs),
+                ))
+                db.commit()
         return ChatResponse(**result)
     except Exception as e:
         print("FULL ERROR:", traceback.format_exc())

@@ -16,6 +16,25 @@ LANGUAGE_NAMES = {
     'ar':   'Arabic',
 }
 
+def generate_title(messages: list, conditions: str = "") -> str:
+    """Generate a concise 3-5 word consultation title from the conversation."""
+    user_msgs = [m["content"] for m in messages if m.get("role") == "user"][:3]
+    context   = " | ".join(user_msgs)
+    prompt    = (
+        "Generate a concise 3-5 word medical consultation title based on this context.\n"
+        "Format examples: \"Headache and Fever\", \"Chest Pain Evaluation\", \"Lower Back Pain\"\n"
+        f"Conversation: {context}\n"
+        f"Conditions: {conditions}\n\n"
+        "Respond with ONLY the title text — no quotes, no trailing punctuation."
+    )
+    message = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=20,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return message.content[0].text.strip()[:60]
+
+
 def analyze_symptoms(symptoms: str, age: int = None, gender: str = None, language: str = "en") -> str:
     age_line    = f"- Age: {age}" if age else ""
     gender_line = f"- Gender: {gender}" if gender else ""
