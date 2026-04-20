@@ -107,11 +107,13 @@ Behaviour rules:
 - Once you have sufficient information AND at least 3 patient messages, respond with ONLY this valid JSON (no markdown, no code fences, no extra text):
 {{
   "urgency": "low" | "medium" | "high",
-  "conditions": "comma-separated list of possible conditions",
-  "advice": "bullet-point recommendations, one per line starting with -"
+  "conditions": "comma-separated list of possible conditions in {lang_name}",
+  "advice": "bullet-point recommendations in {lang_name}, one per line starting with -"
 }}
+- IMPORTANT: The "urgency" value MUST always be exactly one of: "low", "medium", or "high" — always in English, regardless of the response language.
+- The "conditions" and "advice" values must be written in {lang_name}.
 - Always include in the advice that this is not a substitute for professional medical advice.
-- Respond entirely in {lang_name}.{profile_note}"""
+- Respond entirely in {lang_name}, except the urgency value which must stay in English.{profile_note}"""
 
     response = client.messages.create(
         model="claude-sonnet-4-6",

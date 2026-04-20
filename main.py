@@ -184,7 +184,11 @@ def chat_endpoint(
             language=request.language,
         )
         if result["type"] == "diagnosis":
-            title      = generate_title(msgs, result.get("conditions", ""))
+            try:
+                title = generate_title(msgs, result.get("conditions", ""))
+            except Exception:
+                # Title generation is non-critical; fall back to first user message
+                title = next((m["content"] for m in msgs if m.get("role") == "user"), "Consultation")[:50]
             result["title"] = title
             first_user = next((m["content"] for m in msgs if m.get("role") == "user"), "")
             if patient:
