@@ -28,9 +28,9 @@ models.Base.metadata.create_all(bind=engine)
 
 # Schema migrations for columns added after initial deploy
 _MIGRATIONS = [
-    "ALTER TABLE patients  ADD COLUMN language     VARCHAR DEFAULT 'en' NOT NULL",
-    "ALTER TABLE diagnoses ADD COLUMN title        VARCHAR",
-    "ALTER TABLE diagnoses ADD COLUMN conversation TEXT",
+    "ALTER TABLE patients  ADD COLUMN IF NOT EXISTS language     VARCHAR NOT NULL DEFAULT 'en'",
+    "ALTER TABLE diagnoses ADD COLUMN IF NOT EXISTS title        VARCHAR",
+    "ALTER TABLE diagnoses ADD COLUMN IF NOT EXISTS conversation TEXT",
 ]
 try:
     with engine.connect() as conn:

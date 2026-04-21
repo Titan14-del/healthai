@@ -18,10 +18,18 @@ if is_postgres:
         sep = "&" if "?" in DATABASE_URL else "?"
         DATABASE_URL += f"{sep}sslmode=require"
     connect_args = {"sslmode": "require"}
-    engine = create_engine(DATABASE_URL, connect_args=connect_args, pool_pre_ping=True)
-    # Print host only (never the password) for startup debugging
+    # Supabase transaction-mode pooler (port 6543) doesn't support prepared statements
     parsed = urlparse(DATABASE_URL)
-    print(f"[DB] Connecting to PostgreSQL host={parsed.hostname} port={parsed.port} db={parsed.path.lstrip('/')}")
+    is_pooler = parsed.port == 6543
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args=connect_args,
+        pool_pre_ping=True,
+        pool_size=5,
+        max_overflow=10,
+        **({"execution_options": {"no_parameters": True}} if is_pooler else {}),
+    )
+    print(f"[DB] Connecting to PostgreSQL host={parsed.hostname} port={parsed.port} db={parsed.path.lstrip('/')} pooler={is_pooler}")
 else:
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
     print("[DB] Using SQLite (no DATABASE_URL set)")
