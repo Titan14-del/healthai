@@ -7,3 +7,5 @@ services:
     envVars:
       - key: ANTHROPIC_API_KEY
         sync: false
+      - key: SECRET_KEY
+        generateValue: true

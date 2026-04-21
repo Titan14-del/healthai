@@ -1,5 +1,4 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Depends, status
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.middleware.cors import CORSMiddleware
