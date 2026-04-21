@@ -49,7 +49,7 @@
         </div>
         <div>
           <h1 class="font-bold text-white text-sm leading-none">HealthAI</h1>
-          <p class="text-xs text-slate-500 mt-0.5">Medical Intelligence</p>
+          <p class="text-xs text-slate-500 mt-0.5" data-i18n="brand_subtitle">Medical Intelligence</p>
         </div>
       </div>
     </div>
@@ -98,8 +98,8 @@
         <div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-xs
    font-bold text-white">P</div>
         <div>
-          <p class="text-xs font-semibold text-white">Patient</p>
-          <p class="text-xs text-slate-500">Personal Account</p>
+          <p class="text-xs font-semibold text-white" data-i18n="sidebar_patient">Patient</p>
+          <p class="text-xs text-slate-500" data-i18n="sidebar_personal_account">Personal Account</p>
         </div>
       </div>
     </div>
@@ -139,7 +139,7 @@
         <div class="absolute -top-6 -right-6 w-36 h-36 rounded-full bg-white/5"></div>
         <div class="absolute -bottom-8 -left-4 w-28 h-28 rounded-full bg-white/5"></div>
         <div class="relative">
-          <p class="text-emerald-200 text-xs font-medium mb-1 uppercase tracking-wider">AI Medical Assistant</p>
+          <p class="text-emerald-200 text-xs font-medium mb-1 uppercase tracking-wider" data-i18n="chat_assistant_name">AI Medical Assistant</p>
           <h2 data-i18n="dash_feeling" class="text-white text-xl font-bold mb-2">How are you feeling?</h2>
           <p data-i18n="dash_subtitle" class="text-emerald-100/80 text-sm mb-4 max-w-xs">Describe your symptoms and receive instant AI-powered medical guidance.</p>
           <button onclick="showScreen('chat')" class="inline-flex items-center gap-2 bg-white text-emerald-700 px-4 py-2
@@ -189,7 +189,7 @@
   transition"><span data-i18n="dash_viewall">View all →</span></button>
         </div>
         <div id="dashRecentList" class="p-3 space-y-1">
-          <p class="text-sm text-slate-500 text-center py-6">No consultations yet</p>
+          <p class="text-sm text-slate-500 text-center py-6" data-i18n="empty_consultations">No consultations yet</p>
         </div>
       </div>
     </div>
@@ -204,9 +204,8 @@
               <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000        
   6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
             </div>
-            <h3 class="font-semibold text-white text-sm mb-1">HealthAI Assistant</h3>
-            <p class="text-xs text-slate-500">Describe your symptoms in detail — include location, duration, and severity for the
-   best analysis.</p>
+            <h3 class="font-semibold text-white text-sm mb-1" data-i18n="chat_assistant_name">HealthAI Assistant</h3>
+            <p class="text-xs text-slate-500" data-i18n="chat_intro_subtitle">Describe your symptoms in detail — include location, duration, and severity for the best analysis.</p>
           </div>
         </div>
       </div>
@@ -222,7 +221,7 @@
             <img id="imagePreviewThumb" src="" alt="" class="w-12 h-12 rounded-lg object-cover shrink-0 bg-slate-700">
             <div class="flex-1 min-w-0">
               <p id="imagePreviewName" class="text-xs text-white font-medium truncate"></p>
-              <p class="text-xs text-slate-500 mt-0.5">Ready to analyze · add context below (optional)</p>
+              <p class="text-xs text-slate-500 mt-0.5" data-i18n="image_ready_text">Ready to analyze · add context below (optional)</p>
             </div>
             <button onclick="clearPendingImage()"
               class="w-6 h-6 rounded-lg bg-slate-700 hover:bg-red-500/20 text-slate-400 hover:text-red-400 flex items-center     
@@ -299,11 +298,11 @@
     <div class="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
       <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
     </div>
-    <h3 class="text-white font-semibold text-base mb-1">Find Nearby Care</h3>
-    <p class="text-slate-400 text-sm mb-5">Tap below to find hospitals, clinics and pharmacies near you</p>
+    <h3 class="text-white font-semibold text-base mb-1" data-i18n="nearby_heading">Find Nearby Care</h3>
+    <p class="text-slate-400 text-sm mb-5" data-i18n="nearby_subtitle">Tap below to find hospitals, clinics and pharmacies near you</p>
     <button onclick="requestNearbyLocation()" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl text-sm font-semibold transition shadow-lg shadow-emerald-500/25">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-      Find Nearby Hospitals
+      <span data-i18n="btn_find_nearby">Find Nearby Hospitals</span>
     </button>
   </div>
 
@@ -316,7 +315,7 @@
       <button onclick="filterPlaces('clinic')" id="filter-clinic" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 transition"><span data-i18n="filter_clinics">Clinics</span></button>
     </div>
     <div class="flex items-center gap-2">
-      <span class="text-xs text-slate-500">Radius:</span>
+      <span class="text-xs text-slate-500" data-i18n="lbl_radius">Radius:</span>
       <button onclick="changeRadius(1)" id="radius-1" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 transition">1 km</button>
       <button onclick="changeRadius(5)" id="radius-5" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500 text-white transition">5 km</button>
       <button onclick="changeRadius(10)" id="radius-10" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 transition">10 km</button>
@@ -331,7 +330,7 @@
   <!-- Loading state -->
   <div id="nearbyLoading" class="hidden text-center py-8 text-slate-400 text-sm">
     <svg class="w-8 h-8 mx-auto mb-3 animate-spin text-emerald-400" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
-    Detecting your location...
+    <span data-i18n="detecting_location">Detecting your location...</span>
   </div>
 
   <!-- Error state -->
@@ -339,10 +338,10 @@
     <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-3">
       <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
     </div>
-    <p id="nearbyErrorTitle" class="text-red-400 text-sm font-semibold mb-1">Location access denied</p>
-    <p id="nearbyErrorMsg" class="text-slate-400 text-xs mb-4 max-w-xs mx-auto">Tap the lock icon in Chrome's address bar → Permissions → Location → Allow, then try again.</p>
+    <p id="nearbyErrorTitle" class="text-red-400 text-sm font-semibold mb-1" data-i18n="error_location_denied">Location access denied</p>
+    <p id="nearbyErrorMsg" class="text-slate-400 text-xs mb-4 max-w-xs mx-auto" data-i18n="error_location_denied_msg">Tap the lock icon in your browser → Permissions → Location → Allow, then try again.</p>
     <button onclick="requestNearbyLocation()" class="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition">
-      Try Again
+      <span data-i18n="btn_try_again">Try Again</span>
     </button>
   </div>
 
@@ -354,8 +353,8 @@
     <!-- PROFILE -->
     <div id="profileScreen" class="hidden flex-1 overflow-y-auto scrollbar-slim p-4 lg:p-6 space-y-4">
       <div>
-        <h3 class="font-semibold text-white text-sm">Patient Profile</h3>
-        <p class="text-xs text-slate-500 mt-0.5">Manage your health details and preferences</p>
+        <h3 class="font-semibold text-white text-sm" data-i18n="profile_heading">Patient Profile</h3>
+        <p class="text-xs text-slate-500 mt-0.5" data-i18n="profile_subtitle">Manage your health details and preferences</p>
       </div>
 
       <!-- Auth Card -->
@@ -610,7 +609,7 @@
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
   stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20        
   14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            Image Analysis
+            ${T('response_image_analysis')}
           </span>
           <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${uColor}">
             <span class="w-1.5 h-1.5 rounded-full bg-current"></span>${urgencyLabel}
@@ -618,7 +617,7 @@
         </div>
         <div class="p-4 space-y-1">${rendered}</div>
         <div class="px-4 py-2 border-t border-slate-700/50 bg-slate-800/40">
-          <p class="text-xs text-slate-600">${ts()} · Not a substitute for professional medical advice</p>
+          <p class="text-xs text-slate-600">${ts()} · ${T('disclaimer_professional')}</p>
         </div>
       </div>`;
     chat.appendChild(d);
@@ -662,8 +661,8 @@
     document.getElementById('nearbyError').classList.add('hidden');
     if (!navigator.geolocation) {
       document.getElementById('nearbyLoading').classList.add('hidden');
-      document.getElementById('nearbyErrorTitle').textContent = 'Location not supported';
-      document.getElementById('nearbyErrorMsg').textContent   = 'Your browser does not support location services.';
+      document.getElementById('nearbyErrorTitle').textContent = T('error_location_not_supported');
+      document.getElementById('nearbyErrorMsg').textContent   = T('error_browser_no_location');
       document.getElementById('nearbyError').classList.remove('hidden');
       return;
     }
@@ -679,9 +678,9 @@
       },
       err => {
         document.getElementById('nearbyLoading').classList.add('hidden');
-        let msg = 'Tap the lock icon in Chrome\'s address bar → Permissions → Location → Allow, then try again.';
-        if (err.code === 2) msg = 'Your location could not be determined. Check your GPS or network connection and try again.';
-        if (err.code === 3) msg = 'Location request timed out. Please try again.';
+        let msg = T('error_location_denied_msg');
+        if (err.code === 2) msg = T('error_location_unavailable');
+        if (err.code === 3) msg = T('error_location_timeout');
         document.getElementById('nearbyErrorMsg').textContent = msg;
         document.getElementById('nearbyError').classList.remove('hidden');
       },
@@ -708,7 +707,7 @@
         iconSize: [16, 16],
         iconAnchor: [8, 8]
       })
-    }).addTo(map).bindPopup('You are here').openPopup();
+    }).addTo(map).bindPopup(T('map_you_are_here')).openPopup();
   }
 
   function getMarkerIcon(type) {
@@ -778,7 +777,7 @@
           const placeLng = el.lon ?? el.center?.lon;
           const dist = getDistance(lat, lng, placeLat, placeLng);
           return {
-            name:    el.tags?.name || 'Unnamed facility',
+            name:    el.tags?.name || T('facility_unnamed'),
             type:    el.tags?.amenity || 'hospital',
             address: el.tags?.['addr:street'] || el.tags?.['addr:full'] || '',
             phone:   el.tags?.phone || el.tags?.['contact:phone'] || null,
@@ -815,12 +814,12 @@
         <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-3">
           <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
         </div>
-        <p class="text-red-400 text-sm font-semibold mb-1">Could not load places</p>
-        <p class="text-slate-400 text-xs mb-4">Check your internet connection and try again.</p>
+        <p class="text-red-400 text-sm font-semibold mb-1">${T('error_load_places')}</p>
+        <p class="text-slate-400 text-xs mb-4">${T('error_check_connection')}</p>
         <button onclick="fetchNearbyPlaces(nearbyUserLat, nearbyUserLng)"
           class="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-          Retry
+          ${T('btn_retry')}
         </button>
       </div>`;
     results.classList.remove('hidden');
@@ -840,21 +839,21 @@
     const results  = document.getElementById('nearbyResults');
     const filtered = activeFilter === 'all' ? allPlaces : allPlaces.filter(p => p.type === activeFilter);
     if (filtered.length === 0) {
-      results.innerHTML = '<p class="text-slate-500 text-sm text-center py-4">No places found nearby</p>';
+      results.innerHTML = `<p class="text-slate-500 text-sm text-center py-4">${T('nearby_no_places')}</p>`;
       results.classList.remove('hidden');
       return;
     }
     results.innerHTML = filtered.map(p => {
       const dist       = p.dist >= 1000 ? (p.dist/1000).toFixed(1) + ' km' : p.dist + ' m';
       const typeColor  = p.type === 'pharmacy' ? 'bg-blue-500/10 text-blue-400' : 'bg-emerald-500/10 text-emerald-400';
-      const typeLabel  = p.type === 'pharmacy' ? 'Pharmacy' : p.type === 'clinic' ? 'Clinic' : 'Hospital';
+      const typeLabel  = p.type === 'pharmacy' ? T('facility_pharmacy') : p.type === 'clinic' ? T('facility_clinic') : T('facility_hospital');
       return `
       <div class="bg-slate-900 rounded-2xl border border-slate-800 p-4">
         <div class="flex items-start justify-between gap-3">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
               <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${typeColor}">${typeLabel}</span>
-              <span class="text-xs text-slate-500">${dist} away</span>
+              <span class="text-xs text-slate-500">${dist} ${T('distance_away')}</span>
             </div>
             <h3 class="text-sm font-semibold text-white truncate">${p.name}</h3>
             <p class="text-xs text-slate-500 mt-0.5 truncate">${p.address}</p>
@@ -863,7 +862,7 @@
           <a href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank"
             class="shrink-0 flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-3 py-2 rounded-xl hover:bg-emerald-500/20 transition">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-            Directions
+            ${T('btn_directions')}
           </a>
         </div>
       </div>`;
@@ -989,7 +988,7 @@
       }
     } catch (err) {
       removeEl(tid);
-      appendError(err?.message || 'Could not reach the HealthAI server. Please try again.');
+      appendError(err?.message || T('error_server_unreachable'));
     }
 
     isLoading = false;
@@ -1032,7 +1031,7 @@
     d.innerHTML = `
       <button onclick="resetConversation()" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs font-semibold px-4 py-2.5 rounded-xl transition">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-        New Consultation
+        ${T('btn_new_consultation')}
       </button>`;
     chat.appendChild(d);
     chat.scrollTop = chat.scrollHeight;
@@ -1093,23 +1092,23 @@
       </div>
       <div class="max-w-[88%] lg:max-w-[68%] bg-slate-900 border border-slate-700/80 rounded-2xl rounded-tl-sm overflow-hidden"> 
         <div class="flex items-center justify-between px-4 py-2.5 border-b border-slate-700/60 ${uBg}">
-          <span class="text-xs font-semibold text-slate-400 tracking-wider uppercase">AI Assessment</span>
+          <span class="text-xs font-semibold text-slate-400 tracking-wider uppercase">${T('response_header_assessment')}</span>
           <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${uColor}">
             <span class="w-1.5 h-1.5 rounded-full bg-current"></span>${esc(T('urgent_' + urgency) || data.urgency || 'Unknown')}
           </span>
         </div>
         <div class="p-4 space-y-4">
           ${conditions.length ? `<div>
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Possible Conditions</p>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">${T('section_possible_conditions')}</p>
             <div class="flex flex-wrap gap-1.5">${pills}</div>
           </div>` : ''}
           ${advice.length ? `<div>
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Recommendations</p>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">${T('section_recommendations')}</p>
             <ul class="space-y-1.5">${list}</ul>
           </div>` : ''}
         </div>
         <div class="px-4 py-2 border-t border-slate-700/50 bg-slate-800/40">
-          <p class="text-xs text-slate-600">${ts()} · Not a substitute for professional medical advice</p>
+          <p class="text-xs text-slate-600">${ts()} · ${T('disclaimer_professional')}</p>
         </div>
       </div>`;
     chat.appendChild(d);
@@ -1143,7 +1142,7 @@
   // ── Storage ───────────────────────────────────────────
   function saveHistory(title, messages, diagnosis) {
     let h = JSON.parse(localStorage.getItem('hai_history') || '[]');
-    h.unshift({ title: title || 'Consultation', messages: messages || [], diagnosis: diagnosis || {}, ts: Date.now() });
+    h.unshift({ title: title || T('default_consultation'), messages: messages || [], diagnosis: diagnosis || {}, ts: Date.now() });
     localStorage.setItem('hai_history', JSON.stringify(h.slice(0, 100)));
   }
   function saveReport(data) {
@@ -1156,10 +1155,10 @@
   function renderHistory() {
     const el = document.getElementById('historyList');
     const h  = JSON.parse(localStorage.getItem('hai_history') || '[]');
-    if (!h.length) { el.innerHTML = emptyState('clock','No history yet'); return; }
+    if (!h.length) { el.innerHTML = emptyState('clock', T('empty_history')); return; }
     el.innerHTML = h.map((item, i) => {
       // Support old format (item.text) and new format (item.title + item.messages)
-      const title    = item.title || item.text || 'Consultation';
+      const title    = item.title || item.text || T('default_consultation');
       const messages = item.messages || (item.text ? [{role:'user',content:item.text}] : []);
       const firstUser = messages.find(m => m.role === 'user')?.content || '';
       const preview   = firstUser.length > 75 ? firstUser.slice(0,75) + '…' : firstUser;
@@ -1174,7 +1173,7 @@
         try { const p = JSON.parse(content); if (p.urgency && p.conditions) return ''; } catch {}
         return `<div class="flex ${isUser ? 'justify-end' : 'justify-start'} mb-2">
           <div class="max-w-[85%] ${isUser ? 'bg-emerald-600/20 border border-emerald-500/20' : 'bg-slate-800 border border-slate-700/50'} rounded-xl px-3 py-2">
-            <p class="text-[10px] font-semibold uppercase tracking-wide mb-0.5 ${isUser ? 'text-emerald-400' : 'text-slate-400'}">${isUser ? 'You' : 'AI'}</p>
+            <p class="text-[10px] font-semibold uppercase tracking-wide mb-0.5 ${isUser ? 'text-emerald-400' : 'text-slate-400'}">${isUser ? T('chat_speaker_you') : T('chat_speaker_ai')}</p>
             <p class="text-xs text-slate-200 leading-relaxed">${esc(content)}</p>
           </div>
         </div>`;
@@ -1183,7 +1182,7 @@
       const diagHtml = d.urgency ? `
         <div class="mt-3 p-3 bg-slate-800/60 rounded-xl border border-slate-700/50">
           <div class="flex items-center gap-2 mb-1.5">
-            <span class="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Diagnosis</span>
+            <span class="text-[10px] font-semibold uppercase tracking-wide text-slate-400">${T('section_diagnosis')}</span>
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${urgencyColor(d.urgency)}">${esc(T('urgent_' + (d.urgency||'').toLowerCase()) || d.urgency)}</span>
           </div>
           ${d.conditions ? `<p class="text-xs text-slate-300">${esc(d.conditions)}</p>` : ''}
@@ -1198,7 +1197,7 @@
           <div class="flex-1 min-w-0">
             <p class="text-sm font-semibold text-white truncate">${esc(title)}</p>
             ${preview ? `<p class="text-xs text-slate-500 mt-0.5 truncate">${esc(preview)}</p>` : ''}
-            <p class="text-xs text-slate-600 mt-0.5">${fmtDate(item.ts)}${msgCount > 1 ? ` · ${msgCount} messages` : ''}</p>
+            <p class="text-xs text-slate-600 mt-0.5">${fmtDate(item.ts)}${msgCount > 1 ? ` · ${msgCount} ${T('msg_count_suffix')}` : ''}</p>
           </div>
           ${hasContent ? `<svg id="history-chevron-${i}" style="transition:transform .2s;flex-shrink:0" class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>` : ''}
         </button>
@@ -1206,7 +1205,7 @@
         <div id="history-body-${i}" class="hidden border-t border-slate-800 px-4 py-4">
           ${threadHtml}
           ${diagHtml}
-          ${firstUser ? `<div class="pt-3 flex justify-end"><button onclick="reuseQuery('${escAttr(firstUser)}')" class="text-xs text-emerald-400 hover:text-emerald-300 font-medium transition">Start new ›</button></div>` : ''}
+          ${firstUser ? `<div class="pt-3 flex justify-end"><button onclick="reuseQuery('${escAttr(firstUser)}')" class="text-xs text-emerald-400 hover:text-emerald-300 font-medium transition">${T('btn_start_new')}</button></div>` : ''}
         </div>` : ''}
       </div>`;
     }).join('');
@@ -1224,7 +1223,7 @@
   function renderReports() {
     const el = document.getElementById('reportsList');
     const r  = JSON.parse(localStorage.getItem('hai_reports') || '[]');
-    if (!r.length) { el.innerHTML = emptyState('doc','No reports yet'); return; }
+    if (!r.length) { el.innerHTML = emptyState('doc', T('empty_reports')); return; }
     el.innerHTML = r.map((item, idx) => {
       const uc    = urgencyColor((item.urgency||'').toLowerCase());
       const conds = (item.conditions||'').split(/[,\n]/).map(c=>c.trim()).filter(Boolean);
@@ -1235,7 +1234,7 @@
       <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-700 transition-colors">
         <button onclick="toggleReport(${idx})" class="w-full flex items-center gap-3 px-4 py-3 text-left">
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-white truncate">${esc(item.title || item.query || 'Consultation')}</p>
+            <p class="text-sm font-medium text-white truncate">${esc(item.title || item.query || T('default_consultation'))}</p>
             <p class="text-xs text-slate-500 mt-0.5">${fmtDate(item.ts)}</p>
           </div>
           <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${uc}">${esc(T('urgent_' + (item.urgency||'').toLowerCase()) || item.urgency || '—')}</span>
@@ -1244,11 +1243,11 @@
         ${conds.length ? `<div class="px-4 pb-3 flex flex-wrap gap-1.5">${previewPills}${conds.length>3?`<span class="text-xs text-slate-500">+${conds.length-3} more</span>`:''}</div>` : ''}
         <div id="report-body-${idx}" class="hidden border-t border-slate-800">
           ${conds.length > 3 ? `<div class="px-4 pt-3 pb-2">
-            <p class="text-xs text-slate-500 font-semibold uppercase tracking-wide mb-2">All Conditions</p>
+            <p class="text-xs text-slate-500 font-semibold uppercase tracking-wide mb-2">${T('section_all_conditions')}</p>
             <div class="flex flex-wrap gap-1.5">${allPills}</div>
           </div>` : ''}
           ${item.advice ? `<div class="px-4 py-3 ${conds.length > 3 ? 'border-t border-slate-800/60' : 'pt-3'}">
-            <p class="text-xs text-slate-500 font-semibold uppercase tracking-wide mb-2">Advice</p>
+            <p class="text-xs text-slate-500 font-semibold uppercase tracking-wide mb-2">${T('section_advice')}</p>
             <p class="text-sm text-slate-300 leading-relaxed">${esc(item.advice)}</p>
           </div>` : ''}
         </div>
@@ -1274,7 +1273,7 @@
 
     const el = document.getElementById('dashRecentList');
     const recent = h.slice(0,4);
-    if (!recent.length) { el.innerHTML='<p class="text-sm text-slate-500 text-center py-6">No consultations yet</p>'; return; }  
+    if (!recent.length) { el.innerHTML=`<p class="text-sm text-slate-500 text-center py-6">${T('empty_consultations')}</p>`; return; }  
     el.innerHTML = recent.map(item => {
       const firstUser = (item.messages || []).find(m => m.role==='user')?.content || item.text || '';
       return `
@@ -1286,7 +1285,7 @@
   012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
         </div>
         <div class="flex-1 min-w-0">
-          <p class="text-sm text-slate-200 truncate group-hover:text-white transition">${esc(item.title || item.text || 'Consultation')}</p>
+          <p class="text-sm text-slate-200 truncate group-hover:text-white transition">${esc(item.title || item.text || T('default_consultation'))}</p>
           <p class="text-xs text-slate-500">${fmtDate(item.ts)}</p>
         </div>
       </button>`;
@@ -1302,7 +1301,7 @@
     autoResize(inp);
   }
   async function clearHistory() {
-    if (!confirm('Clear all history?')) return;
+    if (!confirm(T('confirm_clear_history'))) return;
     localStorage.removeItem('hai_history');
     localStorage.removeItem('hai_reports');
     renderHistory();
@@ -1312,7 +1311,7 @@
     }
   }
   async function clearReports() {
-    if (!confirm('Clear all reports?')) return;
+    if (!confirm(T('confirm_clear_reports'))) return;
     localStorage.removeItem('hai_history');
     localStorage.removeItem('hai_reports');
     renderHistory();
@@ -1322,7 +1321,7 @@
     }
   }
   async function clearAll() {
-    if (!confirm('Clear ALL data?')) return;
+    if (!confirm(T('confirm_clear_all'))) return;
     localStorage.removeItem('hai_history');
     localStorage.removeItem('hai_reports');
     updateDashboard();
@@ -1428,13 +1427,13 @@
       if (!res.ok) return;
       const data = await res.json();
       const h = data.map(d => ({
-        title:    d.title || d.query || 'Consultation',
+        title:    d.title || d.query || T('default_consultation'),
         messages: (() => { try { return d.conversation ? JSON.parse(d.conversation) : [{role:'user',content:d.query}]; } catch { return [{role:'user',content:d.query}]; } })(),
         diagnosis: { urgency: d.urgency, conditions: d.conditions, advice: d.advice },
         ts: new Date(d.created_at).getTime()
       }));
       const r = data.filter(d => d.type === 'symptom' && d.urgency).map(d => ({
-        title:      d.title || d.query || 'Consultation',
+        title:      d.title || d.query || T('default_consultation'),
         query:      d.query,
         urgency:    d.urgency,
         conditions: d.conditions,
@@ -1474,30 +1473,30 @@
       document.getElementById('authAvatarInitial').textContent = initial;
       avatarEl.textContent = initial;
       avatarEl.className   = 'w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-xl font-bold text-white shadow-lg shadow-violet-500/20 overflow-hidden';
-      nameEl.textContent   = authUser.name  || 'User';
+      nameEl.textContent   = authUser.name  || T('default_user_name');
       emailEl.textContent  = authUser.email || '';
       badge.className      = 'inline-flex items-center gap-1 mt-1.5 text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full font-medium';
-      badge.textContent    = 'Signed In';
+      badge.textContent    = T('badge_signed_in');
     } else {
       signedOutView.classList.remove('hidden');
       signedInView.classList.add('hidden');
-      nameEl.textContent   = 'Patient';
-      emailEl.textContent  = 'Personal health account';
+      nameEl.textContent   = T('default_profile_name');
+      emailEl.textContent  = T('default_profile_desc');
       avatarEl.textContent = 'P';
       avatarEl.className   = 'w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-xl font-bold text-white shadow-lg shadow-violet-500/20 overflow-hidden';
       badge.className      = 'inline-flex items-center gap-1 mt-1.5 text-xs bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded-full font-medium';
-      badge.textContent    = 'Guest';
+      badge.textContent    = T('badge_guest');
     }
   }
 
   // ── i18n ─────────────────────────────────────────────
   const TRANSLATIONS = {
-    en:  { nearby_title:'Nearby Care', filter_all:'All', filter_hospitals:'Hospitals', filter_pharmacies:'Pharmacies', filter_clinics:'Clinics', ai_online:'AI Online', nav_dashboard:'Dashboard', nav_chat:'Symptom Analysis', nav_reports:'Reports', nav_history:'History', nav_profile:'Profile', bnav_home:'Home', bnav_analyze:'Analyze', dash_feeling:'How are you feeling?', dash_subtitle:'Describe your symptoms and receive instant AI-powered medical guidance.', dash_cta:'Start Consultation', dash_consultations:'Consultations', dash_urgent:'Urgent', dash_recent:'Recent Consultations', dash_viewall:'View all →', chat_placeholder:'Describe your symptoms…', chat_placeholder_img:'Add context about the image (optional)…', chat_disclaimer:'For emergencies call 911 · Not a substitute for professional medical advice', reports_subtitle:'AI-generated analyses from your consultations', history_subtitle:'Your past symptom queries', clear_all:'Clear All', profile_account:'Account', profile_signin_prompt:'Sign in to sync your health data', tab_signin:'Sign In', tab_register:'Register', btn_register:'Create Account', btn_signout:'Sign out', guest_mode:'guest mode active', profile_health:'Health Details', lbl_age:'Age', lbl_gender:'Gender', opt_male:'Male', opt_female:'Female', opt_other:'Other', lbl_preferences:'Preferences', pref_include:'Include profile in analysis', pref_include_sub:'Sends age & gender with queries', profile_data:'Data Management', btn_clear_all:'Clear All Data', ph_email:'Email', ph_password:'Password', ph_name:'Full name', ph_age:'Age (optional)', urgent_low:'low', urgent_medium:'medium', urgent_high:'high' },
-    fr:  { nearby_title:'Soins à proximité', filter_all:'Tous', filter_hospitals:'Hôpitaux', filter_pharmacies:'Pharmacies', filter_clinics:'Cliniques', ai_online:'IA en ligne', nav_dashboard:'Tableau de bord', nav_chat:'Analyse des symptômes', nav_reports:'Rapports', nav_history:'Historique', nav_profile:'Profil', bnav_home:'Accueil', bnav_analyze:'Analyser', dash_feeling:'Comment vous sentez-vous ?', dash_subtitle:'Décrivez vos symptômes et recevez une analyse médicale IA instantanée.', dash_cta:'Commencer la consultation', dash_consultations:'Consultations', dash_urgent:'Urgent', dash_recent:'Consultations récentes', dash_viewall:'Tout voir →', chat_placeholder:'Décrivez vos symptômes…', chat_placeholder_img:'Ajoutez un contexte (optionnel)…', chat_disclaimer:'Urgences : appelez le 15 · Ne remplace pas un avis médical professionnel', reports_subtitle:'Analyses IA générées à partir de vos consultations', history_subtitle:'Vos requêtes de symptômes passées', clear_all:'Tout effacer', profile_account:'Compte', profile_signin_prompt:'Connectez-vous pour synchroniser vos données de santé', tab_signin:'Se connecter', tab_register:"S'inscrire", btn_register:'Créer un compte', btn_signout:'Se déconnecter', guest_mode:'mode invité actif', profile_health:'Informations de santé', lbl_age:'Âge', lbl_gender:'Genre', opt_male:'Homme', opt_female:'Femme', opt_other:'Autre', lbl_preferences:'Préférences', pref_include:"Inclure le profil dans l'analyse", pref_include_sub:'Envoie l\'âge et le genre avec les requêtes', profile_data:'Gestion des données', btn_clear_all:'Effacer toutes les données', ph_email:'Email', ph_password:'Mot de passe', ph_name:'Nom complet', ph_age:'Âge (optionnel)', urgent_low:'faible', urgent_medium:'moyen', urgent_high:'élevé' },
-    ar:  { nearby_title:'الرعاية القريبة', filter_all:'الكل', filter_hospitals:'المستشفيات', filter_pharmacies:'الصيدليات', filter_clinics:'العيادات', ai_online:'الذكاء الاصطناعي متصل', nav_dashboard:'لوحة التحكم', nav_chat:'تحليل الأعراض', nav_reports:'التقارير', nav_history:'السجل', nav_profile:'الملف الشخصي', bnav_home:'الرئيسية', bnav_analyze:'تحليل', dash_feeling:'كيف حالك؟', dash_subtitle:'صف أعراضك واحصل على تحليل طبي فوري بالذكاء الاصطناعي.', dash_cta:'بدء الاستشارة', dash_consultations:'الاستشارات', dash_urgent:'عاجل', dash_recent:'الاستشارات الأخيرة', dash_viewall:'عرض الكل ←', chat_placeholder:'صف أعراضك…', chat_placeholder_img:'أضف معلومات عن الصورة (اختياري)…', chat_disclaimer:'للطوارئ اتصل بـ 15 · لا يغني عن استشارة الطبيب', reports_subtitle:'تحليلات الذكاء الاصطناعي من استشاراتك', history_subtitle:'استفساراتك السابقة عن الأعراض', clear_all:'مسح الكل', profile_account:'الحساب', profile_signin_prompt:'سجّل الدخول لمزامنة بياناتك الصحية', tab_signin:'تسجيل الدخول', tab_register:'إنشاء حساب', btn_register:'إنشاء حساب', btn_signout:'تسجيل الخروج', guest_mode:'وضع الضيف نشط', profile_health:'المعلومات الصحية', lbl_age:'العمر', lbl_gender:'الجنس', opt_male:'ذكر', opt_female:'أنثى', opt_other:'آخر', lbl_preferences:'التفضيلات', pref_include:'تضمين الملف في التحليل', pref_include_sub:'يرسل العمر والجنس مع الاستفسارات', profile_data:'إدارة البيانات', btn_clear_all:'مسح جميع البيانات', ph_email:'البريد الإلكتروني', ph_password:'كلمة المرور', ph_name:'الاسم الكامل', ph_age:'العمر (اختياري)', urgent_low:'منخفض', urgent_medium:'متوسط', urgent_high:'عالي' },
-    es: { nearby_title:'Atención cercana', filter_all:'Todos', filter_hospitals:'Hospitales', filter_pharmacies:'Farmacias', filter_clinics:'Clínicas', ai_online:'IA en línea', nav_dashboard:'Panel', nav_chat:'Análisis de síntomas', nav_reports:'Informes', nav_history:'Historial', nav_profile:'Perfil', bnav_home:'Inicio', bnav_analyze:'Analizar', dash_feeling:'¿Cómo se siente?', dash_subtitle:'Describa sus síntomas y reciba orientación médica instantánea.', dash_cta:'Iniciar consulta', dash_consultations:'Consultas', dash_urgent:'Urgente', dash_recent:'Consultas recientes', dash_viewall:'Ver todo →', chat_placeholder:'Describa sus síntomas...', chat_placeholder_img:'Añada información sobre la imagen (opcional)...', chat_disclaimer:'Para emergencias llame al 115 · No sustituye al médico', reports_subtitle:'Informes de IA de sus consultas', history_subtitle:'Sus consultas anteriores', clear_all:'Borrar todo', profile_account:'Cuenta', profile_signin_prompt:'Inicie sesión para guardar sus datos de salud', tab_signin:'Iniciar sesión', tab_register:'Registrarse', btn_register:'Crear cuenta', btn_signout:'Cerrar sesión', guest_mode:'modo invitado activo', profile_health:'Información de salud', lbl_age:'Edad', lbl_gender:'Género', opt_male:'Masculino', opt_female:'Femenino', opt_other:'Otro', lbl_preferences:'Preferencias', pref_include:'Incluir perfil en análisis', pref_include_sub:'Enviará edad y género con la consulta', profile_data:'Gestión de datos', btn_clear_all:'Borrar todos los datos', ph_email:'Correo electrónico', ph_password:'Contraseña', ph_name:'Nombre completo', ph_age:'Edad (opcional)', urgent_low:'bajo', urgent_medium:'medio', urgent_high:'alto' },
-zh: { nearby_title:'附近医疗', filter_all:'全部', filter_hospitals:'医院', filter_pharmacies:'药店', filter_clinics:'诊所', ai_online:'AI 在线', nav_dashboard:'仪表板', nav_chat:'症状分析', nav_reports:'报告', nav_history:'历史', nav_profile:'个人资料', bnav_home:'首页', bnav_analyze:'分析', dash_feeling:'您感觉怎么样？', dash_subtitle:'描述您的症状，获得即时AI医疗指导。', dash_cta:'开始咨询', dash_consultations:'咨询', dash_urgent:'紧急', dash_recent:'最近咨询', dash_viewall:'查看全部 →', chat_placeholder:'描述您的症状...', chat_placeholder_img:'添加图片信息（可选）...', chat_disclaimer:'紧急情况请拨打115 · 不能替代专业医生', reports_subtitle:'您咨询的AI报告', history_subtitle:'您的历史咨询', clear_all:'清除全部', profile_account:'账户', profile_signin_prompt:'登录以保存您的健康数据', tab_signin:'登录', tab_register:'注册', btn_register:'创建账户', btn_signout:'退出登录', guest_mode:'访客模式已激活', profile_health:'健康信息', lbl_age:'年龄', lbl_gender:'性别', opt_male:'男', opt_female:'女', opt_other:'其他', lbl_preferences:'偏好设置', pref_include:'在分析中包含个人资料', pref_include_sub:'将发送年龄和性别', profile_data:'数据管理', btn_clear_all:'清除所有数据', ph_email:'电子邮件', ph_password:'密码', ph_name:'全名', ph_age:'年龄（可选）', urgent_low:'低', urgent_medium:'中', urgent_high:'高' },
-de: { nearby_title:'Nahversorgung', filter_all:'Alle', filter_hospitals:'Krankenhäuser', filter_pharmacies:'Apotheken', filter_clinics:'Kliniken', ai_online:'KI Online', nav_dashboard:'Dashboard', nav_chat:'Symptomanalyse', nav_reports:'Berichte', nav_history:'Verlauf', nav_profile:'Profil', bnav_home:'Start', bnav_analyze:'Analysieren', dash_feeling:'Wie fühlen Sie sich?', dash_subtitle:'Beschreiben Sie Ihre Symptome und erhalten Sie sofortige KI-Unterstützung.', dash_cta:'Beratung starten', dash_consultations:'Beratungen', dash_urgent:'Dringend', dash_recent:'Letzte Beratungen', dash_viewall:'Alle anzeigen →', chat_placeholder:'Beschreiben Sie Ihre Symptome...', chat_placeholder_img:'Bildinformationen hinzufügen (optional)...', chat_disclaimer:'Im Notfall 115 anrufen · Kein Ersatz für einen Arzt', reports_subtitle:'KI-Berichte Ihrer Beratungen', history_subtitle:'Ihre früheren Beratungen', clear_all:'Alle löschen', profile_account:'Konto', profile_signin_prompt:'Anmelden um Gesundheitsdaten zu speichern', tab_signin:'Anmelden', tab_register:'Registrieren', btn_register:'Konto erstellen', btn_signout:'Abmelden', guest_mode:'Gastmodus aktiv', profile_health:'Gesundheitsinformationen', lbl_age:'Alter', lbl_gender:'Geschlecht', opt_male:'Männlich', opt_female:'Weiblich', opt_other:'Andere', lbl_preferences:'Einstellungen', pref_include:'Profil in Analyse einbeziehen', pref_include_sub:'Sendet Alter und Geschlecht mit', profile_data:'Datenverwaltung', btn_clear_all:'Alle Daten löschen', ph_email:'E-Mail', ph_password:'Passwort', ph_name:'Vollständiger Name', ph_age:'Alter (optional)', urgent_low:'niedrig', urgent_medium:'mittel', urgent_high:'hoch' }, };
+    en:  { nearby_title:'Nearby Care', filter_all:'All', filter_hospitals:'Hospitals', filter_pharmacies:'Pharmacies', filter_clinics:'Clinics', ai_online:'AI Online', nav_dashboard:'Dashboard', nav_chat:'Symptom Analysis', nav_reports:'Reports', nav_history:'History', nav_profile:'Profile', bnav_home:'Home', bnav_analyze:'Analyze', dash_feeling:'How are you feeling?', dash_subtitle:'Describe your symptoms and receive instant AI-powered medical guidance.', dash_cta:'Start Consultation', dash_consultations:'Consultations', dash_urgent:'Urgent', dash_recent:'Recent Consultations', dash_viewall:'View all →', chat_placeholder:'Describe your symptoms…', chat_placeholder_img:'Add context about the image (optional)…', chat_disclaimer:'For emergencies call 911 · Not a substitute for professional medical advice', reports_subtitle:'AI-generated analyses from your consultations', history_subtitle:'Your past symptom queries', clear_all:'Clear All', profile_account:'Account', profile_signin_prompt:'Sign in to sync your health data', tab_signin:'Sign In', tab_register:'Register', btn_register:'Create Account', btn_signout:'Sign out', guest_mode:'guest mode active', profile_health:'Health Details', lbl_age:'Age', lbl_gender:'Gender', opt_male:'Male', opt_female:'Female', opt_other:'Other', lbl_preferences:'Preferences', pref_include:'Include profile in analysis', pref_include_sub:'Sends age & gender with queries', profile_data:'Data Management', btn_clear_all:'Clear All Data', ph_email:'Email', ph_password:'Password', ph_name:'Full name', ph_age:'Age (optional)', urgent_low:'low', urgent_medium:'medium', urgent_high:'high', brand_subtitle:'Medical Intelligence', sidebar_patient:'Patient', sidebar_personal_account:'Personal Account', chat_assistant_name:'HealthAI Assistant', chat_intro_subtitle:'Describe your symptoms in detail — include location, duration, and severity for the best analysis.', image_ready_text:'Ready to analyze · add context below (optional)', nearby_heading:'Find Nearby Care', nearby_subtitle:'Tap below to find hospitals, clinics and pharmacies near you', btn_find_nearby:'Find Nearby Hospitals', lbl_radius:'Radius:', detecting_location:'Detecting your location...', error_location_denied:'Location access denied', error_location_denied_msg:'Tap the lock icon in your browser → Permissions → Location → Allow, then try again.', btn_try_again:'Try Again', profile_heading:'Patient Profile', profile_subtitle:'Manage your health details and preferences', default_profile_name:'Patient', default_profile_desc:'Personal health account', badge_guest:'Guest', badge_signed_in:'Signed In', default_user_name:'User', response_image_analysis:'Image Analysis', disclaimer_professional:'Not a substitute for professional medical advice', error_location_not_supported:'Location not supported', error_browser_no_location:'Your browser does not support location services.', error_location_unavailable:'Your location could not be determined. Check your GPS or network connection and try again.', error_location_timeout:'Location request timed out. Please try again.', map_you_are_here:'You are here', facility_unnamed:'Unnamed facility', error_load_places:'Could not load places', error_check_connection:'Check your internet connection and try again.', btn_retry:'Retry', facility_pharmacy:'Pharmacy', facility_clinic:'Clinic', facility_hospital:'Hospital', distance_away:'away', btn_directions:'Directions', nearby_no_places:'No places found nearby', error_server_unreachable:'Could not reach the HealthAI server. Please try again.', btn_new_consultation:'New Consultation', response_header_assessment:'AI Assessment', section_possible_conditions:'Possible Conditions', section_recommendations:'Recommendations', empty_consultations:'No consultations yet', empty_history:'No history yet', empty_reports:'No reports yet', default_consultation:'Consultation', chat_speaker_you:'You', chat_speaker_ai:'AI', section_diagnosis:'Diagnosis', msg_count_suffix:'messages', btn_start_new:'Start new ›', section_all_conditions:'All Conditions', section_advice:'Advice', confirm_clear_history:'Clear all history?', confirm_clear_reports:'Clear all reports?', confirm_clear_all:'Clear ALL data?' },
+    fr:  { nearby_title:'Soins à proximité', filter_all:'Tous', filter_hospitals:'Hôpitaux', filter_pharmacies:'Pharmacies', filter_clinics:'Cliniques', ai_online:'IA en ligne', nav_dashboard:'Tableau de bord', nav_chat:'Analyse des symptômes', nav_reports:'Rapports', nav_history:'Historique', nav_profile:'Profil', bnav_home:'Accueil', bnav_analyze:'Analyser', dash_feeling:'Comment vous sentez-vous ?', dash_subtitle:'Décrivez vos symptômes et recevez une analyse médicale IA instantanée.', dash_cta:'Commencer la consultation', dash_consultations:'Consultations', dash_urgent:'Urgent', dash_recent:'Consultations récentes', dash_viewall:'Tout voir →', chat_placeholder:'Décrivez vos symptômes…', chat_placeholder_img:'Ajoutez un contexte (optionnel)…', chat_disclaimer:'Urgences : appelez le 15 · Ne remplace pas un avis médical professionnel', reports_subtitle:'Analyses IA générées à partir de vos consultations', history_subtitle:'Vos requêtes de symptômes passées', clear_all:'Tout effacer', profile_account:'Compte', profile_signin_prompt:'Connectez-vous pour synchroniser vos données de santé', tab_signin:'Se connecter', tab_register:"S'inscrire", btn_register:'Créer un compte', btn_signout:'Se déconnecter', guest_mode:'mode invité actif', profile_health:'Informations de santé', lbl_age:'Âge', lbl_gender:'Genre', opt_male:'Homme', opt_female:'Femme', opt_other:'Autre', lbl_preferences:'Préférences', pref_include:"Inclure le profil dans l'analyse", pref_include_sub:'Envoie l\'âge et le genre avec les requêtes', profile_data:'Gestion des données', btn_clear_all:'Effacer toutes les données', ph_email:'Email', ph_password:'Mot de passe', ph_name:'Nom complet', ph_age:'Âge (optionnel)', urgent_low:'faible', urgent_medium:'moyen', urgent_high:'élevé', brand_subtitle:'Intelligence Médicale', sidebar_patient:'Patient', sidebar_personal_account:'Compte personnel', chat_assistant_name:'Assistant HealthAI', chat_intro_subtitle:'Décrivez vos symptômes en détail — incluez la localisation, la durée et l\'intensité pour une meilleure analyse.', image_ready_text:'Prêt à analyser · ajoutez du contexte ci-dessous (optionnel)', nearby_heading:'Trouver des soins proches', nearby_subtitle:'Appuyez ci-dessous pour trouver des hôpitaux, cliniques et pharmacies près de vous', btn_find_nearby:'Trouver des hôpitaux proches', lbl_radius:'Rayon :', detecting_location:'Détection de votre position...', error_location_denied:'Accès à la localisation refusé', error_location_denied_msg:'Appuyez sur l\'icône de verrou → Autorisations → Localisation → Autoriser, puis réessayez.', btn_try_again:'Réessayer', profile_heading:'Profil patient', profile_subtitle:'Gérez vos informations de santé et préférences', default_profile_name:'Patient', default_profile_desc:'Compte de santé personnel', badge_guest:'Invité', badge_signed_in:'Connecté', default_user_name:'Utilisateur', response_image_analysis:'Analyse d\'image', disclaimer_professional:'Ne remplace pas un avis médical professionnel', error_location_not_supported:'Localisation non supportée', error_browser_no_location:'Votre navigateur ne prend pas en charge les services de localisation.', error_location_unavailable:'Votre position n\'a pas pu être déterminée. Vérifiez votre GPS ou connexion réseau et réessayez.', error_location_timeout:'Délai de localisation dépassé. Veuillez réessayer.', map_you_are_here:'Vous êtes ici', facility_unnamed:'Établissement sans nom', error_load_places:'Impossible de charger les lieux', error_check_connection:'Vérifiez votre connexion Internet et réessayez.', btn_retry:'Réessayer', facility_pharmacy:'Pharmacie', facility_clinic:'Clinique', facility_hospital:'Hôpital', distance_away:'de distance', btn_directions:'Itinéraire', nearby_no_places:'Aucun lieu trouvé à proximité', error_server_unreachable:'Impossible de joindre le serveur HealthAI. Veuillez réessayer.', btn_new_consultation:'Nouvelle consultation', response_header_assessment:'Évaluation IA', section_possible_conditions:'Conditions possibles', section_recommendations:'Recommandations', empty_consultations:'Aucune consultation pour l\'instant', empty_history:'Aucun historique pour l\'instant', empty_reports:'Aucun rapport pour l\'instant', default_consultation:'Consultation', chat_speaker_you:'Vous', chat_speaker_ai:'IA', section_diagnosis:'Diagnostic', msg_count_suffix:'messages', btn_start_new:'Nouveau ›', section_all_conditions:'Toutes les conditions', section_advice:'Conseils', confirm_clear_history:'Effacer tout l\'historique ?', confirm_clear_reports:'Effacer tous les rapports ?', confirm_clear_all:'Effacer TOUTES les données ?' },
+    ar:  { nearby_title:'الرعاية القريبة', filter_all:'الكل', filter_hospitals:'المستشفيات', filter_pharmacies:'الصيدليات', filter_clinics:'العيادات', ai_online:'الذكاء الاصطناعي متصل', nav_dashboard:'لوحة التحكم', nav_chat:'تحليل الأعراض', nav_reports:'التقارير', nav_history:'السجل', nav_profile:'الملف الشخصي', bnav_home:'الرئيسية', bnav_analyze:'تحليل', dash_feeling:'كيف حالك؟', dash_subtitle:'صف أعراضك واحصل على تحليل طبي فوري بالذكاء الاصطناعي.', dash_cta:'بدء الاستشارة', dash_consultations:'الاستشارات', dash_urgent:'عاجل', dash_recent:'الاستشارات الأخيرة', dash_viewall:'عرض الكل ←', chat_placeholder:'صف أعراضك…', chat_placeholder_img:'أضف معلومات عن الصورة (اختياري)…', chat_disclaimer:'للطوارئ اتصل بـ 15 · لا يغني عن استشارة الطبيب', reports_subtitle:'تحليلات الذكاء الاصطناعي من استشاراتك', history_subtitle:'استفساراتك السابقة عن الأعراض', clear_all:'مسح الكل', profile_account:'الحساب', profile_signin_prompt:'سجّل الدخول لمزامنة بياناتك الصحية', tab_signin:'تسجيل الدخول', tab_register:'إنشاء حساب', btn_register:'إنشاء حساب', btn_signout:'تسجيل الخروج', guest_mode:'وضع الضيف نشط', profile_health:'المعلومات الصحية', lbl_age:'العمر', lbl_gender:'الجنس', opt_male:'ذكر', opt_female:'أنثى', opt_other:'آخر', lbl_preferences:'التفضيلات', pref_include:'تضمين الملف في التحليل', pref_include_sub:'يرسل العمر والجنس مع الاستفسارات', profile_data:'إدارة البيانات', btn_clear_all:'مسح جميع البيانات', ph_email:'البريد الإلكتروني', ph_password:'كلمة المرور', ph_name:'الاسم الكامل', ph_age:'العمر (اختياري)', urgent_low:'منخفض', urgent_medium:'متوسط', urgent_high:'عالي', brand_subtitle:'الذكاء الطبي', sidebar_patient:'مريض', sidebar_personal_account:'حساب شخصي', chat_assistant_name:'مساعد HealthAI', chat_intro_subtitle:'صف أعراضك بالتفصيل — أذكر الموقع والمدة والشدة للحصول على أفضل تحليل.', image_ready_text:'جاهز للتحليل · أضف سياقاً أدناه (اختياري)', nearby_heading:'ابحث عن رعاية قريبة', nearby_subtitle:'اضغط أدناه للعثور على مستشفيات وعيادات وصيدليات قريبة منك', btn_find_nearby:'البحث عن مستشفيات قريبة', lbl_radius:'النطاق:', detecting_location:'جاري تحديد موقعك...', error_location_denied:'تم رفض الوصول إلى الموقع', error_location_denied_msg:'اضغط على أيقونة القفل ← الأذونات ← الموقع ← السماح، ثم حاول مجدداً.', btn_try_again:'حاول مجدداً', profile_heading:'ملف المريض', profile_subtitle:'إدارة بياناتك الصحية وتفضيلاتك', default_profile_name:'مريض', default_profile_desc:'حساب صحي شخصي', badge_guest:'ضيف', badge_signed_in:'مسجل الدخول', default_user_name:'مستخدم', response_image_analysis:'تحليل الصورة', disclaimer_professional:'لا يغني عن استشارة الطبيب المختص', error_location_not_supported:'الموقع غير مدعوم', error_browser_no_location:'متصفحك لا يدعم خدمات الموقع.', error_location_unavailable:'تعذر تحديد موقعك. تحقق من GPS أو اتصالك بالشبكة وحاول مجدداً.', error_location_timeout:'انتهت مهلة طلب الموقع. حاول مجدداً.', map_you_are_here:'أنت هنا', facility_unnamed:'منشأة بلا اسم', error_load_places:'تعذر تحميل الأماكن', error_check_connection:'تحقق من اتصالك بالإنترنت وحاول مجدداً.', btn_retry:'إعادة المحاولة', facility_pharmacy:'صيدلية', facility_clinic:'عيادة', facility_hospital:'مستشفى', distance_away:'بعيداً', btn_directions:'الاتجاهات', nearby_no_places:'لا توجد أماكن قريبة', error_server_unreachable:'تعذر الوصول إلى خادم HealthAI. حاول مجدداً.', btn_new_consultation:'استشارة جديدة', response_header_assessment:'تقييم الذكاء الاصطناعي', section_possible_conditions:'الحالات المحتملة', section_recommendations:'التوصيات', empty_consultations:'لا توجد استشارات بعد', empty_history:'لا يوجد سجل بعد', empty_reports:'لا توجد تقارير بعد', default_consultation:'استشارة', chat_speaker_you:'أنت', chat_speaker_ai:'ذكاء اصطناعي', section_diagnosis:'التشخيص', msg_count_suffix:'رسائل', btn_start_new:'بدء جديد ›', section_all_conditions:'جميع الحالات', section_advice:'النصائح', confirm_clear_history:'مسح كل السجل؟', confirm_clear_reports:'مسح كل التقارير؟', confirm_clear_all:'مسح جميع البيانات؟' },
+    es: { nearby_title:'Atención cercana', filter_all:'Todos', filter_hospitals:'Hospitales', filter_pharmacies:'Farmacias', filter_clinics:'Clínicas', ai_online:'IA en línea', nav_dashboard:'Panel', nav_chat:'Análisis de síntomas', nav_reports:'Informes', nav_history:'Historial', nav_profile:'Perfil', bnav_home:'Inicio', bnav_analyze:'Analizar', dash_feeling:'¿Cómo se siente?', dash_subtitle:'Describa sus síntomas y reciba orientación médica instantánea.', dash_cta:'Iniciar consulta', dash_consultations:'Consultas', dash_urgent:'Urgente', dash_recent:'Consultas recientes', dash_viewall:'Ver todo →', chat_placeholder:'Describa sus síntomas...', chat_placeholder_img:'Añada información sobre la imagen (opcional)...', chat_disclaimer:'Para emergencias llame al 115 · No sustituye al médico', reports_subtitle:'Informes de IA de sus consultas', history_subtitle:'Sus consultas anteriores', clear_all:'Borrar todo', profile_account:'Cuenta', profile_signin_prompt:'Inicie sesión para guardar sus datos de salud', tab_signin:'Iniciar sesión', tab_register:'Registrarse', btn_register:'Crear cuenta', btn_signout:'Cerrar sesión', guest_mode:'modo invitado activo', profile_health:'Información de salud', lbl_age:'Edad', lbl_gender:'Género', opt_male:'Masculino', opt_female:'Femenino', opt_other:'Otro', lbl_preferences:'Preferencias', pref_include:'Incluir perfil en análisis', pref_include_sub:'Enviará edad y género con la consulta', profile_data:'Gestión de datos', btn_clear_all:'Borrar todos los datos', ph_email:'Correo electrónico', ph_password:'Contraseña', ph_name:'Nombre completo', ph_age:'Edad (opcional)', urgent_low:'bajo', urgent_medium:'medio', urgent_high:'alto', brand_subtitle:'Inteligencia Médica', sidebar_patient:'Paciente', sidebar_personal_account:'Cuenta personal', chat_assistant_name:'Asistente HealthAI', chat_intro_subtitle:'Describa sus síntomas en detalle — incluya ubicación, duración e intensidad para el mejor análisis.', image_ready_text:'Listo para analizar · añada contexto abajo (opcional)', nearby_heading:'Encuentra atención cercana', nearby_subtitle:'Toca abajo para encontrar hospitales, clínicas y farmacias cerca de ti', btn_find_nearby:'Encontrar hospitales cercanos', lbl_radius:'Radio:', detecting_location:'Detectando tu ubicación...', error_location_denied:'Acceso a ubicación denegado', error_location_denied_msg:'Toca el ícono de candado → Permisos → Ubicación → Permitir, luego intenta de nuevo.', btn_try_again:'Intentar de nuevo', profile_heading:'Perfil del paciente', profile_subtitle:'Gestiona tus datos de salud y preferencias', default_profile_name:'Paciente', default_profile_desc:'Cuenta de salud personal', badge_guest:'Invitado', badge_signed_in:'Conectado', default_user_name:'Usuario', response_image_analysis:'Análisis de imagen', disclaimer_professional:'No sustituye al consejo médico profesional', error_location_not_supported:'Ubicación no compatible', error_browser_no_location:'Tu navegador no admite servicios de ubicación.', error_location_unavailable:'No se pudo determinar tu ubicación. Verifica tu GPS o conexión de red e intenta de nuevo.', error_location_timeout:'Tiempo de espera agotado. Por favor intenta de nuevo.', map_you_are_here:'Estás aquí', facility_unnamed:'Instalación sin nombre', error_load_places:'No se pudieron cargar los lugares', error_check_connection:'Verifica tu conexión a Internet e intenta de nuevo.', btn_retry:'Reintentar', facility_pharmacy:'Farmacia', facility_clinic:'Clínica', facility_hospital:'Hospital', distance_away:'de distancia', btn_directions:'Cómo llegar', nearby_no_places:'No se encontraron lugares cercanos', error_server_unreachable:'No se pudo contactar el servidor HealthAI. Por favor intenta de nuevo.', btn_new_consultation:'Nueva consulta', response_header_assessment:'Evaluación IA', section_possible_conditions:'Posibles condiciones', section_recommendations:'Recomendaciones', empty_consultations:'Sin consultas aún', empty_history:'Sin historial aún', empty_reports:'Sin informes aún', default_consultation:'Consulta', chat_speaker_you:'Tú', chat_speaker_ai:'IA', section_diagnosis:'Diagnóstico', msg_count_suffix:'mensajes', btn_start_new:'Iniciar nuevo ›', section_all_conditions:'Todas las condiciones', section_advice:'Consejos', confirm_clear_history:'¿Borrar todo el historial?', confirm_clear_reports:'¿Borrar todos los informes?', confirm_clear_all:'¿Borrar TODOS los datos?' },
+zh: { nearby_title:'附近医疗', filter_all:'全部', filter_hospitals:'医院', filter_pharmacies:'药店', filter_clinics:'诊所', ai_online:'AI 在线', nav_dashboard:'仪表板', nav_chat:'症状分析', nav_reports:'报告', nav_history:'历史', nav_profile:'个人资料', bnav_home:'首页', bnav_analyze:'分析', dash_feeling:'您感觉怎么样？', dash_subtitle:'描述您的症状，获得即时AI医疗指导。', dash_cta:'开始咨询', dash_consultations:'咨询', dash_urgent:'紧急', dash_recent:'最近咨询', dash_viewall:'查看全部 →', chat_placeholder:'描述您的症状...', chat_placeholder_img:'添加图片信息（可选）...', chat_disclaimer:'紧急情况请拨打115 · 不能替代专业医生', reports_subtitle:'您咨询的AI报告', history_subtitle:'您的历史咨询', clear_all:'清除全部', profile_account:'账户', profile_signin_prompt:'登录以保存您的健康数据', tab_signin:'登录', tab_register:'注册', btn_register:'创建账户', btn_signout:'退出登录', guest_mode:'访客模式已激活', profile_health:'健康信息', lbl_age:'年龄', lbl_gender:'性别', opt_male:'男', opt_female:'女', opt_other:'其他', lbl_preferences:'偏好设置', pref_include:'在分析中包含个人资料', pref_include_sub:'将发送年龄和性别', profile_data:'数据管理', btn_clear_all:'清除所有数据', ph_email:'电子邮件', ph_password:'密码', ph_name:'全名', ph_age:'年龄（可选）', urgent_low:'低', urgent_medium:'中', urgent_high:'高', brand_subtitle:'医疗智能', sidebar_patient:'患者', sidebar_personal_account:'个人账户', chat_assistant_name:'HealthAI助手', chat_intro_subtitle:'详细描述您的症状——包括部位、持续时间和严重程度以获得最佳分析。', image_ready_text:'准备分析 · 在下方添加上下文（可选）', nearby_heading:'寻找附近医疗', nearby_subtitle:'点击下方查找附近的医院、诊所和药店', btn_find_nearby:'查找附近医院', lbl_radius:'半径：', detecting_location:'正在检测您的位置...', error_location_denied:'位置访问被拒绝', error_location_denied_msg:'点击地址栏中的锁图标 → 权限 → 位置 → 允许，然后重试。', btn_try_again:'再试一次', profile_heading:'患者档案', profile_subtitle:'管理您的健康信息和偏好设置', default_profile_name:'患者', default_profile_desc:'个人健康账户', badge_guest:'访客', badge_signed_in:'已登录', default_user_name:'用户', response_image_analysis:'图像分析', disclaimer_professional:'不能替代专业医疗建议', error_location_not_supported:'不支持定位', error_browser_no_location:'您的浏览器不支持定位服务。', error_location_unavailable:'无法确定您的位置。请检查GPS或网络连接后重试。', error_location_timeout:'定位请求超时，请重试。', map_you_are_here:'您在这里', facility_unnamed:'未命名设施', error_load_places:'无法加载地点', error_check_connection:'请检查您的网络连接后重试。', btn_retry:'重试', facility_pharmacy:'药店', facility_clinic:'诊所', facility_hospital:'医院', distance_away:'外', btn_directions:'导航', nearby_no_places:'附近没有找到地点', error_server_unreachable:'无法连接HealthAI服务器，请重试。', btn_new_consultation:'新咨询', response_header_assessment:'AI评估', section_possible_conditions:'可能的病症', section_recommendations:'建议', empty_consultations:'暂无咨询', empty_history:'暂无历史', empty_reports:'暂无报告', default_consultation:'咨询', chat_speaker_you:'您', chat_speaker_ai:'AI', section_diagnosis:'诊断', msg_count_suffix:'条消息', btn_start_new:'开始新咨询 ›', section_all_conditions:'所有病症', section_advice:'建议', confirm_clear_history:'清除所有历史记录？', confirm_clear_reports:'清除所有报告？', confirm_clear_all:'清除所有数据？' },
+de: { nearby_title:'Nahversorgung', filter_all:'Alle', filter_hospitals:'Krankenhäuser', filter_pharmacies:'Apotheken', filter_clinics:'Kliniken', ai_online:'KI Online', nav_dashboard:'Dashboard', nav_chat:'Symptomanalyse', nav_reports:'Berichte', nav_history:'Verlauf', nav_profile:'Profil', bnav_home:'Start', bnav_analyze:'Analysieren', dash_feeling:'Wie fühlen Sie sich?', dash_subtitle:'Beschreiben Sie Ihre Symptome und erhalten Sie sofortige KI-Unterstützung.', dash_cta:'Beratung starten', dash_consultations:'Beratungen', dash_urgent:'Dringend', dash_recent:'Letzte Beratungen', dash_viewall:'Alle anzeigen →', chat_placeholder:'Beschreiben Sie Ihre Symptome...', chat_placeholder_img:'Bildinformationen hinzufügen (optional)...', chat_disclaimer:'Im Notfall 115 anrufen · Kein Ersatz für einen Arzt', reports_subtitle:'KI-Berichte Ihrer Beratungen', history_subtitle:'Ihre früheren Beratungen', clear_all:'Alle löschen', profile_account:'Konto', profile_signin_prompt:'Anmelden um Gesundheitsdaten zu speichern', tab_signin:'Anmelden', tab_register:'Registrieren', btn_register:'Konto erstellen', btn_signout:'Abmelden', guest_mode:'Gastmodus aktiv', profile_health:'Gesundheitsinformationen', lbl_age:'Alter', lbl_gender:'Geschlecht', opt_male:'Männlich', opt_female:'Weiblich', opt_other:'Andere', lbl_preferences:'Einstellungen', pref_include:'Profil in Analyse einbeziehen', pref_include_sub:'Sendet Alter und Geschlecht mit', profile_data:'Datenverwaltung', btn_clear_all:'Alle Daten löschen', ph_email:'E-Mail', ph_password:'Passwort', ph_name:'Vollständiger Name', ph_age:'Alter (optional)', urgent_low:'niedrig', urgent_medium:'mittel', urgent_high:'hoch', brand_subtitle:'Medizinische Intelligenz', sidebar_patient:'Patient', sidebar_personal_account:'Persönliches Konto', chat_assistant_name:'HealthAI Assistent', chat_intro_subtitle:'Beschreiben Sie Ihre Symptome im Detail — geben Sie Ort, Dauer und Schweregrad für die beste Analyse an.', image_ready_text:'Bereit zur Analyse · Kontext unten hinzufügen (optional)', nearby_heading:'Nahversorgung finden', nearby_subtitle:'Tippen Sie unten, um Krankenhäuser, Kliniken und Apotheken in Ihrer Nähe zu finden', btn_find_nearby:'Krankenhäuser in der Nähe finden', lbl_radius:'Radius:', detecting_location:'Standort wird ermittelt...', error_location_denied:'Standortzugriff verweigert', error_location_denied_msg:'Tippen Sie auf das Schloss-Symbol → Berechtigungen → Standort → Zulassen, dann erneut versuchen.', btn_try_again:'Erneut versuchen', profile_heading:'Patientenprofil', profile_subtitle:'Gesundheitsdaten und Einstellungen verwalten', default_profile_name:'Patient', default_profile_desc:'Persönliches Gesundheitskonto', badge_guest:'Gast', badge_signed_in:'Angemeldet', default_user_name:'Benutzer', response_image_analysis:'Bildanalyse', disclaimer_professional:'Kein Ersatz für professionellen medizinischen Rat', error_location_not_supported:'Standort nicht unterstützt', error_browser_no_location:'Ihr Browser unterstützt keine Standortdienste.', error_location_unavailable:'Ihr Standort konnte nicht ermittelt werden. Überprüfen Sie GPS oder Netzwerkverbindung und versuchen Sie es erneut.', error_location_timeout:'Standortanfrage abgelaufen. Bitte erneut versuchen.', map_you_are_here:'Sie sind hier', facility_unnamed:'Unbenannte Einrichtung', error_load_places:'Orte konnten nicht geladen werden', error_check_connection:'Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.', btn_retry:'Wiederholen', facility_pharmacy:'Apotheke', facility_clinic:'Klinik', facility_hospital:'Krankenhaus', distance_away:'entfernt', btn_directions:'Route', nearby_no_places:'Keine Orte in der Nähe gefunden', error_server_unreachable:'HealthAI-Server nicht erreichbar. Bitte erneut versuchen.', btn_new_consultation:'Neue Beratung', response_header_assessment:'KI-Beurteilung', section_possible_conditions:'Mögliche Erkrankungen', section_recommendations:'Empfehlungen', empty_consultations:'Noch keine Beratungen', empty_history:'Noch kein Verlauf', empty_reports:'Noch keine Berichte', default_consultation:'Beratung', chat_speaker_you:'Sie', chat_speaker_ai:'KI', section_diagnosis:'Diagnose', msg_count_suffix:'Nachrichten', btn_start_new:'Neu starten ›', section_all_conditions:'Alle Erkrankungen', section_advice:'Ratschläge', confirm_clear_history:'Gesamten Verlauf löschen?', confirm_clear_reports:'Alle Berichte löschen?', confirm_clear_all:'ALLE Daten löschen?' }, };
 
   let currentLang = localStorage.getItem('hai_lang') || 'en';
 
@@ -1539,6 +1538,11 @@ de: { nearby_title:'Nahversorgung', filter_all:'Alle', filter_hospitals:'Kranken
     currentLang = lang;
     localStorage.setItem('hai_lang', lang);
     applyTranslations();
+    renderProfile();
+    updateDashboard();
+    renderHistory();
+    renderReports();
+    if (allPlaces.length) renderPlaceCards();
     // Also update the chat placeholder dynamically
     const msgInput = document.getElementById('messageInput');
     if (msgInput) msgInput.placeholder = T('chat_placeholder');
