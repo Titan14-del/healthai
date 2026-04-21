@@ -1301,21 +1301,34 @@
     inp.focus();
     autoResize(inp);
   }
-  function clearHistory() {
+  async function clearHistory() {
     if (!confirm('Clear all history?')) return;
     localStorage.removeItem('hai_history');
-    renderHistory();
-  }
-  function clearReports() {
-    if (!confirm('Clear all reports?')) return;
     localStorage.removeItem('hai_reports');
+    renderHistory();
     renderReports();
+    if (authToken) {
+      await fetch(`${API}/history`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + authToken } });
+    }
   }
-  function clearAll() {
+  async function clearReports() {
+    if (!confirm('Clear all reports?')) return;
+    localStorage.removeItem('hai_history');
+    localStorage.removeItem('hai_reports');
+    renderHistory();
+    renderReports();
+    if (authToken) {
+      await fetch(`${API}/history`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + authToken } });
+    }
+  }
+  async function clearAll() {
     if (!confirm('Clear ALL data?')) return;
     localStorage.removeItem('hai_history');
     localStorage.removeItem('hai_reports');
     updateDashboard();
+    if (authToken) {
+      await fetch(`${API}/history`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + authToken } });
+    }
   }
   function togglePref(btn) {
     const on = btn.dataset.active !== 'true';
@@ -1438,6 +1451,8 @@
     authToken = null;
     localStorage.removeItem('hai_auth');
     localStorage.removeItem('hai_token');
+    localStorage.removeItem('hai_history');
+    localStorage.removeItem('hai_reports');
     renderProfile();
     updateDashboard();
   }
@@ -1547,6 +1562,8 @@ de: { nearby_title:'Nahversorgung', filter_all:'Alle', filter_hospitals:'Kranken
   if (_savedLang) { currentLang = _savedLang; }
   applyTranslations();
   document.getElementById('langSelect').value = currentLang;
+  // If already signed in (token persisted), sync history from server
+  if (authToken) { loadServerHistory().then(updateDashboard); }
   </script>
   </body>
   </html>

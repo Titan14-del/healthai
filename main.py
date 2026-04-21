@@ -290,3 +290,11 @@ def history(
         .order_by(models.Diagnosis.created_at.desc())
         .all()
     )
+
+@app.delete("/history", status_code=204)
+def delete_history(
+    patient: models.Patient = Depends(get_current_patient),
+    db:      Session = Depends(get_db),
+):
+    db.query(models.Diagnosis).filter(models.Diagnosis.patient_id == patient.id).delete()
+    db.commit()
