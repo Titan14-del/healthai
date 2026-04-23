@@ -61,8 +61,197 @@
       /* Step 5: guarantee the bottom nav is visible on screens < 768px
          even if something upstream tried to hide it */
       @media (max-width: 767px) {
-        #mobileBottomNav { display: flex !important; }
+        #mobileBottomNav {
+          display: -webkit-box  !important;
+          display: -webkit-flex !important;
+          display: -ms-flexbox  !important;
+          display: flex         !important;
+        }
       }
+
+      /* ═══════════════════════════════════════════════════════════════
+         Legacy Browser Compatibility — Chrome < 50 / Safari < 10
+         Covers: flexbox prefixes, CSS Grid fallback, vendor-prefixed
+         animations/transforms/gradients, icon sizing, box-sizing.
+         ═══════════════════════════════════════════════════════════════ */
+
+      /* 1. Universal box-sizing — prevents padding from blowing out widths */
+      *, *:before, *:after {
+        -webkit-box-sizing: border-box;
+           -moz-box-sizing: border-box;
+                box-sizing: border-box;
+      }
+
+      /* 2. Vendor-prefixed @keyframes */
+      @-webkit-keyframes msgIn {
+        from { opacity: 0; -webkit-transform: translateY(6px); transform: translateY(6px); }
+        to   { opacity: 1; -webkit-transform: translateY(0);   transform: translateY(0); }
+      }
+      @-webkit-keyframes dotBounce {
+        0%, 60%, 100% { -webkit-transform: translateY(0);    transform: translateY(0); }
+        30%           { -webkit-transform: translateY(-5px); transform: translateY(-5px); }
+      }
+
+      /* 3. Animation / transition vendor prefixes */
+      .msg-enter {
+        -webkit-animation: msgIn 0.25s ease forwards;
+                animation: msgIn 0.25s ease forwards;
+      }
+      .dot {
+        -webkit-animation: dotBounce 1.2s infinite;
+                animation: dotBounce 1.2s infinite;
+      }
+      .dot:nth-child(2) { -webkit-animation-delay: .15s; animation-delay: .15s; }
+      .dot:nth-child(3) { -webkit-animation-delay: .30s; animation-delay: .30s; }
+
+      .transition, .transition-all, .transition-colors {
+        -webkit-transition: all 0.15s ease;
+           -moz-transition: all 0.15s ease;
+             -o-transition: all 0.15s ease;
+                transition: all 0.15s ease;
+      }
+
+      /* 4. Flexbox vendor prefixes
+         (Chrome < 29 and Safari < 9 need -webkit- for flex) */
+      .flex {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+      }
+      .inline-flex {
+        display: -webkit-inline-box;
+        display: -webkit-inline-flex;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+      }
+      .flex-col {
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+            -ms-flex-direction: column;
+                flex-direction: column;
+      }
+      .flex-1 {
+        -webkit-box-flex: 1;
+        -webkit-flex: 1 1 0%;
+            -ms-flex: 1 1 0%;
+                flex: 1 1 0%;
+      }
+      .shrink-0 {
+        -webkit-flex-shrink: 0;
+            -ms-flex-negative: 0;
+                flex-shrink: 0;
+      }
+      .items-center {
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+            -ms-flex-align: center;
+                align-items: center;
+      }
+      .items-end {
+        -webkit-box-align: end;
+        -webkit-align-items: flex-end;
+            -ms-flex-align: end;
+                align-items: flex-end;
+      }
+      .justify-center {
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+            -ms-flex-pack: center;
+                justify-content: center;
+      }
+      .justify-between {
+        -webkit-box-pack: justify;
+        -webkit-justify-content: space-between;
+            -ms-flex-pack: justify;
+                justify-content: space-between;
+      }
+
+      /* 5. Dashboard stat-card row:
+         CSS Grid (grid-cols-3) is unsupported in Chrome < 57 / Safari < 10.1.
+         Override with a vendor-prefixed flex row.
+         Negative-margin trick replaces the unsupported flexbox `gap` property
+         (gap on flex only arrived in Chrome 84 / Safari 14.1). */
+      #dashboardScreen .grid-cols-3 {
+        display: -webkit-box  !important;
+        display: -webkit-flex !important;
+        display: -ms-flexbox  !important;
+        display: flex         !important;
+        -webkit-flex-wrap: nowrap;
+            -ms-flex-wrap: nowrap;
+                flex-wrap: nowrap;
+        margin-left:  -6px;   /* half of 12 px gutter */
+        margin-right: -6px;
+        /* neutralise Tailwind's grid properties */
+        grid-template-columns: none;
+      }
+      #dashboardScreen .grid-cols-3 > * {
+        -webkit-box-flex: 1;
+        -webkit-flex: 1 1 calc(33.333% - 12px);
+            -ms-flex: 1 1 calc(33.333% - 12px);
+                flex: 1 1 calc(33.333% - 12px);
+        min-width: 0;          /* allow text truncation inside card */
+        margin-left:  6px;
+        margin-right: 6px;
+        -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+      }
+
+      /* 6. Hero banner: vendor-prefixed gradient
+         (old WebKit needs -webkit-gradient / -webkit-linear-gradient) */
+      #dashboardScreen > div:first-child {
+        background-color: #0f766e; /* solid colour for very old browsers */
+        background-image: -webkit-gradient(
+          linear, left top, right bottom,
+          color-stop(0%,   #065f46),
+          color-stop(50%,  #0f766e),
+          color-stop(100%, #164e63)
+        );
+        background-image: -webkit-linear-gradient(top left, #065f46, #0f766e, #164e63);
+        background-image:         linear-gradient(to bottom right, #065f46, #0f766e, #164e63);
+      }
+
+      /* 7. Icon containers: lock down size so SVGs never overflow / overlap */
+      #dashboardScreen .w-8.h-8 {
+        width:      2rem    !important;
+        height:     2rem    !important;
+        min-width:  2rem;
+        min-height: 2rem;
+        overflow:   hidden;
+        -webkit-flex-shrink: 0;
+            -ms-flex-negative: 0;
+                flex-shrink: 0;
+      }
+
+      /* 8. SVG icons: consistent scaling across legacy WebKit */
+      #dashboardScreen svg {
+        display: inline-block;
+        vertical-align: middle;
+        -webkit-flex-shrink: 0;
+            -ms-flex-negative: 0;
+                flex-shrink: 0;
+        overflow: hidden;       /* Chrome < 41 renders SVG outside its box without this */
+        max-width:  100%;
+        max-height: 100%;
+      }
+
+      /* 9. Border-radius vendor prefix (needed for Safari < 5 / old Android) */
+      .rounded-2xl { -webkit-border-radius: 1rem;    border-radius: 1rem; }
+      .rounded-xl  { -webkit-border-radius: 0.75rem; border-radius: 0.75rem; }
+      .rounded-full { -webkit-border-radius: 9999px; border-radius: 9999px; }
+      .rounded-lg  { -webkit-border-radius: 0.5rem;  border-radius: 0.5rem; }
+
+      /* 10. CSS custom-property (var()) fallback for body height
+         Browsers that do not support var() skip the calc(var(--vh)*100) line
+         and fall back to the plain 100vh declaration above it. */
+      body {
+        height: 100vh;
+        height: calc(var(--vh, 1vh) * 100);
+      }
+
+      /* 11. Overflow scrolling — keep webkit prefix for iOS < 13 */
+      .overflow-y-auto { -webkit-overflow-scrolling: touch; }
     </style>
   </head>
 
