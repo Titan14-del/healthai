@@ -4,14 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>HealthAI — Medical Intelligence</title>
-    <!-- ── Legacy browser runtime polyfills (Chrome < 50, Safari < 10) ─────
-         Loaded first so they are available before any app code runs.
-         polyfill.io detects the UA and serves only what that browser lacks. ── -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2CPromise%2CArray.prototype.find%2CArray.prototype.findIndex%2CArray.prototype.includes%2CObject.entries%2CObject.assign%2CString.prototype.includes%2CString.prototype.startsWith%2CString.prototype.endsWith%2CElement.prototype.classList"></script>
-    <!-- ── Babel standalone: transpiles ES2020 → ES5 in the browser ─────────
-         Handles: arrow fns, async/await, template literals, destructuring,
-         optional chaining (?.), nullish coalescing (??), spread, defaults. ── -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Google Identity Services -->
@@ -69,196 +61,17 @@
       /* Step 5: guarantee the bottom nav is visible on screens < 768px
          even if something upstream tried to hide it */
       @media (max-width: 767px) {
-        #mobileBottomNav {
-          display: -webkit-box  !important;
-          display: -webkit-flex !important;
-          display: -ms-flexbox  !important;
-          display: flex         !important;
-        }
+        #mobileBottomNav { display: flex !important; }
       }
 
-      /* ═══════════════════════════════════════════════════════════════
-         Legacy Browser Compatibility — Chrome < 50 / Safari < 10
-         Covers: flexbox prefixes, CSS Grid fallback, vendor-prefixed
-         animations/transforms/gradients, icon sizing, box-sizing.
-         ═══════════════════════════════════════════════════════════════ */
-
-      /* 1. Universal box-sizing — prevents padding from blowing out widths */
-      *, *:before, *:after {
-        -webkit-box-sizing: border-box;
-           -moz-box-sizing: border-box;
-                box-sizing: border-box;
-      }
-
-      /* 2. Vendor-prefixed @keyframes */
-      @-webkit-keyframes msgIn {
-        from { opacity: 0; -webkit-transform: translateY(6px); transform: translateY(6px); }
-        to   { opacity: 1; -webkit-transform: translateY(0);   transform: translateY(0); }
-      }
-      @-webkit-keyframes dotBounce {
-        0%, 60%, 100% { -webkit-transform: translateY(0);    transform: translateY(0); }
-        30%           { -webkit-transform: translateY(-5px); transform: translateY(-5px); }
-      }
-
-      /* 3. Animation / transition vendor prefixes */
-      .msg-enter {
-        -webkit-animation: msgIn 0.25s ease forwards;
-                animation: msgIn 0.25s ease forwards;
-      }
-      .dot {
-        -webkit-animation: dotBounce 1.2s infinite;
-                animation: dotBounce 1.2s infinite;
-      }
-      .dot:nth-child(2) { -webkit-animation-delay: .15s; animation-delay: .15s; }
-      .dot:nth-child(3) { -webkit-animation-delay: .30s; animation-delay: .30s; }
-
-      .transition, .transition-all, .transition-colors {
-        -webkit-transition: all 0.15s ease;
-           -moz-transition: all 0.15s ease;
-             -o-transition: all 0.15s ease;
-                transition: all 0.15s ease;
-      }
-
-      /* 4. Flexbox vendor prefixes
-         (Chrome < 29 and Safari < 9 need -webkit- for flex) */
-      .flex {
-        display: -webkit-box;
-        display: -webkit-flex;
-        display: -ms-flexbox;
-        display: flex;
-      }
-      .inline-flex {
-        display: -webkit-inline-box;
-        display: -webkit-inline-flex;
-        display: -ms-inline-flexbox;
-        display: inline-flex;
-      }
-      .flex-col {
-        -webkit-box-orient: vertical;
-        -webkit-box-direction: normal;
-        -webkit-flex-direction: column;
-            -ms-flex-direction: column;
-                flex-direction: column;
-      }
-      .flex-1 {
-        -webkit-box-flex: 1;
-        -webkit-flex: 1 1 0%;
-            -ms-flex: 1 1 0%;
-                flex: 1 1 0%;
-      }
-      .shrink-0 {
-        -webkit-flex-shrink: 0;
-            -ms-flex-negative: 0;
-                flex-shrink: 0;
-      }
-      .items-center {
-        -webkit-box-align: center;
-        -webkit-align-items: center;
-            -ms-flex-align: center;
-                align-items: center;
-      }
-      .items-end {
-        -webkit-box-align: end;
-        -webkit-align-items: flex-end;
-            -ms-flex-align: end;
-                align-items: flex-end;
-      }
-      .justify-center {
-        -webkit-box-pack: center;
-        -webkit-justify-content: center;
-            -ms-flex-pack: center;
-                justify-content: center;
-      }
-      .justify-between {
-        -webkit-box-pack: justify;
-        -webkit-justify-content: space-between;
-            -ms-flex-pack: justify;
-                justify-content: space-between;
-      }
-
-      /* 5. Dashboard stat-card row:
-         CSS Grid (grid-cols-3) is unsupported in Chrome < 57 / Safari < 10.1.
-         Override with a vendor-prefixed flex row.
-         Negative-margin trick replaces the unsupported flexbox `gap` property
-         (gap on flex only arrived in Chrome 84 / Safari 14.1). */
-      #dashboardScreen .grid-cols-3 {
-        display: -webkit-box  !important;
-        display: -webkit-flex !important;
-        display: -ms-flexbox  !important;
-        display: flex         !important;
-        -webkit-flex-wrap: nowrap;
-            -ms-flex-wrap: nowrap;
-                flex-wrap: nowrap;
-        margin-left:  -6px;   /* half of 12 px gutter */
-        margin-right: -6px;
-        /* neutralise Tailwind's grid properties */
-        grid-template-columns: none;
-      }
-      #dashboardScreen .grid-cols-3 > * {
-        -webkit-box-flex: 1;
-        -webkit-flex: 1 1 calc(33.333% - 12px);
-            -ms-flex: 1 1 calc(33.333% - 12px);
-                flex: 1 1 calc(33.333% - 12px);
-        min-width: 0;          /* allow text truncation inside card */
-        margin-left:  6px;
-        margin-right: 6px;
-        -webkit-box-sizing: border-box;
-                box-sizing: border-box;
-      }
-
-      /* 6. Hero banner: vendor-prefixed gradient
-         (old WebKit needs -webkit-gradient / -webkit-linear-gradient) */
-      #dashboardScreen > div:first-child {
-        background-color: #0f766e; /* solid colour for very old browsers */
-        background-image: -webkit-gradient(
-          linear, left top, right bottom,
-          color-stop(0%,   #065f46),
-          color-stop(50%,  #0f766e),
-          color-stop(100%, #164e63)
-        );
-        background-image: -webkit-linear-gradient(top left, #065f46, #0f766e, #164e63);
-        background-image:         linear-gradient(to bottom right, #065f46, #0f766e, #164e63);
-      }
-
-      /* 7. Icon containers: lock down size so SVGs never overflow / overlap */
-      #dashboardScreen .w-8.h-8 {
-        width:      2rem    !important;
-        height:     2rem    !important;
-        min-width:  2rem;
-        min-height: 2rem;
-        overflow:   hidden;
-        -webkit-flex-shrink: 0;
-            -ms-flex-negative: 0;
-                flex-shrink: 0;
-      }
-
-      /* 8. SVG icons: consistent scaling across legacy WebKit */
-      #dashboardScreen svg {
-        display: inline-block;
-        vertical-align: middle;
-        -webkit-flex-shrink: 0;
-            -ms-flex-negative: 0;
-                flex-shrink: 0;
-        overflow: hidden;       /* Chrome < 41 renders SVG outside its box without this */
-        max-width:  100%;
-        max-height: 100%;
-      }
-
-      /* 9. Border-radius vendor prefix (needed for Safari < 5 / old Android) */
-      .rounded-2xl { -webkit-border-radius: 1rem;    border-radius: 1rem; }
-      .rounded-xl  { -webkit-border-radius: 0.75rem; border-radius: 0.75rem; }
-      .rounded-full { -webkit-border-radius: 9999px; border-radius: 9999px; }
-      .rounded-lg  { -webkit-border-radius: 0.5rem;  border-radius: 0.5rem; }
-
-      /* 10. CSS custom-property (var()) fallback for body height
-         Browsers that do not support var() skip the calc(var(--vh)*100) line
-         and fall back to the plain 100vh declaration above it. */
-      body {
-        height: 100vh;
-        height: calc(var(--vh, 1vh) * 100);
-      }
-
-      /* 11. Overflow scrolling — keep webkit prefix for iOS < 13 */
+      /* ── Android 8+ / iOS 15+ targeted fixes ───────────────────────
+         Chrome 63+ (Android 8 WebView) and Safari 15+ (iOS 15) support
+         all modern CSS (Grid, flexbox, animations, border-radius, etc.)
+         without vendor prefixes, so none are needed here.
+         The two rules below remain for Chrome 63 edge cases only:
+           body height: plain 100vh fallback before the var(--vh) calc()
+           -webkit-overflow-scrolling: iOS Safari momentum scroll        */
+      body { height: 100vh; height: calc(var(--vh, 1vh) * 100); }
       .overflow-y-auto { -webkit-overflow-scrolling: touch; }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -869,10 +682,7 @@
     </nav>
   </div>
 
-  <!-- type="text/babel" tells Babel standalone to transpile this block
-       to ES5 before execution — handles arrow fns, async/await, optional
-       chaining (?.), nullish coalescing (??), destructuring, spread, etc. -->
-  <script type="text/babel" data-presets="env">
+  <script>
   // ── State ────────────────────────────────────────────
   const SCREENS = ['dashboard','chat','reports','history','nearby','profile'];
   const TITLES  = { dashboard:'Dashboard', chat:'Symptom Analysis', reports:'Medical Reports', history:'History',
@@ -992,14 +802,14 @@
   function showScreen(name) {
     SCREENS.forEach(s => {
       document.getElementById(s+'Screen').classList.add('hidden');
-      document.getElementById('nav-'+s)?.classList.remove('nav-active');
+      const _nEl = document.getElementById('nav-'+s); if (_nEl) _nEl.classList.remove('nav-active');
       const b = document.getElementById('bnav-'+s);
       if (b) { b.classList.remove('bnav-active'); b.classList.add('text-slate-500'); }
     });
 
     document.getElementById(name+'Screen').classList.remove('hidden');
     document.getElementById('headerTitle').textContent = TITLES[name];
-    document.getElementById('nav-'+name)?.classList.add('nav-active');
+    const _naEl = document.getElementById('nav-'+name); if (_naEl) _naEl.classList.add('nav-active');
     const ab = document.getElementById('bnav-'+name);
     if (ab) { ab.classList.add('bnav-active'); ab.classList.remove('text-slate-500'); }
 
@@ -1124,18 +934,20 @@
     let succeeded = false;
     for (const mirror of MIRRORS) {
       try {
-        const res  = await fetch(mirror, { method: 'POST', body: query, signal: AbortSignal.timeout(30000) });
+        const _sig = (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function')
+          ? AbortSignal.timeout(30000) : undefined;
+        const res  = await fetch(mirror, { method: 'POST', body: query, signal: _sig });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         allPlaces = data.elements.map(el => {
-          const placeLat = el.lat ?? el.center?.lat;
-          const placeLng = el.lon ?? el.center?.lon;
+          const placeLat = (el.lat !== null && el.lat !== undefined) ? el.lat : (el.center && el.center.lat);
+          const placeLng = (el.lon !== null && el.lon !== undefined) ? el.lon : (el.center && el.center.lon);
           const dist = getDistance(lat, lng, placeLat, placeLng);
           return {
-            name:    el.tags?.name || T('facility_unnamed'),
-            type:    el.tags?.amenity || 'hospital',
-            address: el.tags?.['addr:street'] || el.tags?.['addr:full'] || '',
-            phone:   el.tags?.phone || el.tags?.['contact:phone'] || null,
+            name:    (el.tags && el.tags.name) || T('facility_unnamed'),
+            type:    (el.tags && el.tags.amenity) || 'hospital',
+            address: (el.tags && el.tags['addr:street']) || (el.tags && el.tags['addr:full']) || '',
+            phone:   (el.tags && el.tags.phone) || (el.tags && el.tags['contact:phone']) || null,
             lat: placeLat, lng: placeLng, dist
           };
         }).filter(p => p.lat && p.lng).sort((a, b) => a.dist - b.dist);
@@ -1311,7 +1123,7 @@
 
         const payload = { messages: conversationHistory, language: currentLang };
         const pref = document.getElementById('prefToggle');
-        if (pref?.dataset.active === 'true') {
+        if (pref && pref.dataset && pref.dataset.active === 'true') {
           const age    = document.getElementById('profileAge').value;
           const gender = document.getElementById('profileGender').value;
           if (age)    payload.age    = parseInt(age);
@@ -1343,7 +1155,7 @@
       }
     } catch (err) {
       removeEl(tid);
-      appendError(err?.message || T('error_server_unreachable'));
+      appendError((err && err.message) || T('error_server_unreachable'));
     }
 
     isLoading = false;
@@ -1515,7 +1327,8 @@
       // Support old format (item.text) and new format (item.title + item.messages)
       const title    = item.title || item.text || T('default_consultation');
       const messages = item.messages || (item.text ? [{role:'user',content:item.text}] : []);
-      const firstUser = messages.find(m => m.role === 'user')?.content || '';
+      const _fMsg = messages.find(m => m.role === 'user');
+      const firstUser = (_fMsg && _fMsg.content) || '';
       const preview   = firstUser.length > 75 ? firstUser.slice(0,75) + '…' : firstUser;
       const msgCount  = messages.length;
       const d = item.diagnosis || {};
@@ -1630,7 +1443,8 @@
     const recent = h.slice(0,4);
     if (!recent.length) { el.innerHTML=`<p class="text-sm text-slate-500 text-center py-6">${T('empty_consultations')}</p>`; return; }  
     el.innerHTML = recent.map(item => {
-      const firstUser = (item.messages || []).find(m => m.role==='user')?.content || item.text || '';
+      const _dMsg = (item.messages || []).find(m => m.role==='user');
+      const firstUser = (_dMsg && _dMsg.content) || item.text || '';
       return `
       <button onclick="reuseQuery('${escAttr(firstUser)}')" class="w-full flex items-center gap-3 px-2.5 py-2 rounded-xl
   hover:bg-slate-800 transition text-left group">
@@ -1697,7 +1511,7 @@
   function escAttr(s) { return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
   function ts() { return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
   function fmtDate(ms) { return new Date(ms).toLocaleDateString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
-  function removeEl(id) { document.getElementById(id)?.remove(); }
+  function removeEl(id) { const _el = document.getElementById(id); if (_el) _el.remove(); }
   function emptyState(icon, msg) {
     const icons = {
       clock: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
@@ -1856,7 +1670,11 @@ de: { nearby_title:'Nahversorgung', filter_all:'Alle', filter_hospitals:'Kranken
   let currentLang = localStorage.getItem('hai_lang') || 'en';
 
   function T(key) {
-    return TRANSLATIONS[currentLang]?.[key] ?? TRANSLATIONS.en[key] ?? key;
+    const _dict = TRANSLATIONS[currentLang];
+    const _val  = _dict && _dict[key];
+    return (_val !== undefined && _val !== null) ? _val
+         : (TRANSLATIONS.en[key] !== undefined && TRANSLATIONS.en[key] !== null) ? TRANSLATIONS.en[key]
+         : key;
   }
 
   function applyTranslations() {
