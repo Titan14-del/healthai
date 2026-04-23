@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>HealthAI — Medical Intelligence</title>
+    <!-- ── Legacy browser runtime polyfills (Chrome < 50, Safari < 10) ─────
+         Loaded first so they are available before any app code runs.
+         polyfill.io detects the UA and serves only what that browser lacks. ── -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=fetch%2CPromise%2CArray.prototype.find%2CArray.prototype.findIndex%2CArray.prototype.includes%2CObject.entries%2CObject.assign%2CString.prototype.includes%2CString.prototype.startsWith%2CString.prototype.endsWith%2CElement.prototype.classList"></script>
+    <!-- ── Babel standalone: transpiles ES2020 → ES5 in the browser ─────────
+         Handles: arrow fns, async/await, template literals, destructuring,
+         optional chaining (?.), nullish coalescing (??), spread, defaults. ── -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Google Identity Services -->
@@ -252,6 +260,130 @@
 
       /* 11. Overflow scrolling — keep webkit prefix for iOS < 13 */
       .overflow-y-auto { -webkit-overflow-scrolling: touch; }
+
+      /* ═══════════════════════════════════════════════════════════════
+         COLOR & SHADOW FALLBACKS — Chrome < 65 / Safari < 12.1
+         ─────────────────────────────────────────────────────────────
+         Tailwind v3 generates rgb(R G B) (space-separated, no alpha),
+         which is only parsed in Chrome 65+ / Safari 12.1+.
+         It also uses var(--tw-shadow) for every box-shadow utility,
+         which silently produces "none" on browsers without CSS variable
+         support (Chrome < 49 / Safari < 9.1).
+         These explicit overrides use hex + rgba() which work everywhere.
+         ═══════════════════════════════════════════════════════════════ */
+
+      /* ── Background colours ───────────────────────────────────────── */
+      .bg-slate-950   { background-color: #020617  !important; }
+      .bg-slate-900   { background-color: #0f172a  !important; }
+      .bg-slate-800   { background-color: #1e293b  !important; }
+      .bg-slate-700   { background-color: #334155  !important; }
+      .bg-white       { background-color: #ffffff  !important; }
+      .bg-emerald-50  { background-color: #ecfdf5  !important; }
+      .bg-emerald-500 { background-color: #10b981  !important; }
+      .bg-emerald-600 { background-color: #059669  !important; }
+      .bg-red-400     { background-color: #f87171  !important; }
+      .bg-red-500     { background-color: #ef4444  !important; }
+
+      /* ── Text colours ─────────────────────────────────────────────── */
+      .text-slate-100  { color: #f1f5f9 !important; }
+      .text-slate-400  { color: #94a3b8 !important; }
+      .text-slate-500  { color: #64748b !important; }
+      .text-white      { color: #ffffff !important; }
+      .text-emerald-400 { color: #34d399 !important; }
+      .text-emerald-300 { color: #6ee7b7 !important; }
+      .text-emerald-200 { color: #a7f3d0 !important; }
+      .text-emerald-700 { color: #047857 !important; }
+      .text-teal-400   { color: #2dd4bf !important; }
+      .text-blue-400   { color: #60a5fa !important; }
+      .text-red-400    { color: #f87171 !important; }
+      .text-amber-400  { color: #fbbf24 !important; }
+      .text-violet-400 { color: #a78bfa !important; }
+
+      /* ── Border colours ───────────────────────────────────────────── */
+      .border-slate-800   { border-color: #1e293b !important; }
+      .border-slate-700   { border-color: #334155 !important; }
+      .border-emerald-500 { border-color: #10b981 !important; }
+      .border-red-500     { border-color: #ef4444 !important; }
+
+      /* ── Opacity-modifier background classes (bg-color/alpha) ───────
+         CSS selector for .bg-emerald-500\/10 uses a backslash-escaped
+         slash because / is special in CSS class names.               */
+      .bg-white\/5           { background-color: rgba(255,255,255,0.05)  !important; }
+      .bg-white\/10          { background-color: rgba(255,255,255,0.10)  !important; }
+      .bg-emerald-500\/5     { background-color: rgba(16,185,129,0.05)   !important; }
+      .bg-emerald-500\/10    { background-color: rgba(16,185,129,0.10)   !important; }
+      .bg-emerald-500\/15    { background-color: rgba(16,185,129,0.15)   !important; }
+      .bg-emerald-500\/20    { background-color: rgba(16,185,129,0.20)   !important; }
+      .bg-emerald-600\/20    { background-color: rgba(5,150,105,0.20)    !important; }
+      .bg-blue-500\/10       { background-color: rgba(59,130,246,0.10)   !important; }
+      .bg-red-500\/10        { background-color: rgba(239,68,68,0.10)    !important; }
+      .bg-red-500\/15        { background-color: rgba(239,68,68,0.15)    !important; }
+      .bg-amber-500\/5       { background-color: rgba(245,158,11,0.05)   !important; }
+      .bg-amber-500\/15      { background-color: rgba(245,158,11,0.15)   !important; }
+      .bg-slate-700\/50      { background-color: rgba(51,65,85,0.50)     !important; }
+      .bg-slate-800\/40      { background-color: rgba(30,41,59,0.40)     !important; }
+      .bg-slate-800\/60      { background-color: rgba(30,41,59,0.60)     !important; }
+
+      /* ── Opacity-modifier text classes ──────────────────────────── */
+      .text-emerald-100\/80  { color: rgba(209,250,229,0.80) !important; }
+
+      /* ── Opacity-modifier border classes ────────────────────────── */
+      .border-slate-700\/80  { border-color: rgba(51,65,85,0.80)  !important; }
+      .border-slate-700\/60  { border-color: rgba(51,65,85,0.60)  !important; }
+      .border-slate-800\/60  { border-color: rgba(30,41,59,0.60)  !important; }
+      .border-emerald-500\/20 { border-color: rgba(16,185,129,0.20) !important; }
+      .border-red-900\/30    { border-color: rgba(127,29,29,0.30) !important; }
+
+      /* ── Hover states ────────────────────────────────────────────── */
+      .hover\:bg-slate-800:hover        { background-color: #1e293b             !important; }
+      .hover\:bg-emerald-50:hover       { background-color: #ecfdf5             !important; }
+      .hover\:bg-red-500\/10:hover      { background-color: rgba(239,68,68,0.10) !important; }
+      .hover\:bg-emerald-500\/20:hover  { background-color: rgba(16,185,129,0.20)!important; }
+      .hover\:text-white:hover          { color: #ffffff   !important; }
+      .hover\:text-emerald-300:hover    { color: #6ee7b7   !important; }
+      .hover\:text-emerald-400:hover    { color: #34d399   !important; }
+      .hover\:text-red-400:hover        { color: #f87171   !important; }
+
+      /* ── Box shadows: direct rgba values (no CSS variables) ─────── */
+      .shadow-sm { -webkit-box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+                           box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05) !important; }
+      .shadow    { -webkit-box-shadow: 0 1px 3px 0 rgba(0,0,0,0.10),0 1px 2px -1px rgba(0,0,0,0.10);
+                           box-shadow: 0 1px 3px 0 rgba(0,0,0,0.10),0 1px 2px -1px rgba(0,0,0,0.10) !important; }
+      .shadow-md { -webkit-box-shadow: 0 4px 6px -1px rgba(0,0,0,0.10),0 2px 4px -2px rgba(0,0,0,0.10);
+                           box-shadow: 0 4px 6px -1px rgba(0,0,0,0.10),0 2px 4px -2px rgba(0,0,0,0.10) !important; }
+      .shadow-lg { -webkit-box-shadow: 0 10px 15px -3px rgba(0,0,0,0.10),0 4px 6px -4px rgba(0,0,0,0.10);
+                           box-shadow: 0 10px 15px -3px rgba(0,0,0,0.10),0 4px 6px -4px rgba(0,0,0,0.10) !important; }
+      .shadow-xl { -webkit-box-shadow: 0 20px 25px -5px rgba(0,0,0,0.10),0 8px 10px -6px rgba(0,0,0,0.10);
+                           box-shadow: 0 20px 25px -5px rgba(0,0,0,0.10),0 8px 10px -6px rgba(0,0,0,0.10) !important; }
+      /* Coloured glow shadows (also bypass var(--tw-shadow-color)) */
+      .shadow-emerald-500\/20,
+      .shadow-emerald-500\/25 { -webkit-box-shadow: 0 10px 15px -3px rgba(16,185,129,0.25);
+                                         box-shadow: 0 10px 15px -3px rgba(16,185,129,0.25) !important; }
+      .shadow-violet-500\/20  { -webkit-box-shadow: 0 20px 25px -5px rgba(139,92,246,0.20);
+                                         box-shadow: 0 20px 25px -5px rgba(139,92,246,0.20) !important; }
+
+      /* ── Gradient fallbacks (avoid var(--tw-gradient-stops)) ─────── */
+      /* Logo icon / chat icon: from-emerald-500 to-teal-400 */
+      .from-emerald-500.to-teal-400 {
+        background-color: #10b981;
+        background-image: -webkit-gradient(linear,left top,right bottom,
+                            color-stop(0%,#10b981),color-stop(100%,#2dd4bf));
+        background-image: -webkit-linear-gradient(top left,#10b981,#2dd4bf);
+        background-image:         linear-gradient(to bottom right,#10b981,#2dd4bf);
+      }
+      /* Hero banner already handled by #dashboardScreen > div:first-child above */
+
+      /* ── Arbitrary font-size class: text-[10px] ────────────────── */
+      .text-\[10px\] { font-size: 10px !important; }
+
+      /* ── Ring utilities: bypass var(--tw-ring-*) ─────────────── */
+      .ring-0  { -webkit-box-shadow: none; box-shadow: none !important; }
+      .ring-1  { -webkit-box-shadow: 0 0 0 1px rgba(16,185,129,0.5); box-shadow: 0 0 0 1px rgba(16,185,129,0.5) !important; }
+
+      /* ── Opacity utility ─────────────────────────────────────── */
+      .opacity-0   { opacity: 0   !important; }
+      .opacity-50  { opacity: 0.5 !important; }
+      .opacity-100 { opacity: 1   !important; }
     </style>
   </head>
 
@@ -737,7 +869,10 @@
     </nav>
   </div>
 
-  <script>
+  <!-- type="text/babel" tells Babel standalone to transpile this block
+       to ES5 before execution — handles arrow fns, async/await, optional
+       chaining (?.), nullish coalescing (??), destructuring, spread, etc. -->
+  <script type="text/babel" data-presets="env">
   // ── State ────────────────────────────────────────────
   const SCREENS = ['dashboard','chat','reports','history','nearby','profile'];
   const TITLES  = { dashboard:'Dashboard', chat:'Symptom Analysis', reports:'Medical Reports', history:'History',
