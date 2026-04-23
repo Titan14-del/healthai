@@ -2,7 +2,7 @@
   <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>HealthAI — Medical Intelligence</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -32,6 +32,37 @@
       }
       .nav-active { background: rgba(16,185,129,.12) !important; color: #10b981 !important; }
       .bnav-active { color: #10b981 !important; }
+
+      /* ── Mobile / cross-browser viewport fixes ── */
+
+      /* Step 1: allow html to fill the available height on iOS Safari */
+      html { height: -webkit-fill-available; }
+
+      /* Step 2: body uses a JS-driven --vh variable so Android Chrome's
+         shrinking address bar never pushes the bottom nav off-screen.
+         The !important override wins over Tailwind's h-screen (100vh). */
+      body {
+        height: calc(var(--vh, 1vh) * 100) !important;
+        min-height: -webkit-fill-available; /* iOS Safari fallback */
+      }
+
+      /* Step 3: iOS momentum scrolling for all scrollable areas (iOS 12+) */
+      .overflow-y-auto {
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Step 4: safe-area-inset padding on the bottom nav for
+         iPhone notch (constant = iOS < 11.2, env = iOS 11.2+ & Android) */
+      #mobileBottomNav {
+        padding-bottom: constant(safe-area-inset-bottom);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+
+      /* Step 5: guarantee the bottom nav is visible on screens < 768px
+         even if something upstream tried to hide it */
+      @media (max-width: 767px) {
+        #mobileBottomNav { display: flex !important; }
+      }
     </style>
   </head>
 
@@ -475,7 +506,7 @@
     </div>
 
     <!-- BOTTOM NAV (mobile) -->
-    <nav class="lg:hidden shrink-0 bg-slate-900 border-t border-slate-800 flex">
+    <nav id="mobileBottomNav" class="lg:hidden shrink-0 bg-slate-900 border-t border-slate-800 flex">
       <button onclick="showScreen('dashboard')" id="bnav-dashboard" class="bnav-btn flex-1 flex flex-col items-center gap-0.5    
   py-2.5 text-slate-500 transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
@@ -1568,6 +1599,24 @@ de: { nearby_title:'Nahversorgung', filter_all:'Alle', filter_hospitals:'Kranken
   document.getElementById('langSelect').value = currentLang;
   // If already signed in (token persisted), sync history from server
   if (authToken) { loadServerHistory().then(updateDashboard); }
+
+  // ── Viewport height fix (Android Chrome / iOS Safari) ────────────────
+  // Android Chrome: 100vh includes the collapsible address bar, so the
+  // flex layout can push the bottom nav out of view.  We set --vh to the
+  // true visual-viewport height so body { height: calc(var(--vh,1vh)*100) }
+  // always matches what the user actually sees.
+  (function initVH() {
+    function setVH() {
+      var vh = (window.visualViewport ? window.visualViewport.height : window.innerHeight) * 0.01;
+      document.documentElement.style.setProperty('--vh', vh + 'px');
+    }
+    setVH();
+    window.addEventListener('resize', setVH);
+    window.addEventListener('orientationchange', setVH);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', setVH);
+    }
+  })();
   </script>
   </body>
   </html>
