@@ -43,11 +43,15 @@ try:
 except Exception as e:
     print(f"[DB] Migration skipped: {e}")
 async def keep_alive():
+    import os
+    app_url = os.getenv("APP_URL")
+    if not app_url:
+        return  # No URL configured, skip keep-alive
     await asyncio.sleep(60)
     while True:
         try:
             async with httpx.AsyncClient() as client:
-                await client.get("https://healthai-qoem.onrender.com/")
+                await client.get(app_url)
                 print("Keep-alive ping sent")
         except Exception as e:
             print(f"Keep-alive error: {e}")

@@ -13,14 +13,16 @@ if DATABASE_URL.startswith("postgres://"):
 is_postgres = DATABASE_URL.startswith("postgresql")
 
 if is_postgres:
-    # Ensure SSL is required
-    if "sslmode=" not in DATABASE_URL:
-        sep = "&" if "?" in DATABASE_URL else "?"
-        DATABASE_URL += f"{sep}sslmode=require"
-    connect_args = {"sslmode": "require"}
-    # Supabase transaction-mode pooler (port 6543) doesn't support prepared statements
     parsed = urlparse(DATABASE_URL)
     is_pooler = parsed.port == 6543
+    # Only force SSL if not already specified and not on Railway (Railway internal DB doesn't need SSL)
+    is_railway = os.getenv("RAILWAY_ENVIRONMENT") is not None
+    if "sslmode=" not in DATABASE_URL and not is_railway:
+        sep = "&" if "?" in DATABASE_URL else "?"
+        DATABASE_URL += f"{sep}sslmode=require"
+        connect_args = {"sslmode": "require"}
+    else:
+        connect_args = {}
     engine = create_engine(
         DATABASE_URL,
         connect_args=connect_args,
