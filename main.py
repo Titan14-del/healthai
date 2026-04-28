@@ -12,7 +12,7 @@ import asyncio
 from contextlib import asynccontextmanager
 
 
-from database import engine, get_db
+from database import engine, get_db, DATABASE_URL
 import models
 import schemas
 from auth import (
@@ -125,6 +125,18 @@ class ChatResponse(BaseModel):
 @app.get("/")
 def home():
     return {"message": "HealthAI is running!"}
+
+@app.get("/db-status")
+def db_status(db: Session = Depends(get_db)):
+    is_postgres = DATABASE_URL.startswith("postgresql")
+    db_type = "PostgreSQL" if is_postgres else "SQLite (fallback - data will not persist!)"
+    patient_count = db.query(models.Patient).count()
+    return {
+        "database": db_type,
+        "patient_count": patient_count,
+        "connected_to_supabase": is_postgres,
+    }
+
 @app.get("/app")
 def serve_app():
     import os
