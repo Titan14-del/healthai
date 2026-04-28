@@ -2,6 +2,7 @@ import os
 from urllib.parse import urlparse
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.pool import NullPool
 
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 
@@ -14,27 +15,46 @@ is_postgres = DATABASE_URL.startswith("postgresql")
 
 def _make_postgres_engine(url):
     parsed = urlparse(url)
-    is_pooler = parsed.port == 6543
+    port = parsed.port
+
+    # Add SSL if not already in URL
     if "sslmode=" not in url:
         sep = "&" if "?" in url else "?"
         url += f"{sep}sslmode=require"
-    engine = create_engine(
-        url,
-        connect_args={"sslmode": "require"},
-        pool_pre_ping=True,
-        pool_size=5,
-        max_overflow=10,
-        **({"execution_options": {"no_parameters": True}} if is_pooler else {}),
-    )
-    # Test the connection immediately
+
+    # Port 6543 = transaction pooler — use NullPool + no prepared statements
+    # Port 5432 on pooler host = session pooler — use NullPool
+    # Port 5432 on db.*.supabase.co = direct connection — use standard pool
+    is_transaction_pooler = port == 6543
+    is_session_pooler = port == 5432 and "pooler.supabase.com" in (parsed.hostname or "")
+    use_null_pool = is_transaction_pooler or is_session_pooler
+
+    if use_null_pool:
+        engine = create_engine(
+            url,
+            connect_args={"sslmode": "require", "options": "-c statement_cache_size=0"},
+            poolclass=NullPool,
+        )
+        mode = "transaction pooler" if is_transaction_pooler else "session pooler"
+    else:
+        engine = create_engine(
+            url,
+            connect_args={"sslmode": "require"},
+            pool_pre_ping=True,
+            pool_size=5,
+            max_overflow=10,
+        )
+        mode = "direct connection"
+
+    # Test the connection
     with engine.connect() as conn:
         conn.execute(text("SELECT 1"))
-    print(f"[DB] Connected to PostgreSQL host={parsed.hostname} port={parsed.port} db={parsed.path.lstrip('/')} pooler={is_pooler}")
+
+    print(f"[DB] Connected to PostgreSQL via {mode} — host={parsed.hostname} port={port}")
     return engine
 
 def _make_sqlite_engine():
-    url = "sqlite:///./healthai.db"
-    engine = create_engine(url, connect_args={"check_same_thread": False})
+    engine = create_engine("sqlite:///./healthai.db", connect_args={"check_same_thread": False})
     print("[DB] Using SQLite fallback")
     return engine
 
@@ -46,7 +66,7 @@ if is_postgres:
         print("[DB] Falling back to SQLite")
         engine = _make_sqlite_engine()
 else:
-    print("[DB] No DATABASE_URL set")
+    print("[DB] No DATABASE_URL set — using SQLite")
     engine = _make_sqlite_engine()
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
