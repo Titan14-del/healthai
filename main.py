@@ -155,10 +155,17 @@ def register(req: schemas.RegisterRequest, db: Session = Depends(get_db)):
         password = hash_password(req.password),
         age      = req.age,
     )
-    db.add(patient)
-    db.commit()
-    db.refresh(patient)
-    return schemas.TokenResponse(access_token=create_token(patient.id))
+    try:
+        db.add(patient)
+        db.commit()
+        db.refresh(patient)
+        print(f"[REGISTER] Patient saved successfully — id={patient.id} email={patient.email}")
+        return schemas.TokenResponse(access_token=create_token(patient.id))
+    except Exception as e:
+        db.rollback()
+        print(f"[REGISTER] Failed to save patient: {e}")
+        print("FULL ERROR:", traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
 
 @app.post("/login", response_model=schemas.TokenResponse)
 def login(req: schemas.LoginRequest, db: Session = Depends(get_db)):
