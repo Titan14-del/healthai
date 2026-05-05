@@ -2341,9 +2341,9 @@
   // ── Auth ─────────────────────────────────────────────
   // Prefer same-origin API in production (Railway) and localhost during local development.
   const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://localhost:8000'
+    ? 'https://healthai-qoem.onrender.com'
     : (window.location.protocol === 'file:'
-        ? 'http://localhost:8000'   // opened as local file — point to local server
+        ? 'https://healthai-qoem.onrender.com'   // opened as local file — point to local server
         : window.location.origin);  // served by the backend (Render / production)
   let authUser  = JSON.parse(localStorage.getItem('hai_auth') || 'null');
   let authToken = localStorage.getItem('hai_token') || null;
