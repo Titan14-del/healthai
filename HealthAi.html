@@ -1512,7 +1512,7 @@
     const ab = document.getElementById('bnav-'+name);
     if (ab) { ab.classList.add('bnav-active'); ab.classList.remove('text-slate-500'); }
 
-    if (name === 'dashboard') updateDashboard();
+    if (name === 'dashboard') { updateDashboard(); applyTranslations(); }
     if (name === 'reports')   renderReports();
     if (name === 'history')   renderHistory();
     if (name === 'nearby' && map) { setTimeout(() => map.invalidateSize(), 150); }
