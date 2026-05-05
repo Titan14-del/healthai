@@ -1769,6 +1769,32 @@
     el.style.height = Math.min(el.scrollHeight, 128) + 'px';
   }
 
+  // Fetch with automatic Render free-tier wake-up + retry.
+  // On a network error (TypeError), updates the typing indicator and waits
+  // for the server to boot before retrying once.
+  async function fetchWithWake(url, options, tid) {
+    try {
+      return await fetch(url, options);
+    } catch (err) {
+      if (!(err instanceof TypeError)) throw err;
+      // Show "starting up" inside the typing bubble
+      const tidEl = document.getElementById(tid);
+      if (tidEl) {
+        const bubble = tidEl.querySelector('div:last-child');
+        if (bubble) bubble.innerHTML = '<span class="text-xs text-amber-400 font-medium">Server is starting up…</span>';
+      }
+      const alive = await _waitForServer(msg => {
+        const el = document.getElementById(tid);
+        if (el) {
+          const b = el.querySelector('div:last-child');
+          if (b) b.innerHTML = `<span class="text-xs text-amber-400 font-medium">${msg}</span>`;
+        }
+      });
+      if (!alive) throw new Error(T('error_server_unreachable'));
+      return await fetch(url, options);
+    }
+  }
+
   async function sendMessage() {
     if (isLoading) return;
     const input        = document.getElementById('messageInput');
@@ -1801,7 +1827,7 @@
         if (text) formData.append('additional_info', text);
         formData.append('language', currentLang);
 
-        const res  = await fetch(`${API}/analyze-image`, { method: 'POST', headers: authHeaders, body: formData });
+        const res  = await fetchWithWake(`${API}/analyze-image`, { method: 'POST', headers: authHeaders, body: formData }, tid);
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
           throw new Error(err.detail || `Server error (${res.status})`);
@@ -1832,11 +1858,11 @@
           exchange_count: imageExchangeCount,
           original_query: imageFirstQuery,
         };
-        const res  = await fetch(`${API}/image-chat`, {
+        const res  = await fetchWithWake(`${API}/image-chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', ...authHeaders },
           body: JSON.stringify(payload)
-        });
+        }, tid);
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
           throw new Error(err.detail || `Server error (${res.status})`);
@@ -1880,11 +1906,11 @@
           if (age)    payload.age    = parseInt(age);
           if (gender) payload.gender = gender;
         }
-        const res  = await fetch(`${API}/chat`, {
+        const res  = await fetchWithWake(`${API}/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', ...authHeaders },
           body: JSON.stringify(payload)
-        });
+        }, tid);
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
           throw new Error(err.detail || `Server error (${res.status})`);
