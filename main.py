@@ -21,7 +21,7 @@ from auth import (
 )
 from symptom_checker import analyze_symptoms, chat_analyze, generate_title
 import json as _json
-from image_analyzer import analyze_image
+from image_analyzer import analyze_image_initial, image_chat_analyze
 
 # ── DB setup & migration ─────────────────────────────────
 models.Base.metadata.create_all(bind=engine)
@@ -100,7 +100,14 @@ class SymptomResponse(BaseModel):
     advice:     str
 
 class ImageResponse(BaseModel):
-    analysis: str
+    type: str
+    text: str
+
+class ImageChatRequest(BaseModel):
+    messages:       List[ChatMessage]
+    language:       str = 'en'
+    exchange_count: int = 0
+    original_query: str = ''
 
 class ChatMessage(BaseModel):
     role:    str
@@ -270,6 +277,10 @@ async def analyze_image_endpoint(
     db:      Session = Depends(get_db),
     patient: Optional[models.Patient] = Depends(get_optional_patient),
 ):
+    """
+    Initial image upload. Describes what the AI sees and asks ONE follow-up question.
+    The frontend then routes subsequent patient replies to /image-chat until diagnosis.
+    """
     try:
         if file.content_type not in ALLOWED_IMAGE_TYPES:
             raise HTTPException(status_code=400, detail="Invalid file type. Please upload a JPEG, PNG, GIF or WEBP image.")
@@ -278,24 +289,60 @@ async def analyze_image_endpoint(
         if len(image_bytes) > 5 * 1024 * 1024:
             raise HTTPException(status_code=400, detail="Image too large. Please upload an image smaller than 5MB.")
 
-        result = analyze_image(
+        result = analyze_image_initial(
             image_bytes=image_bytes,
             image_type=ALLOWED_IMAGE_TYPES[file.content_type],
             additional_info=additional_info,
             language=language,
         )
-        if patient:
-            db.add(models.Diagnosis(
-                patient_id = patient.id,
-                type       = "image",
-                query      = additional_info or "[Image uploaded]",
-                analysis   = result,
-            ))
-            db.commit()
-        return ImageResponse(analysis=result)
+        return ImageResponse(**result)
 
     except HTTPException:
         raise
+    except Exception as e:
+        print("FULL ERROR:", traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/image-chat", response_model=ChatResponse)
+def image_chat_endpoint(
+    request: ImageChatRequest,
+    db:      Session = Depends(get_db),
+    patient: Optional[models.Patient] = Depends(get_optional_patient),
+):
+    """
+    Continue the conversation that started with an image upload.
+    Saves to DB and returns title only when a final diagnosis is reached.
+    """
+    try:
+        msgs   = [{"role": m.role, "content": m.content} for m in request.messages]
+        result = image_chat_analyze(
+            messages=msgs,
+            language=request.language,
+            exchange_count=request.exchange_count,
+        )
+
+        if result["type"] == "diagnosis":
+            try:
+                title = generate_title(msgs, result.get("conditions", ""))
+            except Exception:
+                title = (request.original_query or "[Image consultation]")[:50]
+            result["title"] = title
+            if patient:
+                db.add(models.Diagnosis(
+                    patient_id   = patient.id,
+                    type         = "image",
+                    query        = request.original_query or "[Image uploaded]",
+                    title        = title,
+                    urgency      = result.get("urgency"),
+                    conditions   = result.get("conditions"),
+                    advice       = result.get("advice"),
+                    conversation = _json.dumps(msgs),
+                ))
+                db.commit()
+
+        return ChatResponse(**result)
+
     except Exception as e:
         print("FULL ERROR:", traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))

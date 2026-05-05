@@ -1355,6 +1355,11 @@
   let conversationHistory = [];
   let chatPhase          = 'idle'; // 'idle' | 'gathering' | 'complete'
   let firstSymptomText   = '';
+  // Image consultation state (separate from text chat)
+  let imageChatHistory   = [];
+  let imageChatPhase     = 'idle'; // 'idle' | 'gathering' | 'complete'
+  let imageExchangeCount = 0;
+  let imageFirstQuery    = '';
 
   // ── Image selection ───────────────────────────────────
   function handleImageSelect(e) {
@@ -1767,12 +1772,12 @@
       const authHeaders = authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
 
       if (imageToSend) {
-        // ── Image analysis path ──
+        // ── Image upload: initial observation + first question ──
         const formData = new FormData();
         formData.append('file', imageToSend);
         if (text) formData.append('additional_info', text);
-
         formData.append('language', currentLang);
+
         const res  = await fetch(`${API}/analyze-image`, { method: 'POST', headers: authHeaders, body: formData });
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
@@ -1780,11 +1785,58 @@
         }
         const data = await res.json();
         removeEl(tid);
-        appendImageAIResponse(data);
-        saveHistory(text || '[Image uploaded]');
-        saveReport({ query: text || '[Image uploaded]', analysis: data.analysis });
+
+        // data = { type: "question", text: "..." }
+        // Reset any previous image consultation, start a new one
+        imageChatHistory   = [{ role: 'assistant', content: data.text }];
+        imageChatPhase     = 'gathering';
+        imageExchangeCount = 0;
+        imageFirstQuery    = text || '[Image uploaded]';
+        // Also reset text chat so next plain message goes to image-chat
+        conversationHistory = [];
+        chatPhase = 'idle';
+
+        appendAIQuestion(data.text);
+
+      } else if (imageChatPhase === 'gathering') {
+        // ── Image follow-up: route to /image-chat ──
+        imageChatHistory.push({ role: 'user', content: text });
+        imageExchangeCount++;
+
+        const payload = {
+          messages:       imageChatHistory,
+          language:       currentLang,
+          exchange_count: imageExchangeCount,
+          original_query: imageFirstQuery,
+        };
+        const res  = await fetch(`${API}/image-chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...authHeaders },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || `Server error (${res.status})`);
+        }
+        const data = await res.json();
+        removeEl(tid);
+
+        if (data.type === 'question') {
+          appendAIQuestion(data.text);
+          imageChatHistory.push({ role: 'assistant', content: data.text });
+        } else {
+          // Final diagnosis reached
+          appendAIResponse(data);
+          imageChatHistory.push({ role: 'assistant', content: JSON.stringify({ urgency: data.urgency, conditions: data.conditions, advice: data.advice }) });
+          const title = data.title || imageFirstQuery;
+          saveHistory(title, imageChatHistory.slice(), { urgency: data.urgency, conditions: data.conditions, advice: data.advice });
+          saveReport({ title, query: imageFirstQuery, ...data });
+          imageChatPhase = 'complete';
+          appendNewConsultationBtn();
+        }
+
       } else {
-        // ── Conversational symptom path ──
+        // ── Conversational symptom path (text only) ──
         // Start fresh if previous consultation was completed
         if (chatPhase === 'complete') {
           conversationHistory = [];
@@ -1882,8 +1934,12 @@
 
   function resetConversation() {
     conversationHistory = [];
-    chatPhase = 'idle';
-    firstSymptomText = '';
+    chatPhase           = 'idle';
+    firstSymptomText    = '';
+    imageChatHistory    = [];
+    imageChatPhase      = 'idle';
+    imageExchangeCount  = 0;
+    imageFirstQuery     = '';
     const inp = document.getElementById('messageInput');
     inp.placeholder = T('chat_placeholder');
     inp.focus();
