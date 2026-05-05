@@ -455,10 +455,144 @@
       @media (max-width: 400px) {
         #dashCarousel button[onclick^="carouselStep"] { display: none !important; }
       }
+
+      /* ═══════════════════════════════════════════════════════════════
+         SPLASH INTRO CAROUSEL ANIMATIONS
+         ═══════════════════════════════════════════════════════════════ */
+      @keyframes splashIn {
+        from { opacity: 0; transform: scale(1.04); }
+        to   { opacity: 1; transform: scale(1); }
+      }
+      @keyframes splashOut {
+        from { opacity: 1; transform: scale(1); }
+        to   { opacity: 0; transform: scale(.96); }
+      }
+      @keyframes splashPulse {
+        0%, 100% { transform: scale(1);   opacity: .6; }
+        50%       { transform: scale(1.18); opacity: .2; }
+      }
     </style>
   </head>
 
   <body class="bg-slate-950 text-slate-100 h-screen flex overflow-hidden">
+
+  <!-- ═══════════════════════════════════════════════════════
+       INTRO SPLASH CAROUSEL
+       Shows every time the app opens. Dismissed via "Get
+       Started" on slide 4, "Skip", or after auto-advance.
+       ═══════════════════════════════════════════════════════ -->
+  <div id="splashOverlay" style="
+      position:fixed;inset:0;z-index:9999;
+      display:flex;flex-direction:column;
+      overflow:hidden;
+      animation: splashIn .45s cubic-bezier(.4,0,.2,1) both;">
+
+    <!-- Slide track -->
+    <div id="splashTrack" style="display:flex;width:400%;flex:1;transition:transform .55s cubic-bezier(.4,0,.2,1)">
+
+      <!-- ── Slide 1: Welcome ── -->
+      <div style="width:25%;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem 2rem;text-align:center;background:linear-gradient(160deg,#022c22 0%,#064e3b 40%,#065f46 70%,#0f766e 100%);position:relative;overflow:hidden">
+        <!-- decorative blobs -->
+        <div style="position:absolute;top:-80px;right:-80px;width:280px;height:280px;border-radius:50%;background:rgba(16,185,129,.12)"></div>
+        <div style="position:absolute;bottom:-100px;left:-60px;width:240px;height:240px;border-radius:50%;background:rgba(45,212,191,.08)"></div>
+        <div style="position:absolute;top:40%;left:-100px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04)"></div>
+        <!-- logo icon -->
+        <div style="width:96px;height:96px;border-radius:28px;background:linear-gradient(135deg,#10b981,#2dd4bf);display:flex;align-items:center;justify-content:center;margin-bottom:1.75rem;box-shadow:0 20px 50px rgba(16,185,129,.4);position:relative">
+          <svg style="width:48px;height:48px;color:#fff" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          <!-- pulse ring -->
+          <div style="position:absolute;inset:-8px;border-radius:36px;border:2px solid rgba(16,185,129,.4);animation:splashPulse 2s ease infinite"></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(110,231,183,.9);margin-bottom:.6rem">Welcome to</div>
+        <h1 style="font-size:2.4rem;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:.75rem;line-height:1.1">HealthAI</h1>
+        <p style="color:rgba(209,250,229,.75);font-size:15px;line-height:1.65;max-width:300px;font-weight:400">Your personal AI medical assistant — available 24/7, in 6 languages, right in your pocket.</p>
+        <!-- decorative pills -->
+        <div style="display:flex;gap:8px;margin-top:1.75rem;flex-wrap:wrap;justify-content:center">
+          <span style="background:rgba(255,255,255,.12);color:rgba(209,250,229,.9);font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.15)">🤖 AI Powered</span>
+          <span style="background:rgba(255,255,255,.12);color:rgba(209,250,229,.9);font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.15)">🌍 6 Languages</span>
+          <span style="background:rgba(255,255,255,.12);color:rgba(209,250,229,.9);font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.15)">📍 Nearby Care</span>
+        </div>
+      </div>
+
+      <!-- ── Slide 2: Symptom Checker ── -->
+      <div style="width:25%;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem 2rem;text-align:center;background:linear-gradient(160deg,#0c1445 0%,#1e3a8a 40%,#1d4ed8 75%,#0369a1 100%);position:relative;overflow:hidden">
+        <div style="position:absolute;top:-60px;right:-60px;width:240px;height:240px;border-radius:50%;background:rgba(59,130,246,.12)"></div>
+        <div style="position:absolute;bottom:-80px;left:-40px;width:200px;height:200px;border-radius:50%;background:rgba(14,165,233,.08)"></div>
+        <!-- icon card -->
+        <div style="width:96px;height:96px;border-radius:28px;background:linear-gradient(135deg,#3b82f6,#0ea5e9);display:flex;align-items:center;justify-content:center;margin-bottom:1.75rem;box-shadow:0 20px 50px rgba(59,130,246,.4);position:relative">
+          <svg style="width:46px;height:46px;color:#fff" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+          <div style="position:absolute;inset:-8px;border-radius:36px;border:2px solid rgba(59,130,246,.4);animation:splashPulse 2s ease infinite .3s"></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(147,197,253,.9);margin-bottom:.6rem">Feature 1</div>
+        <h2 style="font-size:2rem;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:.75rem;line-height:1.15">AI Symptom<br>Checker</h2>
+        <p style="color:rgba(219,234,254,.75);font-size:15px;line-height:1.65;max-width:300px">Describe how you feel and get an instant AI diagnosis — including urgency level, possible conditions, and recommendations.</p>
+        <!-- mockup chat bubbles -->
+        <div style="margin-top:1.75rem;width:100%;max-width:280px;display:flex;flex-direction:column;gap:8px">
+          <div style="align-self:flex-end;background:rgba(59,130,246,.3);border:1px solid rgba(59,130,246,.4);border-radius:14px 14px 4px 14px;padding:8px 14px;font-size:12px;color:rgba(219,234,254,.9);text-align:left">I have a headache and fever since morning…</div>
+          <div style="align-self:flex-start;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:14px 14px 14px 4px;padding:8px 14px;font-size:12px;color:rgba(219,234,254,.9);text-align:left">🔍 Analyzing… Possible: viral infection (medium urgency)</div>
+        </div>
+      </div>
+
+      <!-- ── Slide 3: Image Analysis ── -->
+      <div style="width:25%;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem 2rem;text-align:center;background:linear-gradient(160deg,#1a0533 0%,#4c1d95 40%,#7c3aed 75%,#6d28d9 100%);position:relative;overflow:hidden">
+        <div style="position:absolute;top:-60px;right:-60px;width:240px;height:240px;border-radius:50%;background:rgba(139,92,246,.15)"></div>
+        <div style="position:absolute;bottom:-80px;left:-40px;width:200px;height:200px;border-radius:50%;background:rgba(167,139,250,.08)"></div>
+        <div style="width:96px;height:96px;border-radius:28px;background:linear-gradient(135deg,#8b5cf6,#a78bfa);display:flex;align-items:center;justify-content:center;margin-bottom:1.75rem;box-shadow:0 20px 50px rgba(139,92,246,.45);position:relative">
+          <svg style="width:46px;height:46px;color:#fff" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          <div style="position:absolute;inset:-8px;border-radius:36px;border:2px solid rgba(139,92,246,.4);animation:splashPulse 2s ease infinite .6s"></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(196,181,253,.9);margin-bottom:.6rem">Feature 2</div>
+        <h2 style="font-size:2rem;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:.75rem;line-height:1.15">AI Photo<br>Diagnosis</h2>
+        <p style="color:rgba(237,233,254,.75);font-size:15px;line-height:1.65;max-width:300px">Upload a photo of a rash, wound or skin condition. Our vision AI detects potential issues and provides guidance in seconds.</p>
+        <!-- camera shutter graphic -->
+        <div style="margin-top:1.75rem;display:flex;align-items:center;gap:12px">
+          <div style="width:60px;height:60px;border-radius:16px;border:2px dashed rgba(167,139,250,.5);display:flex;align-items:center;justify-content:center">
+            <svg style="width:26px;height:26px;color:rgba(196,181,253,.7)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <div style="color:rgba(196,181,253,.8);font-size:13px">→</div>
+          <div style="background:rgba(139,92,246,.25);border:1px solid rgba(167,139,250,.3);border-radius:12px;padding:8px 14px;font-size:12px;color:rgba(237,233,254,.9)">✓ Skin condition detected<br><span style="color:rgba(196,181,253,.7);font-size:11px">Low urgency · See a dermatologist</span></div>
+        </div>
+      </div>
+
+      <!-- ── Slide 4: Get Started ── -->
+      <div style="width:25%;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem 2rem;text-align:center;background:linear-gradient(160deg,#0d1f12 0%,#14532d 35%,#166534 65%,#15803d 100%);position:relative;overflow:hidden">
+        <div style="position:absolute;top:-60px;right:-60px;width:240px;height:240px;border-radius:50%;background:rgba(16,185,129,.12)"></div>
+        <div style="position:absolute;bottom:-80px;left:-40px;width:200px;height:200px;border-radius:50%;background:rgba(52,211,153,.08)"></div>
+        <div style="width:96px;height:96px;border-radius:28px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;margin-bottom:1.75rem;box-shadow:0 20px 50px rgba(16,185,129,.45);position:relative">
+          <svg style="width:46px;height:46px;color:#fff" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <div style="position:absolute;inset:-8px;border-radius:36px;border:2px solid rgba(16,185,129,.4);animation:splashPulse 2s ease infinite .9s"></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(110,231,183,.9);margin-bottom:.6rem">You're ready!</div>
+        <h2 style="font-size:2rem;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:.75rem;line-height:1.15">Find Care<br>Near You</h2>
+        <p style="color:rgba(209,250,229,.75);font-size:15px;line-height:1.65;max-width:300px">Locate hospitals, clinics and pharmacies on a live map. Get turn-by-turn directions instantly.</p>
+        <!-- CTA -->
+        <button id="splashGetStarted" onclick="splashDismiss()" style="margin-top:2rem;background:linear-gradient(135deg,#10b981,#0d9488);color:#fff;border:none;border-radius:16px;padding:16px 40px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 8px 30px rgba(16,185,129,.5);transition:transform .2s,box-shadow .2s;letter-spacing:.01em" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 36px rgba(16,185,129,.6)'" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 30px rgba(16,185,129,.5)'">
+          Get Started →
+        </button>
+        <p style="margin-top:.75rem;font-size:11px;color:rgba(110,231,183,.5)">Free · No account required</p>
+      </div>
+
+    </div><!-- end track -->
+
+    <!-- Bottom controls bar -->
+    <div style="flex-shrink:0;padding:1.25rem 1.5rem 1.75rem;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.25);backdrop-filter:blur(12px)">
+
+      <!-- Skip -->
+      <button onclick="splashDismiss()" id="splashSkip" style="color:rgba(255,255,255,.55);font-size:13px;font-weight:600;background:none;border:none;cursor:pointer;padding:6px 0;transition:color .2s" onmouseover="this.style.color='rgba(255,255,255,.9)'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Skip</button>
+
+      <!-- Dots -->
+      <div style="display:flex;gap:8px;align-items:center" id="splashDots">
+        <button onclick="splashGoTo(0)" class="sp-dot sp-dot-active" style="width:28px;height:8px;border-radius:4px;background:rgba(255,255,255,.95);border:none;cursor:pointer;transition:all .35s ease;padding:0"></button>
+        <button onclick="splashGoTo(1)" class="sp-dot" style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35);border:none;cursor:pointer;transition:all .35s ease;padding:0"></button>
+        <button onclick="splashGoTo(2)" class="sp-dot" style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35);border:none;cursor:pointer;transition:all .35s ease;padding:0"></button>
+        <button onclick="splashGoTo(3)" class="sp-dot" style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35);border:none;cursor:pointer;transition:all .35s ease;padding:0"></button>
+      </div>
+
+      <!-- Next -->
+      <button onclick="splashNext()" id="splashNextBtn" style="color:#fff;font-size:13px;font-weight:700;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:10px;cursor:pointer;padding:8px 18px;transition:all .2s;backdrop-filter:blur(8px)" onmouseover="this.style.background='rgba(255,255,255,.25)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">Next →</button>
+
+    </div><!-- end controls -->
+
+  </div><!-- end splashOverlay -->
 
   <!-- ── SIDEBAR (desktop) ── -->
   <aside class="hidden lg:flex flex-col w-60 bg-slate-900 border-r border-slate-800 shrink-0">
@@ -1078,6 +1212,70 @@
     html.setAttribute('data-theme', next);
     localStorage.setItem('hai_theme', next);
   }
+
+  // ── Splash Intro Carousel ─────────────────────────────
+  var _splashIdx    = 0;
+  var _splashTotal  = 4;
+  var _splashTimer  = null;
+
+  function splashGoTo(idx) {
+    _splashIdx = (idx + _splashTotal) % _splashTotal;
+    var track = document.getElementById('splashTrack');
+    if (track) track.style.transform = 'translateX(-' + (_splashIdx * 25) + '%)';
+    // Dots
+    var dots = document.querySelectorAll('.sp-dot');
+    for (var i = 0; i < dots.length; i++) {
+      if (i === _splashIdx) {
+        dots[i].style.width = '28px';
+        dots[i].style.borderRadius = '4px';
+        dots[i].style.background = 'rgba(255,255,255,.95)';
+      } else {
+        dots[i].style.width = '8px';
+        dots[i].style.borderRadius = '50%';
+        dots[i].style.background = 'rgba(255,255,255,.35)';
+      }
+    }
+    // On last slide hide Next, show Get Started (already in slide HTML)
+    var nextBtn = document.getElementById('splashNextBtn');
+    var skipBtn = document.getElementById('splashSkip');
+    if (nextBtn) nextBtn.style.opacity = _splashIdx === _splashTotal - 1 ? '0' : '1';
+    if (skipBtn) skipBtn.style.opacity = _splashIdx === _splashTotal - 1 ? '0' : '1';
+  }
+
+  function splashNext() {
+    if (_splashIdx >= _splashTotal - 1) { splashDismiss(); return; }
+    splashGoTo(_splashIdx + 1);
+    _splashRestart();
+  }
+
+  function splashDismiss() {
+    clearInterval(_splashTimer);
+    var overlay = document.getElementById('splashOverlay');
+    if (!overlay) return;
+    overlay.style.animation = 'splashOut .4s cubic-bezier(.4,0,.2,1) forwards';
+    setTimeout(function() { overlay.remove(); }, 420);
+  }
+
+  function _splashTick() { splashGoTo(_splashIdx + 1); }
+  function _splashRestart() {
+    clearInterval(_splashTimer);
+    _splashTimer = setInterval(_splashTick, 4000);
+  }
+
+  // Auto-start splash on load
+  document.addEventListener('DOMContentLoaded', function() {
+    var overlay = document.getElementById('splashOverlay');
+    if (!overlay) return;
+    _splashTimer = setInterval(_splashTick, 4000);
+
+    // Touch swipe support
+    var startX = 0;
+    overlay.addEventListener('touchstart', function(e) { startX = e.touches[0].clientX; }, { passive: true });
+    overlay.addEventListener('touchend', function(e) {
+      var diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) { splashGoTo(_splashIdx + (diff > 0 ? 1 : -1)); _splashRestart(); }
+    }, { passive: true });
+  });
 
   // ── Carousel ──────────────────────────────────────────
   var _carouselIdx   = 0;
