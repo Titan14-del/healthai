@@ -148,7 +148,14 @@ def db_status(db: Session = Depends(get_db)):
 def serve_app():
     import os
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    return FileResponse(os.path.join(base_dir, "HealthAi.html"))
+    return FileResponse(
+        os.path.join(base_dir, "HealthAi.html"),
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        }
+    )
 
 # ── Auth ─────────────────────────────────────────────────
 
