@@ -704,37 +704,28 @@
           <p data-i18n="dash_urgent" class="text-xs text-slate-500 mt-0.5">Urgent</p>
         </div>
       </div>
-          <p id="statConsultations" class="text-2xl font-bold text-white">0</p>
-          <p data-i18n="dash_consultations" class="text-xs text-slate-500 mt-0.5">Consultations</p>
-        </div>
-        <div class="bg-slate-900 rounded-2xl p-4 border border-slate-800">
-          <div class="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center mb-3">
-            <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
-   stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414      
-  5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          </div>
-          <p id="statReports" class="text-2xl font-bold text-white">0</p>
-          <p data-i18n="nav_reports" class="text-xs text-slate-500 mt-0.5">Reports</p>
-        </div>
-        <div class="bg-slate-900 rounded-2xl p-4 border border-slate-800">
-          <div class="w-8 h-8 rounded-xl bg-red-500/10 flex items-center justify-center mb-3">
-            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" 
-  stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732
-  4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-          </div>
-          <p id="statUrgent" class="text-2xl font-bold text-white">0</p>
-          <p data-i18n="dash_urgent" class="text-xs text-slate-500 mt-0.5">Urgent</p>
-        </div>
-      </div>
 
-      <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
+      <div class="glass-card rounded-2xl overflow-hidden">
         <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-800">
           <h3 data-i18n="dash_recent" class="text-sm font-semibold text-white">Recent Consultations</h3>
-          <button onclick="showScreen('history')" class="text-xs text-emerald-400 hover:text-emerald-300 font-medium
-  transition"><span data-i18n="dash_viewall">View all →</span></button>
+          <button onclick="showScreen('history')" class="text-xs text-emerald-400 hover:text-emerald-300 font-medium transition"><span data-i18n="dash_viewall">View all →</span></button>
         </div>
         <div id="dashRecentList" class="p-3 space-y-1">
-          <p class="text-sm text-slate-500 text-center py-6" data-i18n="empty_consultations">No consultations yet</p>
+          <!-- skeleton shown while loading -->
+          <div class="space-y-2 p-1" id="dashSkeleton">
+            <div class="flex items-center gap-3 px-2.5 py-2">
+              <div class="skeleton skeleton-circle w-7 h-7 shrink-0"></div>
+              <div class="flex-1"><div class="skeleton skeleton-text w-3/4 mb-1"></div><div class="skeleton h-2 rounded w-1/3"></div></div>
+            </div>
+            <div class="flex items-center gap-3 px-2.5 py-2">
+              <div class="skeleton skeleton-circle w-7 h-7 shrink-0"></div>
+              <div class="flex-1"><div class="skeleton skeleton-text w-1/2 mb-1"></div><div class="skeleton h-2 rounded w-1/4"></div></div>
+            </div>
+            <div class="flex items-center gap-3 px-2.5 py-2">
+              <div class="skeleton skeleton-circle w-7 h-7 shrink-0"></div>
+              <div class="flex-1"><div class="skeleton skeleton-text w-2/3 mb-1"></div><div class="skeleton h-2 rounded w-1/3"></div></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -776,8 +767,7 @@
             </button>
           </div>
 
-          <div class="flex gap-2 items-end bg-slate-800 rounded-2xl p-2 border border-slate-700
-  focus-within:border-emerald-500/40 transition-colors">
+          <div class="glass-card flex gap-2 items-end rounded-2xl p-2 border border-slate-700 focus-within:border-emerald-500/40 transition-colors">
             <!-- Image attach button -->
             <button onclick="document.getElementById('imageInput').click()"
               title="Upload image for analysis"
@@ -798,8 +788,7 @@
   max-h-32 scrollbar-slim"
             ></textarea>
             <button onclick="sendMessage()" id="sendBtn"
-              class="shrink-0 w-9 h-9 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed        
-  rounded-xl flex items-center justify-center transition-colors">
+              class="shrink-0 w-9 h-9 btn-gradient disabled:opacity-40 disabled:cursor-not-allowed rounded-xl flex items-center justify-center" style="padding:0">
               <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" 
   stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
             </button>
@@ -819,7 +808,14 @@
         <button onclick="clearReports()" class="text-xs text-slate-500 hover:text-red-400 font-medium px-3 py-1.5 rounded-xl
   hover:bg-red-500/10 transition"><span data-i18n="clear_all">Clear All</span></button>
       </div>
-      <div id="reportsList" class="space-y-3"></div>
+      <div id="reportsList" class="space-y-3">
+        <!-- skeleton placeholder shown by JS -->
+        <div id="reportsSkeleton" class="space-y-3">
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+        </div>
+      </div>
     </div>
 
     <!-- HISTORY -->
@@ -832,7 +828,13 @@
         <button onclick="clearHistory()" class="text-xs text-slate-500 hover:text-red-400 font-medium px-3 py-1.5 rounded-xl
   hover:bg-red-500/10 transition"><span data-i18n="clear_all">Clear All</span></button>
       </div>
-      <div id="historyList" class="space-y-2"></div>
+      <div id="historyList" class="space-y-2">
+        <div id="historySkeleton" class="space-y-2">
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+          <div class="skeleton skeleton-card"></div>
+        </div>
+      </div>
     </div>
 
     <!-- NEARBY CARE SCREEN -->
@@ -846,7 +848,7 @@
       </div>
       <h3 class="text-white font-semibold text-base mb-1" data-i18n="nearby_heading">Find Nearby Care</h3>
       <p class="text-slate-400 text-sm mb-5" data-i18n="nearby_subtitle">Tap below to find hospitals, clinics and pharmacies near you</p>
-      <button onclick="requestNearbyLocation()" class="btn-gradient">
+      <button onclick="requestNearbyLocation()" class="btn-gradient inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         <span data-i18n="btn_find_nearby">Find Nearby Hospitals</span>
       </button>
@@ -905,7 +907,7 @@
       </div>
 
       <!-- Auth Card -->
-      <div class="glass-card rounded-2xl border border-slate-800/60 overflow-hidden">
+      <div class="glass-card rounded-2xl overflow-hidden">
         <!-- Signed-out view -->
         <div id="signedOutView" class="p-5">
           <p data-i18n="profile_account" class="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Account</p>
@@ -926,7 +928,7 @@
               class="w-full bg-slate-800 text-white text-sm rounded-xl px-3 py-2.5 border border-slate-700 focus:border-emerald-500/50 focus:outline-none transition-colors placeholder-slate-500"/>
             <p id="loginError" class="text-xs text-red-400 hidden"></p>
             <button id="loginSubmitBtn" onclick="submitLogin()"
-              class="w-full bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold py-2.5 rounded-xl transition"><span data-i18n="tab_signin">Sign In</span></button>
+              class="btn-gradient w-full text-sm font-semibold py-2.5 rounded-xl"><span data-i18n="tab_signin">Sign In</span></button>
           </div>
 
           <!-- Register form -->
@@ -941,7 +943,7 @@
               class="w-full bg-slate-800 text-white text-sm rounded-xl px-3 py-2.5 border border-slate-700 focus:border-emerald-500/50 focus:outline-none transition-colors placeholder-slate-500"/>
             <p id="registerError" class="text-xs text-red-400 hidden"></p>
             <button id="registerSubmitBtn" onclick="submitRegister()"
-              class="w-full bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold py-2.5 rounded-xl transition"><span data-i18n="btn_register">Create Account</span></button>
+              class="btn-gradient w-full text-sm font-semibold py-2.5 rounded-xl"><span data-i18n="btn_register">Create Account</span></button>
           </div>
 
           <div class="flex items-center gap-3 mt-4">
@@ -966,7 +968,7 @@
       </div>
 
       <!-- Identity Card -->
-      <div class="glass-card rounded-2xl border border-slate-800/60 p-5 flex items-center gap-4">
+      <div class="glass-card rounded-2xl p-5 flex items-center gap-4">
         <div id="profileAvatarEl" class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center 
   justify-center text-xl font-bold text-white shadow-lg shadow-violet-500/20 overflow-hidden">P</div>
         <div>
@@ -977,8 +979,8 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl border border-slate-800/60 overflow-hidden">
-        <div class="px-5 py-4 border-b border-slate-800/60">
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-800">
           <p data-i18n="profile_health" class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Health Details</p>
           <div class="grid grid-cols-2 gap-3 mt-3">
             <div>
@@ -1014,7 +1016,7 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl border border-red-900/30 p-5">
+      <div class="glass-card rounded-2xl p-5" style="border-color:rgba(239,68,68,0.2)!important">
         <p data-i18n="profile_data" class="text-xs text-red-400/80 font-semibold uppercase tracking-wider mb-3">Data Management</p>
         <button onclick="clearAll()" class="text-sm text-red-400 hover:text-red-300 px-4 py-2 rounded-xl border border-red-900/40
    hover:bg-red-500/10 transition font-medium"><span data-i18n="btn_clear_all">Clear All Data</span></button>
@@ -1214,7 +1216,7 @@
         <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12     
   20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
       </div>
-      <div class="max-w-[88%] lg:max-w-[68%] bg-slate-900 border border-slate-700/80 rounded-2xl rounded-tl-sm overflow-hidden"> 
+      <div class="max-w-[88%] lg:max-w-[68%] glass-card rounded-2xl rounded-tl-sm overflow-hidden"> 
         <div class="flex items-center justify-between px-4 py-2.5 border-b border-slate-700/60 ${uBg}">
           <span class="text-xs font-semibold text-slate-400 tracking-wider uppercase flex items-center gap-1.5">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
@@ -1716,7 +1718,7 @@
         <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12     
   20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
       </div>
-      <div class="max-w-[88%] lg:max-w-[68%] bg-slate-900 border border-slate-700/80 rounded-2xl rounded-tl-sm overflow-hidden"> 
+      <div class="max-w-[88%] lg:max-w-[68%] glass-card rounded-2xl rounded-tl-sm overflow-hidden"> 
         <div class="flex items-center justify-between px-4 py-2.5 border-b border-slate-700/60 ${uBg}">
           <span class="text-xs font-semibold text-slate-400 tracking-wider uppercase">${T('response_header_assessment')}</span>
           <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${uColor}">
@@ -1780,6 +1782,8 @@
   // ── Render History ────────────────────────────────────
   function renderHistory() {
     const el = document.getElementById('historyList');
+    const sk = document.getElementById('historySkeleton');
+    if (sk) sk.remove();
     const h  = JSON.parse(localStorage.getItem('hai_history') || '[]');
     if (!h.length) { el.innerHTML = emptyState('clock', T('empty_history')); return; }
     el.innerHTML = h.map((item, i) => {
@@ -1849,6 +1853,8 @@
   // ── Render Reports ────────────────────────────────────
   function renderReports() {
     const el = document.getElementById('reportsList');
+    const sk = document.getElementById('reportsSkeleton');
+    if (sk) sk.remove();
     const r  = JSON.parse(localStorage.getItem('hai_reports') || '[]');
     if (!r.length) { el.innerHTML = emptyState('doc', T('empty_reports')); return; }
     el.innerHTML = r.map((item, idx) => {
@@ -1952,6 +1958,9 @@
     );
 
     const el = document.getElementById('dashRecentList');
+    // Hide skeleton once we have real data to show
+    const sk = document.getElementById('dashSkeleton');
+    if (sk) sk.remove();
     const recent = h.slice(0,4);
     if (!recent.length) { el.innerHTML=`<p class="text-sm text-slate-500 text-center py-6">${T('empty_consultations')}</p>`; return; }
     el.innerHTML = recent.map(item => {
