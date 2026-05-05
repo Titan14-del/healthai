@@ -1,8 +1,10 @@
   <!DOCTYPE html>
-  <html lang="en">
+  <html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- Prevent flash of wrong theme -->
+    <script>(function(){var t=localStorage.getItem('hai_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
     <title>HealthAI — Medical Intelligence</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -197,6 +199,72 @@
       .opacity-0   { opacity: 0   !important; }
       .opacity-50  { opacity: 0.5 !important; }
       .opacity-100 { opacity: 1   !important; }
+
+      /* ── Theme transition ─────────────────────────────────────── */
+      .theme-transitioning,
+      .theme-transitioning * {
+        transition: background-color 0.3s ease, border-color 0.3s ease,
+                    color 0.3s ease, box-shadow 0.3s ease !important;
+      }
+      .theme-transitioning .dot { transition: none !important; }
+
+      /* ── Toggle icon visibility ───────────────────────────────── */
+      .theme-icon-sun  { display: none; }
+      .theme-icon-moon { display: block; }
+      [data-theme="light"] .theme-icon-sun  { display: block; }
+      [data-theme="light"] .theme-icon-moon { display: none; }
+
+      /* ══ LIGHT MODE OVERRIDES ════════════════════════════════════ */
+      [data-theme="light"] body { background-color: #f0f9ff !important; color: #0f172a !important; }
+
+      /* Backgrounds */
+      [data-theme="light"] .bg-slate-950   { background-color: #f0f9ff !important; }
+      [data-theme="light"] .bg-slate-900   { background-color: #ffffff !important; }
+      [data-theme="light"] .bg-slate-800   { background-color: #f1f5f9 !important; }
+      [data-theme="light"] .bg-slate-700   { background-color: #e2e8f0 !important; }
+      [data-theme="light"] .bg-white       { background-color: #ffffff !important; }
+      [data-theme="light"] .bg-white\/5    { background-color: rgba(15,23,42,0.04)  !important; }
+      [data-theme="light"] .bg-white\/10   { background-color: rgba(15,23,42,0.07)  !important; }
+      [data-theme="light"] .bg-slate-700\/50    { background-color: rgba(226,232,240,0.80) !important; }
+      [data-theme="light"] .bg-slate-800\/40    { background-color: rgba(241,245,249,0.85) !important; }
+      [data-theme="light"] .bg-slate-800\/60    { background-color: rgba(241,245,249,0.95) !important; }
+
+      /* Borders */
+      [data-theme="light"] .border-slate-800        { border-color: #e2e8f0 !important; }
+      [data-theme="light"] .border-slate-700        { border-color: #cbd5e1 !important; }
+      [data-theme="light"] .border-slate-700\/80    { border-color: rgba(203,213,225,0.80) !important; }
+      [data-theme="light"] .border-slate-700\/60    { border-color: rgba(203,213,225,0.60) !important; }
+      [data-theme="light"] .border-slate-800\/60    { border-color: rgba(226,232,240,0.80) !important; }
+      [data-theme="light"] .border-red-900\/30      { border-color: rgba(239,68,68,0.20)    !important; }
+
+      /* Text */
+      [data-theme="light"] .text-slate-100  { color: #0f172a !important; }
+      [data-theme="light"] .text-white      { color: #0f172a !important; }
+      [data-theme="light"] .text-slate-200  { color: #1e293b !important; }
+      [data-theme="light"] .text-slate-300  { color: #334155 !important; }
+      [data-theme="light"] .text-slate-400  { color: #475569 !important; }
+      [data-theme="light"] .text-slate-500  { color: #64748b !important; }
+      [data-theme="light"] .text-slate-600  { color: #94a3b8 !important; }
+      /* Emerald text unchanged — same in both modes */
+
+      /* Hover in light mode */
+      [data-theme="light"] .hover\:bg-slate-800:hover  { background-color: #f1f5f9 !important; }
+      [data-theme="light"] .hover\:bg-slate-700:hover  { background-color: #e2e8f0 !important; }
+      [data-theme="light"] .hover\:text-white:hover    { color: #0f172a   !important; }
+
+      /* Inputs / selects */
+      [data-theme="light"] select,
+      [data-theme="light"] input,
+      [data-theme="light"] textarea {
+        background-color: #f1f5f9 !important;
+        color:            #0f172a !important;
+        border-color:     #cbd5e1 !important;
+      }
+      [data-theme="light"] input::placeholder,
+      [data-theme="light"] textarea::placeholder { color: #94a3b8 !important; }
+
+      /* Scrollbar */
+      [data-theme="light"] .scrollbar-slim::-webkit-scrollbar-thumb { background: #cbd5e1; }
     </style>
   </head>
 
@@ -292,6 +360,20 @@
   <option value="ar">العربية</option>
 </optgroup>
         </select>
+        <!-- Dark / Light mode toggle -->
+        <button onclick="toggleTheme()" title="Toggle dark / light mode"
+          class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center hover:border-emerald-500 transition-colors shrink-0">
+          <!-- Moon — visible in dark mode -->
+          <svg class="theme-icon-moon w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+          </svg>
+          <!-- Sun — visible in light mode -->
+          <svg class="theme-icon-sun w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+        </button>
       </div>
     </header>
 
@@ -683,6 +765,18 @@
   </div>
 
   <script>
+  // ── Dark / Light mode ─────────────────────────────────
+  function toggleTheme() {
+    const html    = document.documentElement;
+    const current = html.getAttribute('data-theme') || 'dark';
+    const next    = current === 'dark' ? 'light' : 'dark';
+    // Apply smooth color transition only during the switch
+    document.body.classList.add('theme-transitioning');
+    setTimeout(function(){ document.body.classList.remove('theme-transitioning'); }, 350);
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('hai_theme', next);
+  }
+
   // ── State ────────────────────────────────────────────
   const SCREENS = ['dashboard','chat','reports','history','nearby','profile'];
   const TITLES  = { dashboard:'Dashboard', chat:'Symptom Analysis', reports:'Medical Reports', history:'History',
