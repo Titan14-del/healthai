@@ -2367,11 +2367,21 @@
     if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.remove('hidden'); return; }
     setAuthBusy('login', true);
     try {
-      const res  = await fetch(`${API}/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password}) });
-      const data = await res.json();
-      if (!res.ok) { errEl.textContent = data.detail || 'Login failed.'; errEl.classList.remove('hidden'); return; }
+      let res, data;
+      try {
+        res  = await fetch(`${API}/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password}) });
+        data = await res.json();
+      } catch {
+        errEl.textContent = 'Server is unreachable — it may be waking up. Please wait a few seconds and try again.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      if (!res.ok) { errEl.textContent = data.detail || 'Invalid email or password.'; errEl.classList.remove('hidden'); return; }
       await storeTokenAndLoadUser(data.access_token, { name: email.split('@')[0], email, age: null, language: currentLang });
-    } catch { errEl.textContent = 'Could not reach server.'; errEl.classList.remove('hidden'); }
+    } catch (e) {
+      errEl.textContent = e && e.message ? e.message : 'Login failed. Please try again.';
+      errEl.classList.remove('hidden');
+    }
     finally { setAuthBusy('login', false); }
   }
 
@@ -2385,11 +2395,21 @@
     if (!name || !email || !password) { errEl.textContent = 'Name, email and password are required.'; errEl.classList.remove('hidden'); return; }
     setAuthBusy('register', true);
     try {
-      const res  = await fetch(`${API}/register`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name, email, password, age}) });
-      const data = await res.json();
+      let res, data;
+      try {
+        res  = await fetch(`${API}/register`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name, email, password, age}) });
+        data = await res.json();
+      } catch {
+        errEl.textContent = 'Server is unreachable — it may be waking up. Please wait a few seconds and try again.';
+        errEl.classList.remove('hidden');
+        return;
+      }
       if (!res.ok) { errEl.textContent = data.detail || 'Registration failed.'; errEl.classList.remove('hidden'); return; }
       await storeTokenAndLoadUser(data.access_token, { name, email, age, language: currentLang });
-    } catch { errEl.textContent = 'Could not reach server.'; errEl.classList.remove('hidden'); }
+    } catch (e) {
+      errEl.textContent = e && e.message ? e.message : 'Registration failed. Please try again.';
+      errEl.classList.remove('hidden');
+    }
     finally { setAuthBusy('register', false); }
   }
 

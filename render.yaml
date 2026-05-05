@@ -11,3 +11,5 @@ services:
         generateValue: true
       - key: DATABASE_URL
         sync: false
+      - key: APP_URL
+        sync: false
