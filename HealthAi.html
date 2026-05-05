@@ -1082,6 +1082,10 @@
             <input id="loginPassword" type="password" data-i18n-placeholder="ph_password" placeholder="Password"
               class="w-full bg-slate-800 text-white text-sm rounded-xl px-3 py-2.5 border border-slate-700 focus:border-emerald-500/50 focus:outline-none transition-colors placeholder-slate-500"/>
             <p id="loginError" class="text-xs text-red-400 hidden"></p>
+            <p id="loginWaking" class="hidden text-xs text-amber-400 flex items-center gap-1.5">
+              <svg class="w-3 h-3 animate-spin shrink-0" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+              <span id="loginWakingMsg">Server is starting up, please wait…</span>
+            </p>
             <button id="loginSubmitBtn" onclick="submitLogin()"
               class="btn-gradient w-full text-sm font-semibold py-2.5 rounded-xl"><span data-i18n="tab_signin">Sign In</span></button>
           </div>
@@ -2338,7 +2342,9 @@
   // Prefer same-origin API in production (Railway) and localhost during local development.
   const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:8000'
-    : window.location.origin;
+    : (window.location.protocol === 'file:'
+        ? 'http://localhost:8000'   // opened as local file — point to local server
+        : window.location.origin);  // served by the backend (Render / production)
   let authUser  = JSON.parse(localStorage.getItem('hai_auth') || 'null');
   let authToken = localStorage.getItem('hai_token') || null;
 
@@ -2359,11 +2365,32 @@
     button.classList.toggle('cursor-not-allowed', busy);
   }
 
+  // Poll server until reachable (Render free-tier wake-up), then run action()
+  async function _waitForServer(onStatusMsg) {
+    const MAX_WAIT = 60000; // 60 s
+    const INTERVAL = 3000;
+    const deadline = Date.now() + MAX_WAIT;
+    let attempt = 0;
+    while (Date.now() < deadline) {
+      try {
+        const r = await fetch(`${API}/`, { method: 'GET' });
+        if (r.ok) return true;
+      } catch {}
+      attempt++;
+      if (onStatusMsg) onStatusMsg(`Server is starting up… (${attempt * INTERVAL / 1000}s)`);
+      await new Promise(r => setTimeout(r, INTERVAL));
+    }
+    return false;
+  }
+
   async function submitLogin() {
     const email    = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
     const errEl    = document.getElementById('loginError');
+    const wakingEl = document.getElementById('loginWaking');
+    const wakingMsg= document.getElementById('loginWakingMsg');
     errEl.classList.add('hidden');
+    wakingEl.classList.add('hidden');
     if (!email || !password) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.remove('hidden'); return; }
     setAuthBusy('login', true);
     try {
@@ -2372,9 +2399,24 @@
         res  = await fetch(`${API}/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password}) });
         data = await res.json();
       } catch {
-        errEl.textContent = 'Server is unreachable — it may be waking up. Please wait a few seconds and try again.';
-        errEl.classList.remove('hidden');
-        return;
+        // Server unreachable — try to wake it up
+        wakingEl.classList.remove('hidden');
+        const alive = await _waitForServer(msg => { if (wakingMsg) wakingMsg.textContent = msg; });
+        wakingEl.classList.add('hidden');
+        if (!alive) {
+          errEl.textContent = `Could not reach server at ${API}. Check your connection or try again later.`;
+          errEl.classList.remove('hidden');
+          return;
+        }
+        // Retry login after server is up
+        try {
+          res  = await fetch(`${API}/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, password}) });
+          data = await res.json();
+        } catch (e2) {
+          errEl.textContent = `Server responded but login request failed. (${API})`;
+          errEl.classList.remove('hidden');
+          return;
+        }
       }
       if (!res.ok) { errEl.textContent = data.detail || 'Invalid email or password.'; errEl.classList.remove('hidden'); return; }
       await storeTokenAndLoadUser(data.access_token, { name: email.split('@')[0], email, age: null, language: currentLang });
@@ -2400,9 +2442,23 @@
         res  = await fetch(`${API}/register`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name, email, password, age}) });
         data = await res.json();
       } catch {
-        errEl.textContent = 'Server is unreachable — it may be waking up. Please wait a few seconds and try again.';
+        errEl.textContent = 'Server is starting up… retrying automatically.';
         errEl.classList.remove('hidden');
-        return;
+        const alive = await _waitForServer();
+        errEl.classList.add('hidden');
+        if (!alive) {
+          errEl.textContent = `Could not reach server at ${API}. Check your connection or try again later.`;
+          errEl.classList.remove('hidden');
+          return;
+        }
+        try {
+          res  = await fetch(`${API}/register`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name, email, password, age}) });
+          data = await res.json();
+        } catch (e2) {
+          errEl.textContent = `Server responded but registration request failed. (${API})`;
+          errEl.classList.remove('hidden');
+          return;
+        }
       }
       if (!res.ok) { errEl.textContent = data.detail || 'Registration failed.'; errEl.classList.remove('hidden'); return; }
       await storeTokenAndLoadUser(data.access_token, { name, email, age, language: currentLang });
