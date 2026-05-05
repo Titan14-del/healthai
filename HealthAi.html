@@ -799,12 +799,16 @@
                 </div>
                 <span style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(216,180,254,.9)" data-i18n="carousel4_badge">6 Languages</span>
               </div>
-              <h2 style="color:#fff;font-size:1.2rem;font-weight:700;margin-bottom:6px;line-height:1.3" data-i18n="carousel4_heading">Consult in Your Language</h2>
-              <p style="color:rgba(237,233,254,.82);font-size:13px;margin-bottom:18px;max-width:280px" data-i18n="carousel4_subtitle">English · Français · Español · 中文 · Deutsch · العربية — with full RTL support.</p>
-                <button onclick="showScreen('profile')" class="btn-gradient-outline" style="color:#fff">
-                  <svg style="width:15px;height:15px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                  <span data-i18n="carousel4_btn">Choose Language</span>
-                </button>
+              <h2 style="color:#fff;font-size:1.2rem;font-weight:700;margin-bottom:10px;line-height:1.3" data-i18n="carousel4_heading">Consult in Your Language</h2>
+              <!-- Language picker — tap to switch instantly -->
+              <div id="carouselLangBtns" style="display:flex;flex-wrap:wrap;gap:6px">
+                <button onclick="setLanguage('en')" data-lang="en" style="font-size:12px;font-weight:500;padding:5px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.12);color:rgba(237,233,254,.9);cursor:pointer;transition:all .2s;white-space:nowrap">🇬🇧 English</button>
+                <button onclick="setLanguage('fr')" data-lang="fr" style="font-size:12px;font-weight:500;padding:5px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.12);color:rgba(237,233,254,.9);cursor:pointer;transition:all .2s;white-space:nowrap">🇫🇷 Français</button>
+                <button onclick="setLanguage('es')" data-lang="es" style="font-size:12px;font-weight:500;padding:5px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.12);color:rgba(237,233,254,.9);cursor:pointer;transition:all .2s;white-space:nowrap">🇪🇸 Español</button>
+                <button onclick="setLanguage('zh')" data-lang="zh" style="font-size:12px;font-weight:500;padding:5px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.12);color:rgba(237,233,254,.9);cursor:pointer;transition:all .2s;white-space:nowrap">🇨🇳 中文</button>
+                <button onclick="setLanguage('de')" data-lang="de" style="font-size:12px;font-weight:500;padding:5px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.12);color:rgba(237,233,254,.9);cursor:pointer;transition:all .2s;white-space:nowrap">🇩🇪 Deutsch</button>
+                <button onclick="setLanguage('ar')" data-lang="ar" style="font-size:12px;font-weight:500;padding:5px 11px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.12);color:rgba(237,233,254,.9);cursor:pointer;transition:all .2s;white-space:nowrap">🇸🇦 العربية</button>
+              </div>
             </div>
           </div>
 
@@ -1325,6 +1329,18 @@
   function _carouselRestart() {
     if (_carouselTimer) clearInterval(_carouselTimer);
     _carouselTimer = setInterval(_carouselTick, 4000);
+  }
+
+  // Highlight the active language pill in carousel slide 4
+  function updateCarouselLangBtns() {
+    var btns = document.querySelectorAll('#carouselLangBtns [data-lang]');
+    btns.forEach(function(btn) {
+      var active = btn.dataset.lang === currentLang;
+      btn.style.background  = active ? 'rgba(255,255,255,.9)'   : 'rgba(255,255,255,.12)';
+      btn.style.color       = active ? '#4a1942'                 : 'rgba(237,233,254,.9)';
+      btn.style.fontWeight  = active ? '700'                     : '500';
+      btn.style.borderColor = active ? 'rgba(255,255,255,.9)'   : 'rgba(255,255,255,.2)';
+    });
   }
 
   // Pause on hover, resume on leave
@@ -2528,6 +2544,7 @@ de: { nearby_title:'Nahversorgung', filter_all:'Alle', filter_hospitals:'Kranken
     currentLang = lang;
     localStorage.setItem('hai_lang', lang);
     applyTranslations();
+    updateCarouselLangBtns();
     renderProfile();
     updateDashboard();
     renderHistory();
@@ -2555,6 +2572,7 @@ de: { nearby_title:'Nahversorgung', filter_all:'Alle', filter_hospitals:'Kranken
   const _savedLang = localStorage.getItem('hai_lang');
   if (_savedLang) { currentLang = _savedLang; }
   applyTranslations();
+  updateCarouselLangBtns();
   document.getElementById('langSelect').value = currentLang;
   // If already signed in (token persisted), sync history from server
   if (authToken) { loadServerHistory().then(updateDashboard); }
