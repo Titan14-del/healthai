@@ -265,6 +265,32 @@
 
       /* Scrollbar */
       [data-theme="light"] .scrollbar-slim::-webkit-scrollbar-thumb { background: #cbd5e1; }
+
+      /* ── CAROUSEL ─────────────────────────────────────────────── */
+      #carouselTrack { will-change: transform; }
+
+      /* Dot base */
+      .hai-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.45);
+        border: none; cursor: pointer; padding: 0;
+        transition: width 0.3s ease, border-radius 0.3s ease, background 0.3s ease;
+      }
+      /* Active dot stretches into a pill */
+      .hai-dot-active {
+        width: 24px;
+        border-radius: 4px;
+        background: rgba(255,255,255,0.95);
+      }
+
+      /* Pause auto-slide while the user hovers */
+      #dashCarousel:hover #carouselTrack { /* intentionally empty — handled in JS */ }
+
+      /* Arrow buttons: hide on very small phones */
+      @media (max-width: 400px) {
+        #dashCarousel button[onclick^="carouselStep"] { display: none !important; }
+      }
     </style>
   </head>
 
@@ -382,22 +408,109 @@
     <!-- DASHBOARD -->
     <div id="dashboardScreen" class="flex-1 overflow-y-auto scrollbar-slim p-4 lg:p-6 space-y-5">
 
-      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-700 via-teal-700 to-cyan-800 p-6">
-        <div class="absolute -top-6 -right-6 w-36 h-36 rounded-full bg-white/5"></div>
-        <div class="absolute -bottom-8 -left-4 w-28 h-28 rounded-full bg-white/5"></div>
-        <div class="relative">
-          <p class="text-emerald-200 text-xs font-medium mb-1 uppercase tracking-wider" data-i18n="chat_assistant_name">AI Medical Assistant</p>
-          <h2 data-i18n="dash_feeling" class="text-white text-xl font-bold mb-2">How are you feeling?</h2>
-          <p data-i18n="dash_subtitle" class="text-emerald-100/80 text-sm mb-4 max-w-xs">Describe your symptoms and receive instant AI-powered medical guidance.</p>
-          <button onclick="showScreen('chat')" class="inline-flex items-center gap-2 bg-white text-emerald-700 px-4 py-2
-  rounded-xl text-sm font-semibold hover:bg-emerald-50 transition shadow-md">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round"
-  stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2
-  2 0 01-2 2h-5l-5 5v-5z"/></svg>
-            <span data-i18n="dash_cta">Start Consultation</span>
-          </button>
+      <!-- ── CAROUSEL ── -->
+      <div id="dashCarousel" class="relative rounded-2xl overflow-hidden" style="min-height:190px">
+        <!-- Track: 4 slides side-by-side, translateX drives the slide -->
+        <div id="carouselTrack" style="display:flex;width:400%;transition:transform 0.55s cubic-bezier(0.4,0,0.2,1)">
+
+          <!-- Slide 1: AI Symptom Checker -->
+          <div class="hai-slide" style="width:25%;flex-shrink:0;background:linear-gradient(135deg,#065f46 0%,#0f766e 55%,#0e7490 100%);padding:1.5rem;position:relative;overflow:hidden">
+            <div style="position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.06)"></div>
+            <div style="position:absolute;bottom:-40px;left:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.04)"></div>
+            <div style="position:relative">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg style="width:20px;height:20px;color:#fff" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                </div>
+                <span style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(167,243,208,.9)">AI Symptom Checker</span>
+              </div>
+              <h2 style="color:#fff;font-size:1.2rem;font-weight:700;margin-bottom:6px;line-height:1.3">How are you feeling today?</h2>
+              <p style="color:rgba(209,250,229,.82);font-size:13px;margin-bottom:18px;max-width:280px">Describe your symptoms and get instant AI-powered medical guidance.</p>
+              <button onclick="showScreen('chat')" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#065f46;padding:8px 18px;border-radius:12px;font-size:13px;font-weight:700;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)">
+                <svg style="width:15px;height:15px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                <span data-i18n="dash_cta">Start Consultation</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Slide 2: Image Analysis -->
+          <div class="hai-slide" style="width:25%;flex-shrink:0;background:linear-gradient(135deg,#1e1b4b 0%,#3730a3 55%,#1d4ed8 100%);padding:1.5rem;position:relative;overflow:hidden">
+            <div style="position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.06)"></div>
+            <div style="position:absolute;bottom:-40px;left:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.04)"></div>
+            <div style="position:relative">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg style="width:20px;height:20px;color:#fff" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+                <span style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(199,210,254,.9)">Image Analysis</span>
+              </div>
+              <h2 style="color:#fff;font-size:1.2rem;font-weight:700;margin-bottom:6px;line-height:1.3">AI Photo Diagnosis</h2>
+              <p style="color:rgba(224,231,255,.82);font-size:13px;margin-bottom:18px;max-width:280px">Upload a photo of a rash, wound or skin condition — AI detects conditions instantly.</p>
+              <button onclick="showScreen('chat')" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.22);color:#fff;padding:8px 18px;border-radius:12px;font-size:13px;font-weight:700;border:1px solid rgba(255,255,255,0.35);cursor:pointer;backdrop-filter:blur(8px)">
+                <svg style="width:15px;height:15px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                Upload a Photo
+              </button>
+            </div>
+          </div>
+
+          <!-- Slide 3: Nearby Care -->
+          <div class="hai-slide" style="width:25%;flex-shrink:0;background:linear-gradient(135deg,#14532d 0%,#166534 55%,#0f766e 100%);padding:1.5rem;position:relative;overflow:hidden">
+            <div style="position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.06)"></div>
+            <div style="position:absolute;bottom:-40px;left:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.04)"></div>
+            <div style="position:relative">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg style="width:20px;height:20px;color:#fff" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </div>
+                <span style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(167,243,208,.9)">Nearby Care</span>
+              </div>
+              <h2 style="color:#fff;font-size:1.2rem;font-weight:700;margin-bottom:6px;line-height:1.3">Find Care Near You</h2>
+              <p style="color:rgba(209,250,229,.82);font-size:13px;margin-bottom:18px;max-width:280px">Locate hospitals, clinics and pharmacies near your location with directions.</p>
+              <button onclick="showScreen('nearby')" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.22);color:#fff;padding:8px 18px;border-radius:12px;font-size:13px;font-weight:700;border:1px solid rgba(255,255,255,0.35);cursor:pointer;backdrop-filter:blur(8px)">
+                <svg style="width:15px;height:15px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                <span data-i18n="btn_find_nearby">Find Nearby</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Slide 4: 6 Languages -->
+          <div class="hai-slide" style="width:25%;flex-shrink:0;background:linear-gradient(135deg,#4a1942 0%,#7e22ce 55%,#4f46e5 100%);padding:1.5rem;position:relative;overflow:hidden">
+            <div style="position:absolute;top:-30px;right:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.06)"></div>
+            <div style="position:absolute;bottom:-40px;left:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.04)"></div>
+            <div style="position:relative">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg style="width:20px;height:20px;color:#fff" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+                </div>
+                <span style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(216,180,254,.9)">6 Languages</span>
+              </div>
+              <h2 style="color:#fff;font-size:1.2rem;font-weight:700;margin-bottom:6px;line-height:1.3">Consult in Your Language</h2>
+              <p style="color:rgba(237,233,254,.82);font-size:13px;margin-bottom:18px;max-width:280px">English · Français · Español · 中文 · Deutsch · العربية — with full RTL support.</p>
+              <button onclick="showScreen('profile')" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.22);color:#fff;padding:8px 18px;border-radius:12px;font-size:13px;font-weight:700;border:1px solid rgba(255,255,255,0.35);cursor:pointer;backdrop-filter:blur(8px)">
+                <svg style="width:15px;height:15px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                Choose Language
+              </button>
+            </div>
+          </div>
+
+        </div><!-- end track -->
+
+        <!-- Dot indicators -->
+        <div id="carouselDots" style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:10">
+          <button class="hai-dot hai-dot-active" onclick="carouselGoTo(0)" aria-label="Slide 1"></button>
+          <button class="hai-dot" onclick="carouselGoTo(1)" aria-label="Slide 2"></button>
+          <button class="hai-dot" onclick="carouselGoTo(2)" aria-label="Slide 3"></button>
+          <button class="hai-dot" onclick="carouselGoTo(3)" aria-label="Slide 4"></button>
         </div>
-      </div>
+
+        <!-- Prev / Next arrows (desktop convenience) -->
+        <button onclick="carouselStep(-1)" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.25);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:10;backdrop-filter:blur(4px)">
+          <svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button onclick="carouselStep(1)"  style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.25);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:10;backdrop-filter:blur(4px)">
+          <svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div><!-- end carousel -->
 
       <div class="grid grid-cols-3 gap-3">
         <div class="bg-slate-900 rounded-2xl p-4 border border-slate-800">
@@ -776,6 +889,58 @@
     html.setAttribute('data-theme', next);
     localStorage.setItem('hai_theme', next);
   }
+
+  // ── Carousel ──────────────────────────────────────────
+  var _carouselIdx   = 0;
+  var _carouselTimer = null;
+  var _carouselTotal = 4;
+  var _carouselPaused = false;
+
+  function carouselGoTo(idx) {
+    _carouselIdx = (idx + _carouselTotal) % _carouselTotal;
+    var track = document.getElementById('carouselTrack');
+    if (track) track.style.transform = 'translateX(-' + (_carouselIdx * 25) + '%)';
+    // Update dots
+    var dots = document.querySelectorAll('.hai-dot');
+    for (var i = 0; i < dots.length; i++) {
+      if (i === _carouselIdx) dots[i].classList.add('hai-dot-active');
+      else dots[i].classList.remove('hai-dot-active');
+    }
+  }
+
+  function carouselStep(dir) {
+    carouselGoTo(_carouselIdx + dir);
+    // Reset timer after manual navigation
+    _carouselRestart();
+  }
+
+  function _carouselTick() {
+    if (!_carouselPaused) carouselGoTo(_carouselIdx + 1);
+  }
+
+  function _carouselRestart() {
+    if (_carouselTimer) clearInterval(_carouselTimer);
+    _carouselTimer = setInterval(_carouselTick, 4000);
+  }
+
+  // Pause on hover, resume on leave
+  document.addEventListener('DOMContentLoaded', function() {
+    var el = document.getElementById('dashCarousel');
+    if (el) {
+      el.addEventListener('mouseenter', function(){ _carouselPaused = true; });
+      el.addEventListener('mouseleave', function(){ _carouselPaused = false; });
+      // Touch swipe support
+      var _touchX = 0;
+      el.addEventListener('touchstart', function(e){ _touchX = e.changedTouches[0].clientX; }, {passive:true});
+      el.addEventListener('touchend', function(e){
+        var dx = e.changedTouches[0].clientX - _touchX;
+        if (Math.abs(dx) > 40) { carouselStep(dx < 0 ? 1 : -1); }
+      }, {passive:true});
+    }
+  });
+
+  // Start auto-slide immediately
+  _carouselRestart();
 
   // ── State ────────────────────────────────────────────
   const SCREENS = ['dashboard','chat','reports','history','nearby','profile'];
