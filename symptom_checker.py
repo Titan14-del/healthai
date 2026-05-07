@@ -7,6 +7,8 @@ load_dotenv()
 
 client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
+CLAUDE_MODEL = "claude-sonnet-4-6"
+
 LANGUAGE_NAMES = {
     'en':   'English',
     'fr':   'French',
@@ -28,7 +30,7 @@ def generate_title(messages: list, conditions: str = "") -> str:
         "Respond with ONLY the title text — no quotes, no trailing punctuation."
     )
     message = client.messages.create(
-        model="claude-sonnet-4-6",
+        model=CLAUDE_MODEL,
         max_tokens=20,
         messages=[{"role": "user", "content": prompt}]
     )
@@ -59,7 +61,7 @@ Always remind the patient in the advice field that this is not a substitute for 
 """
 
     message = client.messages.create(
-        model="claude-sonnet-4-6",
+        model=CLAUDE_MODEL,
         max_tokens=1024,
         messages=[{"role": "user", "content": prompt}]
     )
@@ -116,7 +118,7 @@ Behaviour rules:
 - Respond entirely in {lang_name}, except the urgency value which must stay in English.{profile_note}"""
 
     response = client.messages.create(
-        model="claude-sonnet-4-6",
+        model=CLAUDE_MODEL,
         max_tokens=1024,
         system=system,
         messages=messages,

@@ -3,7 +3,7 @@ import base64
 import json
 from anthropic import Anthropic
 from dotenv import load_dotenv
-from symptom_checker import LANGUAGE_NAMES
+from symptom_checker import LANGUAGE_NAMES, CLAUDE_MODEL
 
 load_dotenv()
 
@@ -36,7 +36,7 @@ Do NOT provide any diagnosis, urgency level, or treatment advice yet.
 Respond in natural conversational text only — like a caring doctor who just looked at the photo and is now asking the patient a question."""
 
     message = client.messages.create(
-        model="claude-sonnet-4-6",
+        model=CLAUDE_MODEL,
         max_tokens=512,
         messages=[
             {
@@ -90,7 +90,7 @@ Behaviour rules:
 - Respond entirely in {lang_name}, except the urgency value which must stay in English."""
 
     response = client.messages.create(
-        model="claude-sonnet-4-6",
+        model=CLAUDE_MODEL,
         max_tokens=1024,
         system=system,
         messages=messages,

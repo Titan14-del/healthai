@@ -9,7 +9,9 @@ from sqlalchemy.orm import Session
 from database import get_db
 import models
 
-SECRET_KEY  = os.getenv("SECRET_KEY", "change-this-secret-in-production")
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY environment variable is not set. Refusing to start.")
 ALGORITHM   = "HS256"
 TOKEN_EXPIRE_HOURS = 24 * 7   # 1 week
 
