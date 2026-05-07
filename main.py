@@ -15,8 +15,6 @@ import asyncio
 from contextlib import asynccontextmanager
 
 
-import os
-
 from database import engine, get_db, DATABASE_URL
 import models
 import schemas
@@ -80,12 +78,9 @@ app = FastAPI(title="HealthAI API", lifespan=lifespan)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-_allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:8000,http://localhost:3000")
-ALLOWED_ORIGINS = [o.strip() for o in _allowed_origins_env.split(",") if o.strip()]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
