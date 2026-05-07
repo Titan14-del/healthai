@@ -1,7 +1,10 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Depends, status
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Depends, status, Request
 from fastapi.responses import FileResponse, RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 from pydantic import BaseModel
 from typing import Optional, List
 from sqlalchemy.orm import Session
@@ -71,7 +74,11 @@ class ForceHTTPSMiddleware(BaseHTTPMiddleware):
             return RedirectResponse(url=https_url, status_code=301)
         return await call_next(request)
 
+limiter = Limiter(key_func=get_remote_address)
+
 app = FastAPI(title="HealthAI API", lifespan=lifespan)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 _allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:8000,http://localhost:3000")
 ALLOWED_ORIGINS = [o.strip() for o in _allowed_origins_env.split(",") if o.strip()]
@@ -165,7 +172,8 @@ def serve_app():
 # ── Auth ─────────────────────────────────────────────────
 
 @app.post("/register", response_model=schemas.TokenResponse, status_code=status.HTTP_201_CREATED)
-def register(req: schemas.RegisterRequest, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def register(request: Request, req: schemas.RegisterRequest, db: Session = Depends(get_db)):
     if db.query(models.Patient).filter(models.Patient.email == req.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
     patient = models.Patient(
@@ -187,7 +195,8 @@ def register(req: schemas.RegisterRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
 
 @app.post("/login", response_model=schemas.TokenResponse)
-def login(req: schemas.LoginRequest, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def login(request: Request, req: schemas.LoginRequest, db: Session = Depends(get_db)):
     patient = db.query(models.Patient).filter(models.Patient.email == req.email).first()
     if not patient or not verify_password(req.password, patient.password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
