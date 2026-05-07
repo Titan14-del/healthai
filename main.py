@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -93,10 +93,14 @@ ALLOWED_IMAGE_TYPES = {
     "image/webp": "image/webp",
 }
 
+MAX_SYMPTOMS_LENGTH = 2000
+MAX_CHAT_MESSAGE_LENGTH = 2000
+MAX_CHAT_MESSAGES = 40
+
 # ── Request/Response models ───────────────────────────────
 
 class SymptomRequest(BaseModel):
-    symptoms: str
+    symptoms: str = Field(min_length=1, max_length=MAX_SYMPTOMS_LENGTH)
     age:      Optional[int]  = None
     gender:   Optional[str]  = None
     language: str            = 'en'
@@ -111,17 +115,17 @@ class ImageResponse(BaseModel):
     text: str
 
 class ImageChatRequest(BaseModel):
-    messages:       List[ChatMessage]
+    messages:       List[ChatMessage] = Field(min_length=1, max_length=MAX_CHAT_MESSAGES)
     language:       str = 'en'
     exchange_count: int = 0
-    original_query: str = ''
+    original_query: str = Field(default='', max_length=MAX_CHAT_MESSAGE_LENGTH)
 
 class ChatMessage(BaseModel):
     role:    str
-    content: str
+    content: str = Field(min_length=1, max_length=MAX_CHAT_MESSAGE_LENGTH)
 
 class ChatRequest(BaseModel):
-    messages: List[ChatMessage]
+    messages: List[ChatMessage] = Field(min_length=1, max_length=MAX_CHAT_MESSAGES)
     age:      Optional[int] = None
     gender:   Optional[str] = None
     language: str           = 'en'

@@ -13,7 +13,13 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY environment variable is not set. Refusing to start.")
 ALGORITHM   = "HS256"
-TOKEN_EXPIRE_HOURS = 24 * 7   # 1 week
+try:
+    TOKEN_EXPIRE_MINUTES = int(os.getenv("TOKEN_EXPIRE_MINUTES", "60"))
+except ValueError:
+    raise RuntimeError("TOKEN_EXPIRE_MINUTES must be an integer.")
+
+if TOKEN_EXPIRE_MINUTES <= 0:
+    raise RuntimeError("TOKEN_EXPIRE_MINUTES must be greater than 0.")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login", auto_error=False)
@@ -25,7 +31,7 @@ def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
 def create_token(patient_id: int) -> str:
-    expire = datetime.now(timezone.utc) + timedelta(hours=TOKEN_EXPIRE_HOURS)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=TOKEN_EXPIRE_MINUTES)
     return jwt.encode({"sub": str(patient_id), "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
 
 def get_current_patient(
