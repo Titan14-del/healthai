@@ -255,7 +255,7 @@ def chat_endpoint(
         return ChatResponse(**result)
     except Exception as e:
         print("FULL ERROR:", traceback.format_exc())
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An internal error occurred. Please try again.")
 
 # ── Symptom analysis ─────────────────────────────────────
 
@@ -285,7 +285,7 @@ def analyze(
         return SymptomResponse(**result)
     except Exception as e:
         print("FULL ERROR:", traceback.format_exc())
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An internal error occurred. Please try again.")
 
 # ── Image analysis ───────────────────────────────────────
 
@@ -321,7 +321,7 @@ async def analyze_image_endpoint(
         raise
     except Exception as e:
         print("FULL ERROR:", traceback.format_exc())
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An internal error occurred. Please try again.")
 
 
 @app.post("/image-chat", response_model=ChatResponse)
@@ -365,7 +365,7 @@ def image_chat_endpoint(
 
     except Exception as e:
         print("FULL ERROR:", traceback.format_exc())
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="An internal error occurred. Please try again.")
 
 # ── Patient history ──────────────────────────────────────
 
