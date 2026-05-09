@@ -1,3 +1,4 @@
+import logging
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Depends, status, Request
 from fastapi.responses import FileResponse, RedirectResponse
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -14,7 +15,8 @@ import httpx
 import asyncio
 from contextlib import asynccontextmanager
 
-
+logging.basicConfig(level=logging.INFO, format="%(levelname)s:\t%(name)s - %(message)s")
+logger = logging.getLogger(__name__)
 from database import engine, get_db, DATABASE_URL
 import models
 import schemas
@@ -44,7 +46,7 @@ try:
             except Exception:
                 pass  # column already exists
 except Exception as e:
-    print(f"[DB] Migration skipped: {e}")
+    logger.warning(f"[DB] Migration skipped: {e}")
 async def keep_alive():
     import os
     app_url = os.getenv("APP_URL")
@@ -55,9 +57,9 @@ async def keep_alive():
         try:
             async with httpx.AsyncClient() as client:
                 await client.get(app_url)
-                print("Keep-alive ping sent")
+                logger.info("Keep-alive ping sent")
         except Exception as e:
-            print(f"Keep-alive error: {e}")
+            logger.error(f"Keep-alive error: {e}")
         await asyncio.sleep(840)
 
 @asynccontextmanager
@@ -185,12 +187,12 @@ def register(request: Request, req: schemas.RegisterRequest, db: Session = Depen
         db.add(patient)
         db.commit()
         db.refresh(patient)
-        print(f"[REGISTER] Patient saved successfully — id={patient.id} email={patient.email}")
+        logger.info(f"[REGISTER] Patient saved successfully — id={patient.id} email={patient.email}")
         return schemas.TokenResponse(access_token=create_token(patient.id))
     except Exception as e:
         db.rollback()
-        print(f"[REGISTER] Failed to save patient: {e}")
-        print("FULL ERROR:", traceback.format_exc())
+        logger.error(f"[REGISTER] Failed to save patient: {e}")
+        logger.error(f"FULL ERROR: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
 
 @app.post("/login", response_model=schemas.TokenResponse)
@@ -255,7 +257,7 @@ def chat_endpoint(
         return ChatResponse(**result)
     except Exception as e:
         db.rollback()
-        print("FULL ERROR:", traceback.format_exc())
+        logger.error(f"FULL ERROR: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="An internal error occurred. Please try again.")
 
 # ── Symptom analysis ─────────────────────────────────────
@@ -286,7 +288,7 @@ def analyze(
         return SymptomResponse(**result)
     except Exception as e:
         db.rollback()
-        print("FULL ERROR:", traceback.format_exc())
+        logger.error(f"FULL ERROR: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="An internal error occurred. Please try again.")
 
 # ── Image analysis ───────────────────────────────────────
@@ -322,7 +324,7 @@ async def analyze_image_endpoint(
     except HTTPException:
         raise
     except Exception as e:
-        print("FULL ERROR:", traceback.format_exc())
+        logger.error(f"FULL ERROR: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="An internal error occurred. Please try again.")
 
 
@@ -367,7 +369,7 @@ def image_chat_endpoint(
 
     except Exception as e:
         db.rollback()
-        print("FULL ERROR:", traceback.format_exc())
+        logger.error(f"FULL ERROR: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail="An internal error occurred. Please try again.")
 
 # ── Patient history ──────────────────────────────────────

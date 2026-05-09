@@ -1,5 +1,8 @@
 import os
+import logging
 from urllib.parse import urlparse
+
+logger = logging.getLogger(__name__)
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.pool import NullPool
@@ -50,12 +53,12 @@ def _make_postgres_engine(url):
     with engine.connect() as conn:
         conn.execute(text("SELECT 1"))
 
-    print(f"[DB] Connected to PostgreSQL via {mode} — host={parsed.hostname} port={port}")
+    logger.info(f"[DB] Connected to PostgreSQL via {mode} — host={parsed.hostname} port={port}")
     return engine
 
 def _make_sqlite_engine():
     engine = create_engine("sqlite:///./healthai.db", connect_args={"check_same_thread": False})
-    print("[DB] Using SQLite fallback")
+    logger.info("[DB] Using SQLite fallback")
     return engine
 
 # NEW CODE (No fallback allowed)
