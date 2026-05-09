@@ -40,7 +40,7 @@ def generate_title(messages: list, conditions: str = "") -> str:
     return message.content[0].text.strip()[:60]
 
 
-def analyze_symptoms(symptoms: str, age: int = None, gender: str = None, language: str = "en") -> str:
+def analyze_symptoms(symptoms: str, age: int = None, gender: str = None, language: str = "en") -> dict:
     age_line    = f"- Age: {age}" if age else ""
     gender_line = f"- Gender: {gender}" if gender else ""
     patient_info = "\n".join(filter(None, [age_line, gender_line, f"- Symptoms: {symptoms}"]))
