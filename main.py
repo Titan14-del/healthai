@@ -114,15 +114,15 @@ class ImageResponse(BaseModel):
     type: str
     text: str
 
+class ChatMessage(BaseModel):
+    role:    Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=MAX_CHAT_MESSAGE_LENGTH)
+
 class ImageChatRequest(BaseModel):
     messages:       List[ChatMessage] = Field(min_length=1, max_length=MAX_CHAT_MESSAGES)
     language:       str = 'en'
     exchange_count: int = 0
     original_query: str = Field(default='', max_length=MAX_CHAT_MESSAGE_LENGTH)
-
-class ChatMessage(BaseModel):
-    role:    Literal["user", "assistant"]
-    content: str = Field(min_length=1, max_length=MAX_CHAT_MESSAGE_LENGTH)
 
 class ChatRequest(BaseModel):
     messages: List[ChatMessage] = Field(min_length=1, max_length=MAX_CHAT_MESSAGES)
