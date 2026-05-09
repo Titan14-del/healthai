@@ -254,6 +254,7 @@ def chat_endpoint(
                 db.commit()
         return ChatResponse(**result)
     except Exception as e:
+        db.rollback()
         print("FULL ERROR:", traceback.format_exc())
         raise HTTPException(status_code=500, detail="An internal error occurred. Please try again.")
 
@@ -284,6 +285,7 @@ def analyze(
             db.commit()
         return SymptomResponse(**result)
     except Exception as e:
+        db.rollback()
         print("FULL ERROR:", traceback.format_exc())
         raise HTTPException(status_code=500, detail="An internal error occurred. Please try again.")
 
@@ -364,6 +366,7 @@ def image_chat_endpoint(
         return ChatResponse(**result)
 
     except Exception as e:
+        db.rollback()
         print("FULL ERROR:", traceback.format_exc())
         raise HTTPException(status_code=500, detail="An internal error occurred. Please try again.")
 
