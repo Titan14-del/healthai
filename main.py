@@ -6,7 +6,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Literal
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 import traceback
@@ -121,7 +121,7 @@ class ImageChatRequest(BaseModel):
     original_query: str = Field(default='', max_length=MAX_CHAT_MESSAGE_LENGTH)
 
 class ChatMessage(BaseModel):
-    role:    str
+    role:    Literal["user", "assistant"]
     content: str = Field(min_length=1, max_length=MAX_CHAT_MESSAGE_LENGTH)
 
 class ChatRequest(BaseModel):
