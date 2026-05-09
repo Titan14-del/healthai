@@ -7,7 +7,10 @@ from symptom_checker import LANGUAGE_NAMES, CLAUDE_MODEL
 
 load_dotenv()
 
-client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+_api_key = os.getenv("ANTHROPIC_API_KEY")
+if not _api_key:
+    raise RuntimeError("ANTHROPIC_API_KEY is not set. Refusing to start.")
+client = Anthropic(api_key=_api_key)
 
 
 def analyze_image_initial(image_bytes: bytes, image_type: str, additional_info: str = "", language: str = 'en') -> dict:

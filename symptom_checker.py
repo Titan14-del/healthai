@@ -5,7 +5,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+_api_key = os.getenv("ANTHROPIC_API_KEY")
+if not _api_key:
+    raise RuntimeError("ANTHROPIC_API_KEY is not set. Refusing to start.")
+client = Anthropic(api_key=_api_key)
 
 CLAUDE_MODEL = "claude-sonnet-4-6"
 
