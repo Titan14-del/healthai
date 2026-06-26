@@ -61,12 +61,13 @@ def _make_sqlite_engine():
     logger.info("[DB] Using SQLite fallback")
     return engine
 
-# NEW CODE (No fallback allowed)
 if is_postgres:
-    # This will now throw a real error if the connection fails
     engine = _make_postgres_engine(DATABASE_URL)
+elif DATABASE_URL:
+    raise ValueError(f"[DB] CRITICAL: Unsupported DATABASE_URL scheme. Check your Railway variables: {DATABASE_URL}")
 else:
-    raise ValueError("[DB] CRITICAL: No PostgreSQL DATABASE_URL found. Check your Railway variables.")
+    logger.warning("[DB] No DATABASE_URL set — using SQLite for local development")
+    engine = _make_sqlite_engine()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 

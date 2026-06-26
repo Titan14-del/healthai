@@ -1,6 +1,6 @@
 import logging
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Depends, status, Request
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse, JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -13,6 +13,9 @@ from sqlalchemy import text
 import traceback
 import httpx
 import asyncio
+import secrets
+import hashlib
+from datetime import datetime, timedelta, timezone
 from contextlib import asynccontextmanager
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:\t%(name)s - %(message)s")
@@ -27,6 +30,7 @@ from auth import (
 from symptom_checker import analyze_symptoms, chat_analyze, generate_title
 import json as _json
 from image_analyzer import analyze_image_initial, image_chat_analyze
+from email_service import send_reset_email
 
 # ── DB setup & migration ─────────────────────────────────
 models.Base.metadata.create_all(bind=engine)
@@ -36,6 +40,14 @@ _MIGRATIONS = [
     "ALTER TABLE patients  ADD COLUMN IF NOT EXISTS language     VARCHAR NOT NULL DEFAULT 'en'",
     "ALTER TABLE diagnoses ADD COLUMN IF NOT EXISTS title        VARCHAR",
     "ALTER TABLE diagnoses ADD COLUMN IF NOT EXISTS conversation TEXT",
+    """CREATE TABLE IF NOT EXISTS password_reset_tokens (
+        id         SERIAL PRIMARY KEY,
+        patient_id INTEGER NOT NULL REFERENCES patients(id),
+        token_hash VARCHAR NOT NULL,
+        expires_at TIMESTAMP NOT NULL,
+        used       INTEGER NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )""",
 ]
 try:
     with engine.connect() as conn:
@@ -217,6 +229,64 @@ def update_language(
     db.commit()
     db.refresh(patient)
     return patient
+
+# ── Password reset ─────────────────────────────────────
+
+@limiter.limit("3/minute")
+@app.post("/forgot-password")
+def forgot_password(request: Request, req: schemas.ForgotPasswordRequest, db: Session = Depends(get_db)):
+    patient = db.query(models.Patient).filter(models.Patient.email == req.email).first()
+    if not patient:
+        return JSONResponse({"message": "If that email is registered, a reset link has been sent."})
+
+    raw_token = secrets.token_urlsafe(32)
+    token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
+
+    db.add(models.PasswordResetToken(
+        patient_id=patient.id,
+        token_hash=token_hash,
+        expires_at=expires_at,
+    ))
+    db.commit()
+
+    try:
+        send_reset_email(patient.email, raw_token)
+    except Exception as e:
+        logger.error(f"Failed to send reset email: {e}")
+
+    return JSONResponse({"message": "If that email is registered, a reset link has been sent."})
+
+
+@limiter.limit("5/minute")
+@app.post("/reset-password")
+def reset_password(request: Request, req: schemas.ResetPasswordRequest, db: Session = Depends(get_db)):
+    token_hash = hashlib.sha256(req.token.encode()).hexdigest()
+    now = datetime.now(timezone.utc)
+
+    reset_token = (
+        db.query(models.PasswordResetToken)
+        .filter(
+            models.PasswordResetToken.token_hash == token_hash,
+            models.PasswordResetToken.expires_at > now,
+            models.PasswordResetToken.used == 0,
+        )
+        .first()
+    )
+
+    if not reset_token:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+
+    patient = db.query(models.Patient).filter(models.Patient.id == reset_token.patient_id).first()
+    if not patient:
+        raise HTTPException(status_code=400, detail="Patient not found")
+
+    patient.password = hash_password(req.new_password)
+    reset_token.used = 1
+    db.commit()
+
+    return JSONResponse({"message": "Password reset successfully."})
+
 
 # ── Conversational symptom intake ────────────────────────
 
