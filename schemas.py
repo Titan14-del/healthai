@@ -40,8 +40,19 @@ class PatientOut(BaseModel):
 
     model_config = {"from_attributes": True}
 
+SUPPORTED_LANGUAGES = {"en", "fr", "es", "zh", "de", "ar"}
+
 class LanguageUpdate(BaseModel):
     language: str
+
+    @field_validator("language")
+    @classmethod
+    def validate_language(cls, v: str) -> str:
+        if v not in SUPPORTED_LANGUAGES:
+            raise ValueError(
+                f"Unsupported language '{v}'. Supported: {', '.join(sorted(SUPPORTED_LANGUAGES))}"
+            )
+        return v
 
 # ── Password reset ─────────────────────────────────────────
 

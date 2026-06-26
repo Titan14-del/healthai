@@ -7,6 +7,8 @@ logger = logging.getLogger(__name__)
 
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
 APP_URL = os.getenv("APP_URL", "")
+# Sender address must be a SendGrid-verified domain; make it configurable per deployment.
+SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL", "noreply@healthai.app")
 
 
 def send_reset_email(to_email: str, reset_token: str) -> None:
@@ -17,7 +19,7 @@ def send_reset_email(to_email: str, reset_token: str) -> None:
     reset_url = f"{APP_URL}/reset-password?token={reset_token}"
 
     message = Mail(
-        from_email="noreply@healthai.app",
+        from_email=SENDGRID_FROM_EMAIL,
         to_emails=to_email,
         subject="Reset your HealthAI password",
         html_content=(

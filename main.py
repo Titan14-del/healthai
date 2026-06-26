@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List, Literal
 from sqlalchemy.orm import Session
 from sqlalchemy import text
@@ -32,7 +32,7 @@ from auth import (
     hash_password, verify_password, create_token,
     get_current_patient, get_optional_patient
 )
-from symptom_checker import analyze_symptoms, chat_analyze, generate_title
+from symptom_checker import analyze_symptoms, chat_analyze, generate_title, LANGUAGE_NAMES
 import json as _json
 from image_analyzer import analyze_image_initial, image_chat_analyze
 from email_service import send_reset_email
@@ -45,6 +45,7 @@ _MIGRATIONS = [
     "ALTER TABLE patients  ADD COLUMN IF NOT EXISTS language     VARCHAR NOT NULL DEFAULT 'en'",
     "ALTER TABLE diagnoses ADD COLUMN IF NOT EXISTS title        VARCHAR",
     "ALTER TABLE diagnoses ADD COLUMN IF NOT EXISTS conversation TEXT",
+    "ALTER TABLE diagnoses ADD COLUMN IF NOT EXISTS analysis     TEXT",
     """CREATE TABLE IF NOT EXISTS password_reset_tokens (
         id         SERIAL PRIMARY KEY,
         patient_id INTEGER NOT NULL REFERENCES patients(id),
@@ -60,8 +61,12 @@ try:
             try:
                 conn.execute(text(stmt))
                 conn.commit()
-            except Exception:
-                pass  # column already exists
+            except Exception as e:
+                # "already exists" / "duplicate column" are expected (idempotent re-runs);
+                # surface anything else so real migration failures aren't hidden.
+                msg = str(e).lower()
+                if "exist" not in msg and "duplicate" not in msg:
+                    logger.warning(f"[DB] Migration statement failed: {e}")
 except Exception as e:
     logger.warning(f"[DB] Migration skipped: {e}")
 async def keep_alive():
@@ -97,9 +102,14 @@ app = FastAPI(title="HealthAI API", lifespan=lifespan)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+# Restrict CORS to the origins listed in ALLOWED_ORIGINS (comma-separated).
+# Falls back to "*" only when the var is unset, to keep local development frictionless.
+_allowed = os.getenv("ALLOWED_ORIGINS", "")
+allowed_origins = [o.strip() for o in _allowed.split(",") if o.strip()] or ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
+    allow_credentials=allowed_origins != ["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -118,7 +128,20 @@ MAX_CHAT_MESSAGES = 40
 
 # ── Request/Response models ───────────────────────────────
 
-class SymptomRequest(BaseModel):
+class _LangValidatedModel(BaseModel):
+    """Base for request models that carry a `language` field, restricting it to
+    the languages the prompts actually support (otherwise they silently fall
+    back to English)."""
+    @field_validator("language", check_fields=False)
+    @classmethod
+    def _validate_language(cls, v: str) -> str:
+        if v not in LANGUAGE_NAMES:
+            raise ValueError(
+                f"Unsupported language '{v}'. Supported: {', '.join(sorted(LANGUAGE_NAMES))}"
+            )
+        return v
+
+class SymptomRequest(_LangValidatedModel):
     symptoms: str = Field(min_length=1, max_length=MAX_SYMPTOMS_LENGTH)
     age:      Optional[int]  = None
     gender:   Optional[str]  = None
@@ -137,13 +160,13 @@ class ChatMessage(BaseModel):
     role:    Literal["user", "assistant"]
     content: str = Field(min_length=1, max_length=MAX_CHAT_MESSAGE_LENGTH)
 
-class ImageChatRequest(BaseModel):
+class ImageChatRequest(_LangValidatedModel):
     messages:       List[ChatMessage] = Field(min_length=1, max_length=MAX_CHAT_MESSAGES)
     language:       str = 'en'
     exchange_count: int = 0
     original_query: str = Field(default='', max_length=MAX_CHAT_MESSAGE_LENGTH)
 
-class ChatRequest(BaseModel):
+class ChatRequest(_LangValidatedModel):
     messages: List[ChatMessage] = Field(min_length=1, max_length=MAX_CHAT_MESSAGES)
     age:      Optional[int] = None
     gender:   Optional[str] = None
@@ -237,12 +260,18 @@ def update_language(
 
 # ── Password reset ─────────────────────────────────────
 
-@limiter.limit("3/minute")
 @app.post("/forgot-password")
+@limiter.limit("3/minute")
 def forgot_password(request: Request, req: schemas.ForgotPasswordRequest, db: Session = Depends(get_db)):
     patient = db.query(models.Patient).filter(models.Patient.email == req.email).first()
     if not patient:
         return JSONResponse({"message": "If that email is registered, a reset link has been sent."})
+
+    # Invalidate any previously issued, still-unused tokens for this patient.
+    db.query(models.PasswordResetToken).filter(
+        models.PasswordResetToken.patient_id == patient.id,
+        models.PasswordResetToken.used == 0,
+    ).update({"used": 1})
 
     raw_token = secrets.token_urlsafe(32)
     token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
@@ -263,8 +292,8 @@ def forgot_password(request: Request, req: schemas.ForgotPasswordRequest, db: Se
     return JSONResponse({"message": "If that email is registered, a reset link has been sent."})
 
 
-@limiter.limit("5/minute")
 @app.post("/reset-password")
+@limiter.limit("5/minute")
 def reset_password(request: Request, req: schemas.ResetPasswordRequest, db: Session = Depends(get_db)):
     token_hash = hashlib.sha256(req.token.encode()).hexdigest()
     now = datetime.now(timezone.utc)
@@ -373,7 +402,6 @@ async def analyze_image_endpoint(
     file:            UploadFile = File(...),
     additional_info: str = Form(default=""),
     language:        str = Form(default="en"),
-    db:      Session = Depends(get_db),
     patient: Optional[models.Patient] = Depends(get_optional_patient),
 ):
     """
@@ -451,13 +479,19 @@ def image_chat_endpoint(
 
 @app.get("/history", response_model=List[schemas.DiagnosisOut])
 def history(
+    limit:   int = 50,
+    offset:  int = 0,
     patient: models.Patient = Depends(get_current_patient),
     db:      Session = Depends(get_db),
 ):
+    limit = max(1, min(limit, 200))
+    offset = max(0, offset)
     return (
         db.query(models.Diagnosis)
         .filter(models.Diagnosis.patient_id == patient.id)
         .order_by(models.Diagnosis.created_at.desc())
+        .limit(limit)
+        .offset(offset)
         .all()
     )
 
