@@ -32,7 +32,7 @@ from auth import (
     hash_password, verify_password, create_token,
     get_current_patient, get_optional_patient
 )
-from symptom_checker import analyze_symptoms, chat_analyze, generate_title, LANGUAGE_NAMES
+from symptom_checker import analyze_symptoms, chat_analyze, generate_title, LANGUAGE_NAMES, LANGUAGE_NAMES
 import json as _json
 from image_analyzer import analyze_image_initial, image_chat_analyze
 from email_service import send_reset_email
@@ -408,6 +408,11 @@ async def analyze_image_endpoint(
     Initial image upload. Describes what the AI sees and asks ONE follow-up question.
     The frontend then routes subsequent patient replies to /image-chat until diagnosis.
     """
+    if language not in LANGUAGE_NAMES:
+        raise HTTPException(status_code=400, detail=f"Unsupported language '{language}'. Supported: {', '.join(LANGUAGE_NAMES)}")
+    if len(additional_info) > MAX_SYMPTOMS_LENGTH:
+        raise HTTPException(status_code=400, detail=f"Additional info too long ({len(additional_info)} chars). Max: {MAX_SYMPTOMS_LENGTH}")
+
     try:
         if file.content_type not in ALLOWED_IMAGE_TYPES:
             raise HTTPException(status_code=400, detail="Invalid file type. Please upload a JPEG, PNG, GIF or WEBP image.")
