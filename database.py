@@ -64,11 +64,15 @@ def _make_sqlite_engine():
 _ENV = os.getenv("ENV", "").lower()
 
 if is_postgres:
-    engine = _make_postgres_engine(DATABASE_URL)
+    try:
+        engine = _make_postgres_engine(DATABASE_URL)
+    except Exception as e:
+        logger.error(f"[DB] PostgreSQL connection failed: {e}")
+        logger.warning("[DB] Falling back to SQLite — data will NOT persist across restarts!")
+        engine = _make_sqlite_engine()
 elif DATABASE_URL:
     raise ValueError(f"[DB] CRITICAL: Unsupported DATABASE_URL scheme. Check your Railway variables: {DATABASE_URL}")
 elif _ENV in ("production", "prod"):
-    # Never silently fall back to ephemeral SQLite in production — that loses all data on restart.
     raise RuntimeError("[DB] CRITICAL: DATABASE_URL must be set when ENV=production.")
 else:
     logger.warning("[DB] No DATABASE_URL set — using SQLite for local development")
