@@ -23,6 +23,10 @@ import hashlib
 from datetime import datetime, timedelta, timezone
 from contextlib import asynccontextmanager
 
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:\t%(name)s - %(message)s")
 logger = logging.getLogger(__name__)
 from database import engine, get_db, DATABASE_URL
@@ -275,7 +279,7 @@ def forgot_password(request: Request, req: schemas.ForgotPasswordRequest, db: Se
 
     raw_token = secrets.token_urlsafe(32)
     token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
-    expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
+    expires_at = _utcnow() + timedelta(hours=1)
 
     db.add(models.PasswordResetToken(
         patient_id=patient.id,
@@ -296,7 +300,7 @@ def forgot_password(request: Request, req: schemas.ForgotPasswordRequest, db: Se
 @limiter.limit("5/minute")
 def reset_password(request: Request, req: schemas.ResetPasswordRequest, db: Session = Depends(get_db)):
     token_hash = hashlib.sha256(req.token.encode()).hexdigest()
-    now = datetime.now(timezone.utc)
+    now = _utcnow()
 
     reset_token = (
         db.query(models.PasswordResetToken)

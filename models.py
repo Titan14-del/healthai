@@ -3,6 +3,10 @@ from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 from database import Base
 
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
 class Patient(Base):
     __tablename__ = "patients"
 
@@ -41,6 +45,6 @@ class PasswordResetToken(Base):
     token_hash = Column(String, nullable=False)
     expires_at = Column(DateTime, nullable=False)
     used       = Column(Integer, default=0, nullable=False)  # boolean 0/1
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=_utcnow)
 
     patient = relationship("Patient")
